@@ -48,8 +48,8 @@
         }
     }
 
-    function counter($kode)
-	{
+    function counter($kode) {
+
 		$data = DB::table('ms_counter')->where('kode', $kode)->first();
 
 		if(!empty($data)){
@@ -74,5 +74,87 @@
 
 		return $counter;
 	}
+
+    function cleanTag($tag = '') {
+        //add dashes
+        $tag = str_replace(' ', '-', $tag);
+    
+        //change to lowercase
+        $tag = strtolower($tag);
+    
+        //remove none alpha-numeric characters - not sure how good this will be with none latin languages
+        //$tag = preg_replace('/[^a-zA-Z0-9.]+/', '', $tag);
+        return $tag;
+    }
+
+    function hourMinuteSeconds($duration = 0, $type = '') {
+
+        $hours = 0;
+        $minutes = 0;
+        $seconds = 0;
+    
+        //avoid divisiob by zero
+        if ($duration > 0) {
+            $hours = floor($duration / 3600);
+            $minutes = floor(($duration / 60) % 60);
+            $seconds = $duration % 60;
+        }
+        switch ($type) {
+        case 'hours':
+            return $hours;
+        case 'minutes':
+            return $minutes;
+        case 'seconds':
+            return $seconds;
+        }
+    
+    }
+
+    function runtimeDate($date = '', $date_format = 'Y-m-d') {
+
+        $alternative = '---';
+
+        if ($date == '0000-00-00' || $date == '0000-00-00 00:00:00' || $date == '---') {
+            return $alternative;
+        }
+    
+        if ($date != '') {
+            return \Carbon\Carbon::parse($date)->format($date_format);
+        }
+    
+        return $alternative;
+    }
+
+    function listMonth() {
+
+        $month = array(
+            1 => 'January',
+                'February',
+                'March',
+                'April',
+                'May',
+                'June',
+                'July',
+                'August',
+                'September',
+                'October',
+                'November',
+                'December'
+            );
+
+        return $month;
+    }
+
+    function listYear() {
+        
+        $start = '2020';
+        $end = date('Y');
+        $array = array();
+        for($start; $start <= $end; $start++) {
+            $array[$start] = $start;
+        }
+
+        return $array;
+    }
 
 ?>

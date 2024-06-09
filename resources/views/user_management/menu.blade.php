@@ -71,7 +71,7 @@
                     <div class="form-group">
                         <label class="form-label">Kode Menu</label>
                         <div class="form-control-wrap">
-                            <input type="text" class="form-control" name="kode" id="kode" required>
+                            <input type="text" class="form-control" name="code" id="code" required>
                         </div>
                     </div>
                     <div class="form-group">

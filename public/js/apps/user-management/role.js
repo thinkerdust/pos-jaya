@@ -8,7 +8,7 @@ var table = NioApp.DataTable('#dt-table', {
     },
     columns: [
         {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false},
-        {data: 'nama'},
+        {data: 'name'},
         {data: 'status'},
         {data: 'id'},
     ],
@@ -174,7 +174,7 @@ function edit(id_role) {
                 $('#modalForm').modal('show');
                 let data = response.data;
                 $('#id_role').val(id_role);
-                $('#role').val(data.nama)
+                $('#role').val(data.name)
                 edit_tree_menu(id_role);
             }
         },

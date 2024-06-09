@@ -9,8 +9,8 @@ var table = NioApp.DataTable('#dt-table', {
     columns: [
         {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false},
         {data: 'parent'},
-        {data: 'kode'},
-        {data: 'nama'},
+        {data: 'code'},
+        {data: 'name'},
         {data: 'icon'},
         {data: 'status'},
         {data: 'id'},
@@ -105,9 +105,9 @@ function edit(id_menu) {
                 $('#modalForm').modal('show');
                 let data = response.data;
                 $('#id_menu').val(id_menu);
-                $('#menu').val(data.nama);
+                $('#menu').val(data.name);
                 $('#icon').val(data.icon);
-                $('#kode').val(data.kode);
+                $('#code').val(data.code);
                 $('#parent').val(data.parent);
             }
         },

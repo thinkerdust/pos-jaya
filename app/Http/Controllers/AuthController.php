@@ -31,13 +31,12 @@ class AuthController extends BaseController
         $id = $request->id_user;
 
         $validator = Validator::make($request->all(), [
-            'nama'=> 'required',
-            'mall' => 'required',
+            'name'=> 'required',
+            'company' => 'required',
             'email' => 'required|email:rfc,dns|unique:users, "email",'.$id,
-            'telp' => 'required|numeric',
+            'phone' => 'required|numeric',
             'username' => 'required|unique:users, "username",'.$id,
             'role' => 'required_if:id_user, null',
-            'level' => 'required_if:id_user, null',
         ]);
    
         if($validator->stopOnFirstFailure()->fails()){
@@ -45,19 +44,18 @@ class AuthController extends BaseController
         }
 
         $data_user = [
-            'name' => $request->nama,
-            'username' => $request->username,
+            'name' => $request->name,
+            'username' => strtolower(str_replace(' ','',$request->username)),
             'email' => $request->email,
-            'telp' => $request->telp,
-            'uid_mall' => $request->mall,
+            'phone' => $request->phone,
+            'uid_company' => $request->company,
             'id_role' => $request->role,
-            'id_level' => $request->level
         ];
 
         if(!empty($id)) {
             $data_user['updated_at'] = Carbon::now();
         }else{
-            $data_user['password'] = Hash::make('SinarmasLand');
+            $data_user['password'] = Hash::make('POSJAYA24');
             $data_user['created_at'] = Carbon::now();
         }
 
@@ -143,7 +141,7 @@ class AuthController extends BaseController
         $id = $request->id;
 
         $user = User::where('id', $id)
-                ->update(['password'=> Hash::make('SinarmasLand'), 'updated_at' => $time]);
+                ->update(['password'=> Hash::make('POSJAYA24'), 'updated_at' => $time]);
         
         if($user) {
             return $this->ajaxResponse(true, 'Data save successfully');
@@ -158,9 +156,9 @@ class AuthController extends BaseController
             return abort(404);
         }
 
-        $user = Auth::user();
         $time = Carbon::now();
         $id = $request->id;
+        $user = User::find($id)->first();
 
         if($user->status == 1) {
             $status = 0;

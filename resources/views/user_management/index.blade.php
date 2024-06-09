@@ -24,7 +24,6 @@
                                         <tr>
                                             <th>No</th>
                                             <th>Nama</th> 
-                                            <th>Mall</th> 
                                             <th>Username</th> 
                                             <th>Email</th> 
                                             <th>No HP</th> 
@@ -63,13 +62,13 @@
                         <div class="form-group">
                             <label class="form-label">Nama</label>
                             <div class="form-control-wrap">
-                                <input type="text" class="form-control" name="nama" id="nama" required>
+                                <input type="text" class="form-control" name="name" id="name" required>
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="form-label">Mall</label>
+                            <label class="form-label">Perusahaan</label>
                             <div class="form-control-wrap">
-                                <select class="form-control" name="mall" id="mall" required>
+                                <select class="form-control" name="company" id="company" required>
         
                                 </select>
                             </div>
@@ -82,14 +81,7 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="form-group">
-                            <label class="form-label">Level</label>
-                            <div class="form-control-wrap">
-                                <select class="form-control" name="level" id="level" required>
 
-                                </select>
-                            </div>
-                        </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
@@ -101,14 +93,14 @@
                         <div class="form-group">
                             <label class="form-label">Telp</label>
                             <div class="form-control-wrap">
-                                <input type="text" class="form-control" name="telp" id="telp" required>
+                                <input type="text" class="form-control" name="phone" id="phone" required>
                             </div>
                         </div>
                         <div class="form-group">
                             <label class="form-label">Username</label>
                             <div class="form-control-wrap">
                                 <input type="text" class="form-control" name="username" id="username" required>
-                                <span class="ff-italic">Default Password : SinarmasLand</span>
+                                <span class="ff-italic">Default Password : POSJAYA24</span>
                             </div>
                         </div>
                     </div>

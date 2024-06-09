@@ -1,20 +1,18 @@
 var table = NioApp.DataTable('#dt-table', {
     serverSide: true,
     processing: true,
-    responsive: false,
+    responsive: true,
     searchDelay: 500,
-    scrollX: true,
     ajax: {
         url: '/datatable-user-management'
     },
     columns: [
         {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false},
         {data: 'name', name: 'u.name'},
-        {data: 'nama_mall', name: 'mm.nama'},
         {data: 'username', name: 'u.username'},
         {data: 'email', name: 'u.email'},
-        {data: 'telp', name: 'u.telp'},
-        {data: 'roles', name: 'r.nama'},
+        {data: 'phone', name: 'u.phone'},
+        {data: 'roles', name: 'r.name'},
         {data: 'status'},
         {data: 'id'},
     ],
@@ -92,12 +90,12 @@ function aktivasi(id) {
     })
 }
 
-$('#mall').select2({
-    placeholder: 'Select Mall',
+$('#company').select2({
+    placeholder: 'Pilih Perusahaan',
     allowClear: true,
     dropdownParent: $('#modalForm'),
     ajax: {
-        url: '/data-mall',
+        url: '/data-company',
         dataType: "json",
         type: "get",
         delay: 250,
@@ -108,7 +106,7 @@ $('#mall').select2({
             return {
                 results: $.map(data, function (item) {
                     return {
-                        text: item.nama,
+                        text: item.name,
                         id: item.uid
                     }
                 })
@@ -119,11 +117,11 @@ $('#mall').select2({
 })
 
 $('#role').select2({
-    placeholder: 'Select Role',
+    placeholder: 'Pilih Role',
     allowClear: true,
     dropdownParent: $('#modalForm'),
     ajax: {
-        url: '/data-role-user',
+        url: '/data-role',
         dataType: "json",
         type: "get",
         delay: 250,
@@ -134,33 +132,7 @@ $('#role').select2({
             return {
                 results: $.map(data, function (item) {
                     return {
-                        text: item.nama,
-                        id: item.id
-                    }
-                })
-            };
-        },
-        cache: true
-    }
-})
-
-$('#level').select2({
-    placeholder: 'Select Level',
-    allowClear: true,
-    dropdownParent: $('#modalForm'),
-    ajax: {
-        url: '/data-level-user',
-        dataType: "json",
-        type: "get",
-        delay: 250,
-        data: function (params) {
-            return { q: params.term };
-        },
-        processResults: function (data, params) {
-            return {
-                results: $.map(data, function (item) {
-                    return {
-                        text: item.nama,
+                        text: item.name,
                         id: item.id
                     }
                 })
@@ -173,12 +145,8 @@ $('#level').select2({
 function tambah() {
     $('#form-data')[0].reset();
     $('#id_user').val('');
-    $('#username').val('');
-    $('#mall').val('').change();
+    $('#company').val('').change();
     $('#role').val('').change();
-    $('#level').val('').change();
-    $("#role").attr('disabled', false);
-    $("#level").attr('disabled', false);
     $('#modalForm').modal('show');
 }
 
@@ -233,14 +201,13 @@ function edit(id) {
                 $('#modalForm').modal('show');
                 let data = response.data;
                 $('#id_user').val(id);
-                $('#nama').val(data.name);
+                $('#name').val(data.name);
                 $('#email').val(data.email);
-                $('#telp').val(data.telp);
+                $('#phone').val(data.phone);
                 $('#username').val(data.username);
 
-                $("#mall").empty().append(`<option value="${data.uid_mall}">${data.nama_mall}</option>`).val(data.uid_mall).trigger('change');
-                $("#role").empty().append(`<option value="${data.id_role}">${data.nama_role}</option>`).val(data.id_role).trigger('change');
-                $("#level").empty().append(`<option value="${data.id_level}">${data.nama_level}</option>`).val(data.id_level).trigger('change');
+                $("#company").empty().append(`<option value="${data.uid_company}">${data.name_company}</option>`).val(data.uid_company).trigger('change');
+                $("#role").empty().append(`<option value="${data.id_role}">${data.name_role}</option>`).val(data.id_role).trigger('change');
             }
         },
         error: function(error) {

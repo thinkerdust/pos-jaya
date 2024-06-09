@@ -27,10 +27,10 @@
                 <div class="nk-content ">
                     <div class="nk-block nk-block-middle nk-auth-body  wide-xs">
                         <div class="brand-logo pb-4 text-center">
-                            <a href="/" class="logo-link">
-                                <img class="logo-light logo-img logo-img-lg" src="{{ asset('images/logo-for-you-sml-2.png') }}" srcset="{{ asset('images/logo-for-you-sml-2.png 2x') }}" alt="logo">
-                                <img class="logo-dark logo-img logo-img-lg" src="{{ asset('images/logo-for-you-sml-2.png') }}" srcset="{{ asset('images/logo-for-you-sml.png 2x') }}" alt="logo-dark">
-                            </a>
+                            <!-- <a href="/" class="logo-link">
+                                <img class="logo-light logo-img logo-img-lg" src="{{ asset('images/icon-bag-small-2.png') }}" srcset="{{ asset('images/icon-bag-small-2.png 2x') }}" alt="logo">
+                                <img class="logo-dark logo-img logo-img-lg" src="{{ asset('images/icon-bag-small-2.png') }}" srcset="{{ asset('images/icon-bag-small-2.png 2x') }}" alt="logo-dark">
+                            </a> -->
                         </div>
                         <div class="card">
                             <div class="card-inner card-inner-lg">
@@ -38,7 +38,7 @@
                                     <div class="nk-block-head-content">
                                         <h4 class="nk-block-title">Sign-In</h4>
                                         <div class="nk-block-des">
-                                            <p>Welcome to ForYou by Sinarmas Land</p>
+                                            <p>Welcome to POS JAYA</p>
                                         </div>
                                     </div>
                                 </div>

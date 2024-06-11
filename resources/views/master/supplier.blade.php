@@ -15,7 +15,7 @@
                     <div class="nk-block nk-block-lg">
                         <div class="card card-bordered card-preview">
                             <div class="card-inner">
-                                @can("crudAccess", "MD3")
+                                @can("crudAccess", "MD7")
                                 <a href="" onclick="tambah()" class="toggle btn btn-theme-sml btn-sm"><em class="icon ni ni-plus"></em><span>Add Data</span></a>
                                 @endcan
                                 <hr class="preview-hr">
@@ -24,7 +24,9 @@
                                         <tr>
                                             <th>No</th>
                                             <th>Nama</th> 
-                                            <th>Status</th> 
+                                            <th>Phone</th> 
+                                            <th>Email</th> 
+                                            <th>Alamat</th> 
                                             <th>Action</th> 
                                         </tr>
                                     </thead>
@@ -47,7 +49,7 @@
                 <em class="icon ni ni-cross"></em>
             </a>
             <div class="modal-header">
-                <h5 class="modal-title">Form Satuan</h5>
+                <h5 class="modal-title">Form Supplier</h5>
             </div>
             <div class="modal-body">
                 <form class="form-validate is-alter" id="form-data">
@@ -57,6 +59,27 @@
                         <label class="form-label">Nama</label>
                         <div class="form-control-wrap">
                             <input type="text" class="form-control" name="name" id="name" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Phone</label>
+                        <div class="form-control-wrap">
+                            <input type="text" class="form-control" name="phone" id="phone" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Email</label>
+                        <div class="form-control-wrap">
+                            <input type="text" class="form-control" name="email" id="email" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Alamat</label>
+                        <div class="form-control-wrap">
+                            <textarea class="form-control" name="address" id="address" rows="5" required></textarea>
                         </div>
                     </div>
                     

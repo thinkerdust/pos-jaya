@@ -82,12 +82,12 @@ class UserManagementController extends BaseController
             $data['insert_by'] = $user->username;
         }
 
-        $menu = Menu::updateOrCreate(
+        $process = Menu::updateOrCreate(
             ['id' => $id],
             $data
         );
 
-        if($menu) {
+        if($process) {
             return $this->ajaxResponse(true, 'Data save successfully');
         }else{
             return $this->ajaxResponse(false, 'Failed to save data');
@@ -97,18 +97,18 @@ class UserManagementController extends BaseController
     public function edit_menu(Request $request) 
     {
         $id = $request->id;
-        $menu = Menu::where('id', $id)->first();
-        return $this->ajaxResponse(true, 'Success!', $menu);
+        $data = Menu::where('id', $id)->first();
+        return $this->ajaxResponse(true, 'Success!', $data);
     }
 
     public function delete_menu(Request $request)
     {
         $id = $request->id;
         $user = Auth::user();
-        $menu = Menu::where('id', $id)
+        $process = Menu::where('id', $id)
             ->update(['status' => 0, 'update_at' => Carbon::now(), 'update_by' => $user->username]);
 
-        if($menu) {
+        if($process) {
             return $this->ajaxResponse(true, 'Data save successfully');
         }else{
             return $this->ajaxResponse(false, 'Failed to save data');
@@ -212,8 +212,8 @@ class UserManagementController extends BaseController
     public function edit_role(Request $request) 
     {
         $id = $request->id;
-        $role = Role::where('id', $id)->first();
-        return $this->ajaxResponse(true, 'Success!', $role);
+        $data = Role::where('id', $id)->first();
+        return $this->ajaxResponse(true, 'Success!', $data);
     }
 
     public function list_permissions_menu(Request $request)

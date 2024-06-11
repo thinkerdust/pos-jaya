@@ -18,7 +18,7 @@
                                 <div class="preview-block">
                                     <form class="form-validate is-alter" id="form-data">
                                         @csrf
-                                        <input type="hidden" name="uid_company" id="uid_company" value="{{ isset($uid) ? $uid:null }}">
+                                        <input type="hidden" name="uid" id="uid" value="{{ isset($uid) ? $uid:null }}">
                                     <div class="row gy-4">
                                         <div class="col-sm-6">
                                             

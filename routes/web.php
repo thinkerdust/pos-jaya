@@ -7,10 +7,12 @@ use App\Http\Controllers\UserManagementController;
 
 // Master 
 use App\Http\Controllers\Master\MasterCompanyController;
-use App\Http\Controllers\Master\MasterMemberController;
+use App\Http\Controllers\Master\MasterCustomerController;
 use App\Http\Controllers\Master\MasterProductController;
 use App\Http\Controllers\Master\MasterPaymentController;
 use App\Http\Controllers\Master\MasterUnitController;
+use App\Http\Controllers\Master\MasterSupplierController;
+use App\Http\Controllers\Master\MasterMaterialController;
 
 /*
 |--------------------------------------------------------------------------
@@ -78,6 +80,8 @@ Route::group(['middleware' => ['web', 'auth']], function() {
         Route::get('/data-payment-method', [MasterPaymentController::class, 'list_data_payment_method']);
         Route::get('/data-product', [MasterProductController::class, 'list_data_product']);
         Route::get('/data-unit', [MasterUnitController::class, 'list_data_unit']);
+        Route::get('/data-supplier', [MasterSupplierController::class, 'list_data_supplier']);
+        Route::get('/data-material', [MasterMaterialController::class, 'list_data_material']);
     });
 
     // Master Data
@@ -128,6 +132,30 @@ Route::group(['middleware' => ['web', 'auth']], function() {
                 Route::post('/store', 'store_unit');
                 Route::get('/edit/{uid}', 'edit_unit');
                 Route::get('/delete/{uid}', 'delete_unit');
+            });
+        });
+
+        // Unit
+        Route::group(['prefix' => 'material', 'middleware' => ["can:SubMenu, 'MD6'"]], function() {
+            Route::controller(MasterMaterialController::class)->group(function() {
+                Route::get('/', 'index')->name('material');
+                Route::get('/datatable', 'datatable_material');
+                Route::get('/add', 'add_material');
+                Route::post('/store', 'store_material');
+                Route::get('/edit/{uid}', 'edit_material');
+                Route::get('/delete/{uid}', 'delete_material');
+            });
+        });
+
+        // Supplier
+        Route::group(['prefix' => 'supplier', 'middleware' => ["can:SubMenu, 'MD7'"]], function() {
+            Route::controller(MasterSupplierController::class)->group(function() {
+                Route::get('/', 'index')->name('supplier');
+                Route::get('/datatable', 'datatable_supplier');
+                Route::get('/add', 'add_supplier');
+                Route::post('/store', 'store_supplier');
+                Route::get('/edit/{uid}', 'edit_supplier');
+                Route::get('/delete/{uid}', 'delete_supplier');
             });
         });
         

@@ -6,16 +6,16 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
-class Product extends Model
+class Supplier extends Model
 {
     use HasFactory;
 
     public $timestamps = false;
-    protected $table = 'product';
+    protected $table = 'supplier';
 
-    public function dataTableProduct()
+    public function dataTableSupplier()
     {
-        $query = DB::table('product')->select('uid', 'name', 'status');
+        $query = DB::table('supplier')->select('uid', 'name', 'phone', 'email', 'address', 'status');
 
         $order = request('order')[0];
         if($order['column'] == '0') {
@@ -25,9 +25,9 @@ class Product extends Model
         return $query;
     }
 
-    public function listDataProduct($q)
+    public function listDataSupplier($q)
     {
-        $data = DB::table('product')->where('status', 1)->select('uid', 'name');
+        $data = DB::table('supplier')->where('status', 1)->select('uid', 'name');
         if($q) {
             $data = $data->where('name', 'like', '%'.$q.'%');
         }

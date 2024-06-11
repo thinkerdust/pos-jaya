@@ -1,6 +1,6 @@
 $(document).ready(function() {
 
-    let uid = $('#uid_company').val();
+    let uid = $('#uid').val();
     if(uid) {
         $.ajax({
             url: '/company/edit/'+uid,
@@ -16,7 +16,7 @@ $(document).ready(function() {
                     $('#filename_photo').text(filePath);
                     $('#filename_photo').attr("href", 'storage/'+data.photo);
 
-                    $('#uid_company').val(data.uid);
+                    $('#uid').val(data.uid);
                     $('#name').val(data.name);
                     $('#phone').val(data.phone);
                     $('#address').val(data.address);

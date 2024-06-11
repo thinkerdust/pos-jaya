@@ -56,13 +56,13 @@ class MasterCompanyController extends BaseController
 
     public function store_company(Request $request)
     {
-        $uid = $request->input('uid_company');
+        $uid = $request->input('uid');
 
         $validator = Validator::make($request->all(), [
             'name' => 'required',
             'phone' => 'required|numeric',
             'address' => 'required',
-            'photo' => 'required_if:uid_company,null|file|mimes:jpg,png,jpeg,gif,svg,pdf',
+            'photo' => 'required_if:uid,null|file|mimes:jpg,png,jpeg,gif,svg,pdf',
         ]);
 
         if($validator->stopOnFirstFailure()->fails()){

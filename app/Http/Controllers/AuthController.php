@@ -6,6 +6,7 @@ use App\Http\Controllers\BaseController as BaseController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use App\Models\User;
 use App\Models\Menu;
 use Carbon\Carbon;
@@ -45,7 +46,7 @@ class AuthController extends BaseController
 
         $data_user = [
             'name' => $request->name,
-            'username' => strtolower(str_replace(' ','',$request->username)),
+            'username' => Str::lower(str_replace(' ','',$request->username)),
             'email' => $request->email,
             'phone' => $request->phone,
             'uid_company' => $request->company,
@@ -59,12 +60,12 @@ class AuthController extends BaseController
             $data_user['created_at'] = Carbon::now();
         }
 
-        $user = DB::table('users')->updateOrInsert(
+        $process = DB::table('users')->updateOrInsert(
             ['id' => $id],
             $data_user
         );
 
-        if($user) {
+        if($process) {
             return $this->ajaxResponse(true, 'Data save successfully');
         }else{
             return $this->ajaxResponse(false, 'Failed to save data');
@@ -140,10 +141,10 @@ class AuthController extends BaseController
         $time = Carbon::now();
         $id = $request->id;
 
-        $user = User::where('id', $id)
+        $process = User::where('id', $id)
                 ->update(['password'=> Hash::make('POSJAYA24'), 'updated_at' => $time]);
         
-        if($user) {
+        if($process) {
             return $this->ajaxResponse(true, 'Data save successfully');
         }else{
             return $this->ajaxResponse(false, 'Failed to save data');
@@ -166,10 +167,10 @@ class AuthController extends BaseController
             $status = 1;
         }
 
-        $user = User::where('id', $id)
+        $process = User::where('id', $id)
                 ->update(['status' => $status, 'updated_at' => $time]);
         
-        if($user) {
+        if($process) {
             return $this->ajaxResponse(true, 'Data save successfully');
         }else{
             return $this->ajaxResponse(false, 'Failed to save data');

@@ -35,6 +35,4 @@ $('#form-data').submit(function(e) {
             NioApp.Toast('Error while fetching data', 'error', {position: 'top-right'});
         }
     });
-
-    
 });

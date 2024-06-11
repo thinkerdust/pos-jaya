@@ -41,7 +41,7 @@ var table = NioApp.DataTable('#dt-table', {
     ] 
 });
 
-function hapus(uid_company) {
+function hapus(uid) {
     Swal.fire({
         title: 'Are you sure?',
         text: "You won't be able to revert this!",
@@ -51,7 +51,7 @@ function hapus(uid_company) {
     }).then((result) => {
         if (result.value) {
             $.ajax({
-                url: '/company/delete/'+uid_company,
+                url: '/company/delete/'+uid,
                 dataType: 'JSON',
                 success: function(response) {
                     if(response.status){

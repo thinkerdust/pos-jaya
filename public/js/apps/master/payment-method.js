@@ -4,16 +4,13 @@ var table = NioApp.DataTable('#dt-table', {
     responsive: true,
     searchDelay: 500,
     ajax: {
-        url: '/datatable-menu'
+        url: '/payment-method/datatable'
     },
     columns: [
         {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false},
-        {data: 'parent'},
-        {data: 'code'},
         {data: 'name'},
-        {data: 'icon'},
         {data: 'status'},
-        {data: 'id'},
+        {data: 'action', orderable: false, searchable: false},
     ],
     columnDefs: [
         {
@@ -32,28 +29,41 @@ var table = NioApp.DataTable('#dt-table', {
                 return '<span class="badge '+ status[full['status']].class +'">'+ status[full['status']].title +'</span>';
             }
         },
-        {
-            targets: -1,
-            orderable: false,
-            searchable: false,
-            render: function(data, type, full, meta) {
-                return `<div class="drodown">
-                        <a href="#" class="dropdown-toggle btn btn-icon btn-trigger" data-bs-toggle="dropdown"><em class="icon ni ni-more-h"></em></a>
-                        <div class="dropdown-menu dropdown-menu-end">
-                            <ul class="link-list-opt no-bdr">
-                                <li><a class="btn" onclick="edit(${full['id']})"><em class="icon ni ni-edit"></em><span>Edit</span></a></li>
-                                <li><a class="btn" onclick="hapus(${full['id']})"><em class="icon ni ni-trash"></em><span>Delete</span></a></li>
-                            </ul>
-                        </div>
-                    </div>`;
-            }
-        },
     ] 
 });
 
+function hapus(uid) {
+    Swal.fire({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, delete it!'
+    }).then((result) => {
+        if (result.value) {
+            $.ajax({
+                url: '/payment-method/delete/'+uid,
+                dataType: 'JSON',
+                success: function(response) {
+                    if(response.status){
+                        $("#dt-table").DataTable().ajax.reload(null, false);
+                        NioApp.Toast(response.message, 'success', {position: 'top-right'});
+                    }else{
+                        NioApp.Toast(response.message, 'warning', {position: 'top-right'});
+                    }
+                },
+                error: function(error) {
+                    console.log(error)
+                    NioApp.Toast('Error while fetching data', 'error', {position: 'top-right'});
+                }
+            })
+        }
+    });
+}
+
 function tambah() {
     $('#form-data')[0].reset();
-    $('#id_menu').val('');
+    $('#uid').val('');
     $('#modalForm').modal('show');
 }
 
@@ -63,7 +73,7 @@ $('#form-data').submit(function(e) {
     var btn = $('#btn-submit');
 
     $.ajax({
-        url : "/store-menu",  
+        url : "/payment-method/store",  
         data : formData,
         type : "POST",
         dataType : "JSON",
@@ -96,19 +106,16 @@ $('#form-data').submit(function(e) {
     });
 });
 
-function edit(id) {
+function edit(uid) {
     $.ajax({
-        url: '/edit-menu/'+id,
+        url: '/payment-method/edit/'+uid,
         dataType: 'JSON',
         success: function(response) {
             if(response.status) {
                 $('#modalForm').modal('show');
                 let data = response.data;
-                $('#id_menu').val(id);
-                $('#menu').val(data.name);
-                $('#icon').val(data.icon);
-                $('#code').val(data.code);
-                $('#parent').val(data.parent);
+                $('#uid').val(uid);
+                $('#name').val(data.name);
             }
         },
         error: function(error) {
@@ -116,33 +123,4 @@ function edit(id) {
             NioApp.Toast('Error while fetching data', 'error', {position: 'top-right'});
         }
     })
-}
-
-function hapus(id) {
-    Swal.fire({
-        title: 'Are you sure?',
-        text: "You won't be able to revert this!",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Yes, delete it!'
-    }).then((result) => {
-        if (result.value) {
-            $.ajax({
-                url: '/delete-menu/'+id,
-                dataType: 'JSON',
-                success: function(response) {
-                    if(response.status){
-                        $("#dt-table").DataTable().ajax.reload(null, false);
-                        NioApp.Toast(response.message, 'success', {position: 'top-right'});
-                    }else{
-                        NioApp.Toast(response.message, 'warning', {position: 'top-right'});
-                    }
-                },
-                error: function(error) {
-                    console.log(error)
-                    NioApp.Toast('Error while fetching data', 'error', {position: 'top-right'});
-                }
-            })
-        }
-    });
 }

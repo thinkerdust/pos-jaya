@@ -6,10 +6,15 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\UserManagementController;
+
+// Master 
 use App\Http\Controllers\Master\MasterCompanyController;
-use App\Http\Controllers\Master\MasterMemberController;
+use App\Http\Controllers\Master\MasterCustomerController;
 use App\Http\Controllers\Master\MasterProductController;
 use App\Http\Controllers\Master\MasterPaymentController;
+use App\Http\Controllers\Master\MasterUnitController;
+use App\Http\Controllers\Master\MasterSupplierController;
+use App\Http\Controllers\Master\MasterMaterialController;
 
 /*
 |--------------------------------------------------------------------------
@@ -76,14 +81,18 @@ Route::group(['middleware' => ['web', 'auth']], function () {
     Route::middleware('ajax.request')->group(function () {
         Route::get('/data-company', [MasterCompanyController::class, 'list_data_company']);
         Route::get('/data-role', [UserManagementController::class, 'list_data_role']);
+        Route::get('/data-payment-method', [MasterPaymentController::class, 'list_data_payment_method']);
+        Route::get('/data-product', [MasterProductController::class, 'list_data_product']);
+        Route::get('/data-unit', [MasterUnitController::class, 'list_data_unit']);
+        Route::get('/data-supplier', [MasterSupplierController::class, 'list_data_supplier']);
+        Route::get('/data-material', [MasterMaterialController::class, 'list_data_material']);
     });
 
     // Master Data
     Route::group(['middleware' => ["can:Menu, 'MD'"]], function () {
-
+        // Company
         Route::group(['prefix' => 'company', 'middleware' => ["can:SubMenu, 'MD1'"]], function () {
             Route::controller(MasterCompanyController::class)->group(function () {
-                // Company
                 Route::get('/', 'index')->name('company');
                 Route::get('/datatable', 'datatable_company');
                 Route::get('/add', 'add_company');
@@ -93,8 +102,67 @@ Route::group(['middleware' => ['web', 'auth']], function () {
             });
         });
 
-    });
+        // Product
+        Route::group(['prefix' => 'product', 'middleware' => ["can:SubMenu, 'MD3'"]], function () {
+            Route::controller(MasterProductController::class)->group(function () {
+                Route::get('/', 'index')->name('product');
+                Route::get('/datatable', 'datatable_product');
+                Route::get('/add', 'add_product');
+                Route::post('/store', 'store_product');
+                Route::get('/edit/{uid}', 'edit_product');
+                Route::get('/delete/{uid}', 'delete_product');
+            });
+        });
 
+        // Payment Method
+        Route::group(['prefix' => 'payment-method', 'middleware' => ["can:SubMenu, 'MD4'"]], function () {
+            Route::controller(MasterPaymentController::class)->group(function () {
+                Route::get('/', 'payment_method')->name('payment-method');
+                Route::get('/datatable', 'datatable_payment_method');
+                Route::get('/add', 'add_payment_method');
+                Route::post('/store', 'store_payment_method');
+                Route::get('/edit/{uid}', 'edit_payment_method');
+                Route::get('/delete/{uid}', 'delete_payment_method');
+            });
+        });
+
+        // Unit
+        Route::group(['prefix' => 'unit', 'middleware' => ["can:SubMenu, 'MD5'"]], function () {
+            Route::controller(MasterUnitController::class)->group(function () {
+                Route::get('/', 'index')->name('unit');
+                Route::get('/datatable', 'datatable_unit');
+                Route::get('/add', 'add_unit');
+                Route::post('/store', 'store_unit');
+                Route::get('/edit/{uid}', 'edit_unit');
+                Route::get('/delete/{uid}', 'delete_unit');
+            });
+        });
+
+        // Unit
+        Route::group(['prefix' => 'material', 'middleware' => ["can:SubMenu, 'MD6'"]], function () {
+            Route::controller(MasterMaterialController::class)->group(function () {
+                Route::get('/', 'index')->name('material');
+                Route::get('/datatable', 'datatable_material');
+                Route::get('/add', 'add_material');
+                Route::post('/store', 'store_material');
+                Route::get('/edit/{uid}', 'edit_material');
+                Route::get('/delete/{uid}', 'delete_material');
+            });
+        });
+
+        // Supplier
+        Route::group(['prefix' => 'supplier', 'middleware' => ["can:SubMenu, 'MD7'"]], function () {
+            Route::controller(MasterSupplierController::class)->group(function () {
+                Route::get('/', 'index')->name('supplier');
+                Route::get('/datatable', 'datatable_supplier');
+                Route::get('/add', 'add_supplier');
+                Route::post('/store', 'store_supplier');
+                Route::get('/edit/{uid}', 'edit_supplier');
+                Route::get('/delete/{uid}', 'delete_supplier');
+            });
+        });
+
+    });
 
     // Transactions
     Route::group(['prefix' => 'transaction', 'middleware' => ["can:Menu, 'TX'"]], function () {

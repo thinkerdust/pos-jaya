@@ -81,8 +81,8 @@ function tree_menu() {
     });
 }
 
-function edit_tree_menu(id_role) {
-    $.getJSON("/list-permissions-menu?id=" + id_role,
+function edit_tree_menu(id) {
+    $.getJSON("/list-permissions-menu?id=" + id,
         function (data) {
             let menu_json = data.menu;
             $("#tree_menu").jstree("destroy");
@@ -165,17 +165,17 @@ $('#form-data').submit(function(e) {
     });
 });
 
-function edit(id_role) {
+function edit(id) {
     $.ajax({
-        url: '/edit-role/'+id_role,
+        url: '/edit-role/'+id,
         dataType: 'JSON',
         success: function(response) {
             if(response.status) {
                 $('#modalForm').modal('show');
                 let data = response.data;
-                $('#id_role').val(id_role);
+                $('#id_role').val(id);
                 $('#role').val(data.name)
-                edit_tree_menu(id_role);
+                edit_tree_menu(id);
             }
         },
         error: function(error) {

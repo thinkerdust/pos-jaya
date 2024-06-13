@@ -111,10 +111,6 @@ Route::group(['middleware' => ['web', 'auth']], function () {
             });
         });
 
-    });
-
-    Route::group(['prefix' => 'transaction', 'middleware' => ["can:Menu, 'TX'"]], function () {
-
         Route::group(['prefix' => 'sales', 'middleware' => ["can:SubMenu, 'TX2'"]], function () {
             Route::controller(SalesController::class)->group(function () {
                 // Company
@@ -128,7 +124,6 @@ Route::group(['middleware' => ['web', 'auth']], function () {
         });
 
     });
-
 
 
 });

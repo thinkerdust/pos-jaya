@@ -6,33 +6,33 @@ use App\Http\Controllers\BaseController as BaseController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
-use App\Models\Payment;
+use App\Models\Supplier;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\Validator;
 
-class MasterPaymentController extends BaseController
+class MasterSupplierController extends BaseController
 {
     function __construct()
     {
-        $this->payment = new Payment();
+        $this->supplier = new Supplier();
     }
 
-    public function payment_method()
+    public function index()
     {
-        $title = 'Metode Pembayaran';
-        $js = 'js/apps/master/payment-method.js?_='.rand();
-        return view('master.payment_method', compact('js', 'title'));
+        $title = 'Master Supplier';
+        $js = 'js/apps/master/supplier.js?_='.rand();
+        return view('master.supplier', compact('js', 'title'));
     }
 
-    public function datatable_payment_method(Request $request)
+    public function datatable_supplier(Request $request)
     {
-        $data = $this->payment->dataTablePaymentMethod();
+        $data = $this->supplier->dataTableSupplier();
         return Datatables::of($data)->addIndexColumn()
             ->addColumn('action', function($row) {
                 $btn = '';
-                if(Gate::allows('crudAccess', 'MD4', $row)) {
+                if(Gate::allows('crudAccess', 'MD7', $row)) {
                     if($row->status == 1) {
                         $btn = '<a class="btn btn-dim btn-outline-secondary btn-sm" onclick="edit(\'' . $row->uid . '\')"><em class="icon ni ni-edit"></em><span>Edit</span></a>&nbsp;
                                 <a class="btn btn-dim btn-outline-secondary btn-sm" onclick="hapus(\'' . $row->uid . '\')"><em class="icon ni ni-trash"></em><span>Delete</span></a>
@@ -46,12 +46,15 @@ class MasterPaymentController extends BaseController
             ->make(true);
     }
 
-    public function store_payment_method(Request $request)
+    public function store_supplier(Request $request)
     {
         $uid = $request->input('uid');
 
         $validator = Validator::make($request->all(), [
             'name' => 'required',
+            'phone' => 'required',
+            'email' => 'required|email:rfc,dns',
+            'address' => 'required',
         ]);
 
         if($validator->stopOnFirstFailure()->fails()){
@@ -61,7 +64,10 @@ class MasterPaymentController extends BaseController
         $user = Auth::user();
 
         $data = [
-            'name' => $request->name
+            'name' => $request->name,
+            'phone' => $request->phone,
+            'email' => $request->email,
+            'address' => $request->address,
         ];
 
         if(!empty($uid)) {
@@ -70,11 +76,11 @@ class MasterPaymentController extends BaseController
         }else{
             $data['insert_at'] = Carbon::now();
             $data['insert_by'] = $user->username;
-            $uid_payment_method = 'P'.Carbon::now()->format('YmdHisu');
-            $data['uid'] = $uid_payment_method;
+            $uid_supplier = 'S'.Carbon::now()->format('YmdHisu');
+            $data['uid'] = $uid_supplier;
         }
 
-        $process = DB::table('payment_method')->updateOrInsert(
+        $process = DB::table('supplier')->updateOrInsert(
             ['uid' => $uid],
             $data
         );
@@ -86,18 +92,18 @@ class MasterPaymentController extends BaseController
         }
     }
 
-    public function edit_payment_method(Request $request) 
+    public function edit_supplier(Request $request) 
     {
         $uid = $request->uid;
-        $data = DB::table('payment_method')->where('uid', $uid)->first();
+        $data = Supplier::where('uid', $uid)->first();
         return $this->ajaxResponse(true, 'Success!', $data);
     }
 
-    public function delete_payment_method(Request $request)
+    public function delete_supplier(Request $request)
     {
         $uid = $request->uid;
         $user = Auth::user();
-        $process = DB::table('payment_method')->where('uid', $uid)
+        $process = DB::table('supplier')->where('uid', $uid)
             ->update(['status' => 0, 'update_at' => Carbon::now(), 'update_by' => $user->username]);
 
         if($process) {
@@ -107,10 +113,10 @@ class MasterPaymentController extends BaseController
         }
     }
 
-    public function list_data_payment_method(Request $request)
+    public function list_data_supplier(Request $request)
     {
         $q = $request->get('q');
-        $data = $this->payment->listDataPaymentMethod($q);
+        $data = $this->supplier->listDataSupplier($q);
         return response()->json($data);
     }
 }

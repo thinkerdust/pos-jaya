@@ -7,21 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
-class Company extends Model
+class Payment extends Model
 {
     use HasFactory;
 
-    public $timestamps = false;
-    protected $table = 'company';
-
-    public function dataTableCompany()
+    public function dataTablePaymentMethod()
     {
-        $query = DB::table('company')->select('uid', 'name', 'address', 'phone', 'status');
-
-        $user = Auth::user();
-        if(!in_array($user->id_role, [1,2])) {
-            $query->where('uid', $user->uid_company);
-        }
+        $query = DB::table('payment_method')->select('uid', 'name', 'account_number', 'status');
 
         $order = request('order')[0];
         if($order['column'] == '0') {
@@ -31,9 +23,9 @@ class Company extends Model
         return $query;
     }
 
-    public function listDataCompany($q)
+    public function listDataPaymentMethod($q)
     {
-        $data = DB::table('company')->where('status', 1)->select('uid', 'name');
+        $data = DB::table('payment_method')->where('status', 1)->select('uid', 'name', 'account_number');
         if($q) {
             $data = $data->where('name', 'like', '%'.$q.'%');
         }

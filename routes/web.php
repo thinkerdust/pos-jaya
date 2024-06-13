@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Transactions\PurchaseController;
+use App\Http\Controllers\Transactions\SalesController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
@@ -21,7 +23,9 @@ use App\Http\Controllers\Master\MasterPaymentController;
 */
 
 
-Route::get('/', function () { return redirect('login'); });
+Route::get('/', function () {
+    return redirect('login');
+});
 
 Route::controller(AuthController::class)->group(function () {
     Route::get('/login', 'login')->name('login');
@@ -29,7 +33,7 @@ Route::controller(AuthController::class)->group(function () {
     Route::get('/logout', 'logout')->name('logout');
 });
 
-Route::group(['middleware' => ['web', 'auth']], function() {
+Route::group(['middleware' => ['web', 'auth']], function () {
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
@@ -47,7 +51,7 @@ Route::group(['middleware' => ['web', 'auth']], function() {
             Route::get('/edit-user/{id}', 'edit_user');
         });
 
-        Route::controller(UserManagementController::class)->group(function() {
+        Route::controller(UserManagementController::class)->group(function () {
             // user
             Route::get('/user-management', 'index')->middleware("can:SubMenu, 'UM1'");
             Route::get('/datatable-user-management', 'datatable_user_management');
@@ -69,16 +73,16 @@ Route::group(['middleware' => ['web', 'auth']], function() {
     });
 
     // Master Data
-    Route::middleware('ajax.request')->group(function() {
+    Route::middleware('ajax.request')->group(function () {
         Route::get('/data-company', [MasterCompanyController::class, 'list_data_company']);
         Route::get('/data-role', [UserManagementController::class, 'list_data_role']);
     });
 
     // Master Data
-    Route::group(['middleware' => ["can:Menu, 'MD'"]], function() {
+    Route::group(['middleware' => ["can:Menu, 'MD'"]], function () {
 
-        Route::group(['prefix' => 'company', 'middleware' => ["can:SubMenu, 'MD1'"]], function() {
-            Route::controller(MasterCompanyController::class)->group(function() {
+        Route::group(['prefix' => 'company', 'middleware' => ["can:SubMenu, 'MD1'"]], function () {
+            Route::controller(MasterCompanyController::class)->group(function () {
                 // Company
                 Route::get('/', 'index')->name('company');
                 Route::get('/datatable', 'datatable_company');
@@ -88,7 +92,43 @@ Route::group(['middleware' => ['web', 'auth']], function() {
                 Route::get('/delete/{uid}', 'delete_company');
             });
         });
-        
+
     });
+
+
+    // Transactions
+    Route::group(['prefix' => 'transaction', 'middleware' => ["can:Menu, 'TX'"]], function () {
+
+        Route::group(['prefix' => 'purchase', 'middleware' => ["can:SubMenu, 'TX1'"]], function () {
+            Route::controller(PurchaseController::class)->group(function () {
+                // Company
+                Route::get('/', 'index');
+                Route::get('/datatable', 'datatable_purchase_order');
+                Route::get('/add', 'add_purchase_order');
+                Route::post('/store', 'store_purchase_order');
+                Route::get('/edit/{uid}', 'edit_purchase_order');
+                Route::get('/delete/{uid}', 'delete_purchase_order');
+            });
+        });
+
+    });
+
+    Route::group(['prefix' => 'transaction', 'middleware' => ["can:Menu, 'TX'"]], function () {
+
+        Route::group(['prefix' => 'sales', 'middleware' => ["can:SubMenu, 'TX2'"]], function () {
+            Route::controller(SalesController::class)->group(function () {
+                // Company
+                Route::get('/', 'index');
+                Route::get('/datatable', 'datatable_sales_order');
+                Route::get('/add', 'add_sales_order');
+                Route::post('/store', 'store_sales_order');
+                Route::get('/edit/{uid}', 'edit_sales_order');
+                Route::get('/delete/{uid}', 'delete_sales_order');
+            });
+        });
+
+    });
+
+
 
 });

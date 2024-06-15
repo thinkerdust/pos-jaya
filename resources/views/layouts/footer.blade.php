@@ -1,7 +1,7 @@
 <div class="nk-footer">
     <div class="container-fluid">
         <div class="nk-footer-wrap">
-            <div class="nk-footer-copyright"> &copy; {{ date('Y') }} ForYou by Sinarmas Land.
+            <div class="nk-footer-copyright"> &copy; {{ date('Y') }} Point Of Sales by Jaya Group
             </div>
             <div class="nk-footer-links">
                 

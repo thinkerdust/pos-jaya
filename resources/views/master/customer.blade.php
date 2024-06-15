@@ -15,7 +15,7 @@
                     <div class="nk-block nk-block-lg">
                         <div class="card card-bordered card-preview">
                             <div class="card-inner">
-                                @can("crudAccess", "MD3")
+                                @can("crudAccess", "MD2")
                                 <a href="" onclick="tambah()" class="toggle btn btn-theme-sml btn-sm"><em class="icon ni ni-plus"></em><span>Add Data</span></a>
                                 @endcan
                                 <hr class="preview-hr">
@@ -24,8 +24,11 @@
                                         <tr>
                                             <th>No</th>
                                             <th>Nama</th> 
-                                            <th>Bahan</th>
-                                            <th>Satuan</th>
+                                            <th>Organisasi</th> 
+                                            <th>Phone</th> 
+                                            <th>Email</th> 
+                                            <th>Alamat</th> 
+                                            <th>Tipe</th> 
                                             <th>Status</th> 
                                             <th>Action</th> 
                                         </tr>
@@ -49,7 +52,7 @@
                 <em class="icon ni ni-cross"></em>
             </a>
             <div class="modal-header">
-                <h5 class="modal-title">Form Produk</h5>
+                <h5 class="modal-title">Form Pelanggan</h5>
             </div>
             <div class="modal-body">
                 <form class="form-validate is-alter" id="form-data">
@@ -63,19 +66,39 @@
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label">Bahan</label>
+                        <label class="form-label">Organisasi</label>
                         <div class="form-control-wrap">
-                            <select class="form-control" name="material" id="material" required>
-
-                            </select>
+                            <input type="text" class="form-control" name="organisation" id="organisation" required>
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label">Satuan</label>
+                        <label class="form-label">Phone</label>
                         <div class="form-control-wrap">
-                            <select class="form-control" name="unit" id="unit" required>
+                            <input type="text" class="form-control" name="phone" id="phone" required>
+                        </div>
+                    </div>
 
+                    <div class="form-group">
+                        <label class="form-label">Alamat</label>
+                        <div class="form-control-wrap">
+                            <textarea class="form-control" name="address" id="address" rows="5" required></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Email</label>
+                        <div class="form-control-wrap">
+                            <input type="email" class="form-control" name="email" id="email" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Tipe</label>
+                        <div class="form-control-wrap">
+                            <select class="form-control" name="type" id="type" required>
+                                <option value=""></option>
+                                <option value="Retail">Retail</option>
                             </select>
                         </div>
                     </div>
@@ -87,5 +110,11 @@
         </div>
     </div>
 </div>
+
+<style type="text/css">
+    .modal.show .select2-container {
+        position: inherit !important;
+    }
+</style>
 
 @endsection

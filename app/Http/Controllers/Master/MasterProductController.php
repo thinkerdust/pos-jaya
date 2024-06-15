@@ -52,6 +52,8 @@ class MasterProductController extends BaseController
 
         $validator = Validator::make($request->all(), [
             'name' => 'required',
+            'material' => 'required',
+            'unit' => 'required'
         ]);
 
         if($validator->stopOnFirstFailure()->fails()){
@@ -61,7 +63,9 @@ class MasterProductController extends BaseController
         $user = Auth::user();
 
         $data = [
-            'name' => $request->name
+            'name' => $request->name,
+            'uid_material' => $request->material,
+            'uid_unit' => $request->unit
         ];
 
         if(!empty($uid)) {
@@ -89,7 +93,7 @@ class MasterProductController extends BaseController
     public function edit_product(Request $request) 
     {
         $uid = $request->uid;
-        $data = Product::where('uid', $uid)->first();
+        $data = $this->product->editProduct($uid);
         return $this->ajaxResponse(true, 'Success!', $data);
     }
 

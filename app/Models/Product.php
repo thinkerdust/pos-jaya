@@ -15,11 +15,14 @@ class Product extends Model
 
     public function dataTableProduct()
     {
-        $query = DB::table('product')->select('uid', 'name', 'status');
+        $query = DB::table('product as p')
+                    ->join('material as m', 'm.uid', '=', 'p.uid_material')
+                    ->join('unit as u', 'u.uid', '=', 'p.uid_unit')
+                    ->select('p.uid', 'p.name', 'p.status', 'm.name as name_material', 'u.name as name_unit');
 
         $order = request('order')[0];
         if($order['column'] == '0') {
-            $query->orderBy('insert_at', 'DESC');
+            $query->orderBy('p.insert_at', 'DESC');
         }
 
         return $query;
@@ -32,5 +35,17 @@ class Product extends Model
             $data = $data->where('name', 'like', '%'.$q.'%');
         }
         return $data->get();
+    }
+
+    public function editProduct($uid) 
+    {
+        $data = DB::table('product as p')
+                ->join('material as m', 'm.uid', '=', 'p.uid_material')
+                ->join('unit as u', 'u.uid', '=', 'p.uid_unit')
+                ->where('p.uid', $uid)
+                ->select('p.uid', 'p.name', 'p.status', 'p.uid_material', 'p.uid_unit', 'm.name as name_material', 'u.name as name_unit')
+                ->first();
+        
+        return $data;
     }
 }

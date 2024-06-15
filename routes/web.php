@@ -82,6 +82,7 @@ Route::group(['middleware' => ['web', 'auth']], function() {
         Route::get('/data-unit', [MasterUnitController::class, 'list_data_unit']);
         Route::get('/data-supplier', [MasterSupplierController::class, 'list_data_supplier']);
         Route::get('/data-material', [MasterMaterialController::class, 'list_data_material']);
+        Route::get('/data-customer', [MasterCustomerController::class, 'list_data_customer']);
     });
 
     // Master Data
@@ -99,12 +100,21 @@ Route::group(['middleware' => ['web', 'auth']], function() {
             });
         });
 
+        Route::group(['prefix' => 'customer', 'middleware' => ["can:SubMenu, 'MD2'"]], function() {
+            Route::controller(MasterCustomerController::class)->group(function() {
+                Route::get('/', 'index')->name('customer');
+                Route::get('/datatable', 'datatable_customer');
+                Route::post('/store', 'store_customer');
+                Route::get('/edit/{uid}', 'edit_customer');
+                Route::get('/delete/{uid}', 'delete_customer');
+            });
+        });
+
         // Product
         Route::group(['prefix' => 'product', 'middleware' => ["can:SubMenu, 'MD3'"]], function() {
             Route::controller(MasterProductController::class)->group(function() {
                 Route::get('/', 'index')->name('product');
                 Route::get('/datatable', 'datatable_product');
-                Route::get('/add', 'add_product');
                 Route::post('/store', 'store_product');
                 Route::get('/edit/{uid}', 'edit_product');
                 Route::get('/delete/{uid}', 'delete_product');
@@ -116,7 +126,6 @@ Route::group(['middleware' => ['web', 'auth']], function() {
             Route::controller(MasterPaymentController::class)->group(function() {
                 Route::get('/', 'payment_method')->name('payment-method');
                 Route::get('/datatable', 'datatable_payment_method');
-                Route::get('/add', 'add_payment_method');
                 Route::post('/store', 'store_payment_method');
                 Route::get('/edit/{uid}', 'edit_payment_method');
                 Route::get('/delete/{uid}', 'delete_payment_method');
@@ -128,19 +137,17 @@ Route::group(['middleware' => ['web', 'auth']], function() {
             Route::controller(MasterUnitController::class)->group(function() {
                 Route::get('/', 'index')->name('unit');
                 Route::get('/datatable', 'datatable_unit');
-                Route::get('/add', 'add_unit');
                 Route::post('/store', 'store_unit');
                 Route::get('/edit/{uid}', 'edit_unit');
                 Route::get('/delete/{uid}', 'delete_unit');
             });
         });
 
-        // Unit
+        // Material
         Route::group(['prefix' => 'material', 'middleware' => ["can:SubMenu, 'MD6'"]], function() {
             Route::controller(MasterMaterialController::class)->group(function() {
                 Route::get('/', 'index')->name('material');
                 Route::get('/datatable', 'datatable_material');
-                Route::get('/add', 'add_material');
                 Route::post('/store', 'store_material');
                 Route::get('/edit/{uid}', 'edit_material');
                 Route::get('/delete/{uid}', 'delete_material');
@@ -152,7 +159,6 @@ Route::group(['middleware' => ['web', 'auth']], function() {
             Route::controller(MasterSupplierController::class)->group(function() {
                 Route::get('/', 'index')->name('supplier');
                 Route::get('/datatable', 'datatable_supplier');
-                Route::get('/add', 'add_supplier');
                 Route::post('/store', 'store_supplier');
                 Route::get('/edit/{uid}', 'edit_supplier');
                 Route::get('/delete/{uid}', 'delete_supplier');

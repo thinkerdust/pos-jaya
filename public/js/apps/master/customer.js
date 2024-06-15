@@ -4,13 +4,16 @@ var table = NioApp.DataTable('#dt-table', {
     responsive: true,
     searchDelay: 500,
     ajax: {
-        url: '/product/datatable'
+        url: '/customer/datatable'
     },
     columns: [
         {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false},
-        {data: 'name', name: 'p.name'},
-        {data: 'name_material', name: 'm.name'},
-        {data: 'name_unit', name: 'u.name'},
+        {data: 'name'},
+        {data: 'organisation'},
+        {data: 'phone'},
+        {data: 'email'},
+        {data: 'address'},
+        {data: 'type'},
         {data: 'status'},
         {data: 'action', orderable: false, searchable: false},
     ],
@@ -34,57 +37,11 @@ var table = NioApp.DataTable('#dt-table', {
     ] 
 });
 
-$('#material').select2({
-    placeholder: 'Pilih Bahan',
+$('#type').select2({
+    placeholder: 'Pilih Tipe',
     allowClear: true,
-    dropdownParent: $('#modalForm'),
-    ajax: {
-        url: '/data-material',
-        dataType: "json",
-        type: "get",
-        delay: 250,
-        data: function (params) {
-            return { q: params.term };
-        },
-        processResults: function (data, params) {
-            return {
-                results: $.map(data, function (item) {
-                    return {
-                        text: item.name,
-                        id: item.uid
-                    }
-                })
-            };
-        },
-        cache: true
-    }
-})
-
-$('#unit').select2({
-    placeholder: 'Pilih Satuan',
-    allowClear: true,
-    dropdownParent: $('#modalForm'),
-    ajax: {
-        url: '/data-unit',
-        dataType: "json",
-        type: "get",
-        delay: 250,
-        data: function (params) {
-            return { q: params.term };
-        },
-        processResults: function (data, params) {
-            return {
-                results: $.map(data, function (item) {
-                    return {
-                        text: item.name,
-                        id: item.uid
-                    }
-                })
-            };
-        },
-        cache: true
-    }
-})
+    dropdownParent: $('#modalForm')
+});
 
 function hapus(uid) {
     Swal.fire({
@@ -96,7 +53,7 @@ function hapus(uid) {
     }).then((result) => {
         if (result.value) {
             $.ajax({
-                url: '/product/delete/'+uid,
+                url: '/customer/delete/'+uid,
                 dataType: 'JSON',
                 success: function(response) {
                     if(response.status){
@@ -118,8 +75,7 @@ function hapus(uid) {
 function tambah() {
     $('#form-data')[0].reset();
     $('#uid').val('');
-    $('#material').val('').change();
-    $('#unit').val('').change();
+    $('#type').val('');
     $('#modalForm').modal('show');
 }
 
@@ -129,7 +85,7 @@ $('#form-data').submit(function(e) {
     var btn = $('#btn-submit');
 
     $.ajax({
-        url : "/product/store",  
+        url : "/customer/store",  
         data : formData,
         type : "POST",
         dataType : "JSON",
@@ -164,7 +120,7 @@ $('#form-data').submit(function(e) {
 
 function edit(uid) {
     $.ajax({
-        url: '/product/edit/'+uid,
+        url: '/customer/edit/'+uid,
         dataType: 'JSON',
         success: function(response) {
             if(response.status) {
@@ -172,8 +128,11 @@ function edit(uid) {
                 let data = response.data;
                 $('#uid').val(uid);
                 $('#name').val(data.name);
-                $("#material").empty().append(`<option value="${data.uid_material}">${data.name_material}</option>`).val(data.uid_material).trigger('change');
-                $("#unit").empty().append(`<option value="${data.uid_unit}">${data.name_unit}</option>`).val(data.uid_unit).trigger('change');
+                $('#organisation').val(data.organisation);
+                $('#phone').val(data.phone);
+                $('#email').val(data.email);
+                $('#address').val(data.address);
+                $('#type').val(data.type).change();
             }
         },
         error: function(error) {
@@ -182,3 +141,9 @@ function edit(uid) {
         }
     })
 }
+
+$('#phone').keyup(function() {
+    $(this).val(function (index, value) {
+      return value.replace(/\D/g, "");
+    });
+});

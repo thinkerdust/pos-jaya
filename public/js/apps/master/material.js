@@ -181,7 +181,7 @@ $('#supplier').select2({
 })
 
 $('#unit').select2({
-    placeholder: 'Pilih Unit',
+    placeholder: 'Pilih Satuan',
     allowClear: true,
     dropdownParent: $('#modalForm'),
     ajax: {

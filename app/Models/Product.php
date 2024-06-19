@@ -16,9 +16,9 @@ class Product extends Model
     public function dataTableProduct()
     {
         $query = DB::table('product as p')
-                    ->join('material as m', 'm.uid', '=', 'p.uid_material')
+                    ->join('product_categories as pc', 'pc.uid', '=', 'p.uid_product_categories')
                     ->join('unit as u', 'u.uid', '=', 'p.uid_unit')
-                    ->select('p.uid', 'p.name', 'p.status', 'm.name as name_material', 'u.name as name_unit');
+                    ->select('p.uid', 'p.name', 'p.cost_price', 'p.sell_price', 'p.retail_member_price', 'p.stock', 'p.status', 'pc.name as name_categories', 'u.name as name_unit');
 
         $order = request('order')[0];
         if($order['column'] == '0') {
@@ -40,12 +40,36 @@ class Product extends Model
     public function editProduct($uid) 
     {
         $data = DB::table('product as p')
-                ->join('material as m', 'm.uid', '=', 'p.uid_material')
-                ->join('unit as u', 'u.uid', '=', 'p.uid_unit')
-                ->where('p.uid', $uid)
-                ->select('p.uid', 'p.name', 'p.status', 'p.uid_material', 'p.uid_unit', 'm.name as name_material', 'u.name as name_unit')
-                ->first();
+                    ->join('product_categories as pc', 'pc.uid', '=', 'p.uid_product_categories')
+                    ->join('unit as u', 'u.uid', '=', 'p.uid_unit')
+                    ->where('p.uid', $uid)
+                    ->select('p.uid', 'p.name', 'p.uid_product_categories', 'p.uid_unit', 'p.cost_price', 'p.sell_price', 'p.retail_member_price', 'p.stock', 'p.status', 'p.description', 'pc.name as name_categories', 'u.name as name_unit')
+                    ->first();
         
+        return $data;
+    }
+
+    public function dataTableProductPrice($uid_product)
+    {
+        $query = DB::table('product_price')
+                    ->where('uid_product', $uid_product)
+                    ->select('uid', 'uid_product', 'first_quantity', 'last_quantity', 'price', 'status');
+
+        $order = request('order')[0];
+        if($order['column'] == '0') {
+            $query->orderBy('insert_at', 'DESC');
+        }
+
+        return $query;
+    }
+
+    public function editProductPrice($uid_product_price) 
+    {
+        $data = DB::table('product_price')
+                    ->where('uid', $uid_product_price)
+                    ->select('uid', 'uid_product', 'first_quantity', 'last_quantity', 'price')
+                    ->first();
+
         return $data;
     }
 }

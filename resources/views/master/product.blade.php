@@ -24,8 +24,12 @@
                                         <tr>
                                             <th>No</th>
                                             <th>Nama</th> 
-                                            <th>Bahan</th>
+                                            <th>Kategori</th>
                                             <th>Satuan</th>
+                                            <th>Harga Produk</th>
+                                            <th>Harga Jual</th>
+                                            <th>Harga Member Retail</th>
+                                            <th>Stock</th>
                                             <th>Status</th> 
                                             <th>Action</th> 
                                         </tr>
@@ -43,7 +47,7 @@
 
 <!-- Modal Content Code -->
 <div class="modal fade" tabindex="-1" id="modalForm">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content">
             <a href="#" class="close" data-bs-dismiss="modal" aria-label="Close">
                 <em class="icon ni ni-cross"></em>
@@ -55,28 +59,69 @@
                 <form class="form-validate is-alter" id="form-data">
                     @csrf
                     <input type="hidden" name="uid" id="uid">
-                    <div class="form-group">
-                        <label class="form-label">Nama</label>
-                        <div class="form-control-wrap">
-                            <input type="text" class="form-control" name="name" id="name" required>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">Nama</label>
+                                <div class="form-control-wrap">
+                                    <input type="text" class="form-control" name="name" id="name" required>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Kategori</label>
+                                <div class="form-control-wrap">
+                                    <select class="form-control" name="product_categories" id="product_categories" required>
+
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Satuan</label>
+                                <div class="form-control-wrap">
+                                    <select class="form-control" name="unit" id="unit" required>
+
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Keterangan</label>
+                                <div class="form-control-wrap">
+                                    <textarea class="form-control" rows="5" name="description" id="description"></textarea>
+                                </div>
+                            </div>
+
                         </div>
-                    </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">Harga Produk</label>
+                                <div class="form-control-wrap">
+                                    <input type="text" class="form-control number" name="cost_price" id="cost_price" required>
+                                </div>
+                            </div>
 
-                    <div class="form-group">
-                        <label class="form-label">Bahan</label>
-                        <div class="form-control-wrap">
-                            <select class="form-control" name="material" id="material" required>
+                            <div class="form-group">
+                                <label class="form-label">Harga Jual</label>
+                                <div class="form-control-wrap">
+                                    <input type="text" class="form-control number" name="sell_price" id="sell_price" required>
+                                </div>
+                            </div>
 
-                            </select>
-                        </div>
-                    </div>
+                            <div class="form-group">
+                                <label class="form-label">Harga Member Retail</label>
+                                <div class="form-control-wrap">
+                                    <input type="text" class="form-control number" name="retail_member_price" id="retail_member_price" required>
+                                </div>
+                            </div>
 
-                    <div class="form-group">
-                        <label class="form-label">Satuan</label>
-                        <div class="form-control-wrap">
-                            <select class="form-control" name="unit" id="unit" required>
-
-                            </select>
+                            <div class="form-group">
+                                <label class="form-label">Stock</label>
+                                <div class="form-control-wrap">
+                                    <input type="text" class="form-control number" name="stock" id="stock" required>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     
@@ -87,5 +132,74 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" tabindex="-1" id="modalFormPrice">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <a href="#" class="close" data-bs-dismiss="modal" aria-label="Close">
+                <em class="icon ni ni-cross"></em>
+            </a>
+            <div class="modal-header">
+                <h5 class="modal-title">Form Produk - Harga Grosir</h5>
+            </div>
+            <div class="modal-body">
+                <form class="form-validate is-alter" id="form-data-price">
+                    @csrf
+                    <input type="hidden" name="uid_product" id="uid_product">
+                    <input type="hidden" name="uid_price" id="uid_price">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label class="form-label">Qty 1</label>
+                                <div class="form-control-wrap">
+                                    <input type="text" class="form-control number text-end" name="first_quantity" id="first_quantity" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                    <label class="form-label">Qty 2</label>
+                                    <div class="form-control-wrap">
+                                        <input type="text" class="form-control number text-end" name="last_quantity" id="last_quantity" required>
+                                    </div>
+                                </div>
+                            </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label class="form-label">Harga</label>
+                                <div class="form-control-wrap">
+                                    <input type="text" class="form-control number text-end" name="price" id="price" required>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <hr class="preview-hr">
+                    <button type="submit" class="btn btn-theme-sml" id="btn-submit">Save</button>
+                </form>
+                <hr class="preview-hr">
+                <table class="table table-striped nowrap" id="dt-table-price">
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Qty Pertama</th> 
+                            <th>Qty Terakhir</th>
+                            <th>Harga</th>
+                            <th>Status</th> 
+                            <th>Action</th> 
+                        </tr>
+                    </thead>
+
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style type="text/css">
+    .modal.show .select2-container {
+        position: inherit !important;
+    }
+</style>
 
 @endsection

@@ -45,5 +45,7 @@ class Material extends Model
                     ->where('m.uid', $uid)
                     ->select('m.uid', 'm.name', 'm.status', 'm.price', 'm.stock', 'm.volume', 'm.uid_unit', 'm.uid_supplier', 'u.name as unit', 's.name as supplier', 'm.length', 'm.wide')
                     ->first();
+
+        return $data;
     }
 }

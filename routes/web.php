@@ -13,6 +13,7 @@ use App\Http\Controllers\Master\MasterPaymentController;
 use App\Http\Controllers\Master\MasterUnitController;
 use App\Http\Controllers\Master\MasterSupplierController;
 use App\Http\Controllers\Master\MasterMaterialController;
+use App\Http\Controllers\Master\ProductCategoriesController;
 
 /*
 |--------------------------------------------------------------------------
@@ -83,6 +84,7 @@ Route::group(['middleware' => ['web', 'auth']], function() {
         Route::get('/data-supplier', [MasterSupplierController::class, 'list_data_supplier']);
         Route::get('/data-material', [MasterMaterialController::class, 'list_data_material']);
         Route::get('/data-customer', [MasterCustomerController::class, 'list_data_customer']);
+        Route::get('/data-product-categories', [ProductCategoriesController::class, 'list_data_product_categories']);
     });
 
     // Master Data
@@ -118,6 +120,10 @@ Route::group(['middleware' => ['web', 'auth']], function() {
                 Route::post('/store', 'store_product');
                 Route::get('/edit/{uid}', 'edit_product');
                 Route::get('/delete/{uid}', 'delete_product');
+                Route::post('/datatable-price', 'datatable_product_price');
+                Route::post('/store-price', 'store_product_price');
+                Route::get('/edit-price/{uid}', 'edit_product_price');
+                Route::get('/delete-price/{uid}', 'delete_product_price');
             });
         });
 
@@ -162,6 +168,17 @@ Route::group(['middleware' => ['web', 'auth']], function() {
                 Route::post('/store', 'store_supplier');
                 Route::get('/edit/{uid}', 'edit_supplier');
                 Route::get('/delete/{uid}', 'delete_supplier');
+            });
+        });
+
+        // Product Categories
+        Route::group(['prefix' => 'product-categories', 'middleware' => ["can:SubMenu, 'MD8'"]], function() {
+            Route::controller(ProductCategoriesController::class)->group(function() {
+                Route::get('/', 'index')->name('product-categories');
+                Route::get('/datatable', 'datatable_product_categories');
+                Route::post('/store', 'store_product_categories');
+                Route::get('/edit/{uid}', 'edit_product_categories');
+                Route::get('/delete/{uid}', 'delete_product_categories');
             });
         });
         

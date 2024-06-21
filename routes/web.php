@@ -200,6 +200,7 @@ Route::group(['middleware' => ['web', 'auth']], function () {
                 Route::post('/store', 'store_purchase_order');
                 Route::get('/edit/{uid}', 'edit_purchase_order');
                 Route::get('/delete/{uid}', 'delete_purchase_order');
+                Route::get('/export_excel', 'export_excel');
             });
         });
 
@@ -213,6 +214,8 @@ Route::group(['middleware' => ['web', 'auth']], function () {
                 Route::get('/edit/{uid}', 'edit_sales_order');
                 Route::get('/delete/{uid}', 'delete_sales_order');
                 Route::get('/invoice/{uid}', 'print_pdf');
+                Route::get('/export_excel', 'export_excel');
+                Route::get('/export_excel_pending', 'export_excel_pending');
             });
         });
 

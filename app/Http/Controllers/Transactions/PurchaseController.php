@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Transactions;
 
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\PurchaseOrderExport;
 use App\Http\Controllers\BaseController as BaseController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -188,12 +190,12 @@ class PurchaseController extends BaseController
         }
     }
 
-    public function list_data_company(Request $request)
+    public function export_excel()
     {
-        $q = $request->get('q');
-        $data = $this->company->listDataCompany($q);
-        return response()->json($data);
+        return Excel::download(new PurchaseOrderExport, 'Pembelian.xlsx');
     }
+
+
 
     public function origin_number($number = 0)
     {

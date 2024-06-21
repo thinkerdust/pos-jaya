@@ -15,10 +15,10 @@
                     <div class="nk-block nk-block-lg">
                         <div class="card card-bordered card-preview">
                             <div class="card-inner">
-                                <!-- @can("crudAccess", "TX3")
-                                    <a href="/transaction/sales/add" class="btn btn-theme-sml btn-sm"><em
-                                            class="icon ni ni-plus"></em><span>Add Data</span></a>
-                                @endcan -->
+                                @can("crudAccess", "TX3")
+                                    <a href="/transaction/sales/export_excel_pending" class="btn btn-success btn-sm"><em
+                                            class="icon ni ni-download"></em><span>Export Excel</span></a>
+                                @endcan
                                 <hr class="preview-hr">
                                 <table class="table table-striped nowrap" id="dt-table">
                                     <thead>

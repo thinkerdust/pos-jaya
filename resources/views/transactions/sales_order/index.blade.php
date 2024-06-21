@@ -18,6 +18,8 @@
                                 @can("crudAccess", "TX2")
                                     <a href="/transaction/sales/add" class="btn btn-theme-sml btn-sm"><em
                                             class="icon ni ni-plus"></em><span>Add Data</span></a>
+                                    <a href="/transaction/sales/export_excel" class="btn btn-success btn-sm"><em
+                                            class="icon ni ni-download"></em><span>Export Excel</span></a>
                                 @endcan
                                 <hr class="preview-hr">
                                 <table class="table table-striped nowrap" id="dt-table">

@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers\Transactions;
 
+use App\Exports\PendingTransactionExport;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\SalesOrderExport;
 use App\Http\Controllers\BaseController as BaseController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -227,12 +230,6 @@ class SalesController extends BaseController
         }
     }
 
-    public function list_data_company(Request $request)
-    {
-        $q = $request->get('q');
-        $data = $this->company->listDataCompany($q);
-        return response()->json($data);
-    }
 
     public function print_pdf(Request $request)
     {
@@ -244,6 +241,17 @@ class SalesController extends BaseController
         return $pdf->stream('Invoice-' . $data['header']->invoice_number);
         // return view('transactions.sales_order.invoice', ['data' => $data]);
     }
+
+    public function export_excel()
+    {
+        return Excel::download(new SalesOrderExport, 'Penjualan.xlsx');
+    }
+
+    public function export_excel_pending()
+    {
+        return Excel::download(new PendingTransactionExport, 'Pending.xlsx');
+    }
+
 
     public function origin_number($number = 0)
     {

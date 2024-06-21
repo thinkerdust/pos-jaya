@@ -23,7 +23,7 @@ class MasterProductController extends BaseController
     public function index()
     {
         $title = 'Master Produk';
-        $js = 'js/apps/master/product.js?_='.rand();
+        $js = 'js/apps/master/product.js?_=' . rand();
         return view('master.product', compact('js', 'title'));
     }
 
@@ -31,10 +31,10 @@ class MasterProductController extends BaseController
     {
         $data = $this->product->dataTableProduct();
         return Datatables::of($data)->addIndexColumn()
-            ->addColumn('action', function($row) {
+            ->addColumn('action', function ($row) {
                 $btn = '';
-                if(Gate::allows('crudAccess', 'MD3', $row)) {
-                    if($row->status == 1) {
+                if (Gate::allows('crudAccess', 'MD3', $row)) {
+                    if ($row->status == 1) {
                         $btn = '<a class="btn btn-dim btn-outline-secondary btn-sm" onclick="edit(\'' . $row->uid . '\')"><em class="icon ni ni-edit"></em><span>Edit</span></a>&nbsp;
                                 <a class="btn btn-dim btn-outline-secondary btn-sm" onclick="hapus(\'' . $row->uid . '\')"><em class="icon ni ni-trash"></em><span>Delete</span></a>
                                 <a class="btn btn-dim btn-outline-secondary btn-sm" onclick="addprice(\'' . $row->uid . '\')"><em class="icon ni ni-coin-alt"></em><span>Harga Grosir</span></a>
@@ -63,8 +63,8 @@ class MasterProductController extends BaseController
             'description' => 'required',
         ]);
 
-        if($validator->stopOnFirstFailure()->fails()){
-            return $this->ajaxResponse(false, $validator->errors()->first());        
+        if ($validator->stopOnFirstFailure()->fails()) {
+            return $this->ajaxResponse(false, $validator->errors()->first());
         }
 
         $user = Auth::user();
@@ -85,13 +85,13 @@ class MasterProductController extends BaseController
             'description' => $request->description
         ];
 
-        if(!empty($uid)) {
+        if (!empty($uid)) {
             $data['update_at'] = Carbon::now();
             $data['update_by'] = $user->username;
-        }else{
+        } else {
             $data['insert_at'] = Carbon::now();
             $data['insert_by'] = $user->username;
-            $uid_product = 'P'.Carbon::now()->format('YmdHisu');
+            $uid_product = 'P' . Carbon::now()->format('YmdHisu');
             $data['uid'] = $uid_product;
         }
 
@@ -100,14 +100,14 @@ class MasterProductController extends BaseController
             $data
         );
 
-        if($process) {
+        if ($process) {
             return $this->ajaxResponse(true, 'Data save successfully');
-        }else{
+        } else {
             return $this->ajaxResponse(false, 'Failed to save data');
         }
     }
 
-    public function edit_product(Request $request) 
+    public function edit_product(Request $request)
     {
         $uid = $request->uid;
         $data = $this->product->editProduct($uid);
@@ -121,9 +121,9 @@ class MasterProductController extends BaseController
         $process = DB::table('product')->where('uid', $uid)
             ->update(['status' => 0, 'update_at' => Carbon::now(), 'update_by' => $user->username]);
 
-        if($process) {
+        if ($process) {
             return $this->ajaxResponse(true, 'Data save successfully');
-        }else{
+        } else {
             return $this->ajaxResponse(false, 'Failed to save data');
         }
     }
@@ -140,10 +140,10 @@ class MasterProductController extends BaseController
         $uid_product = $request->uid_product;
         $data = $this->product->dataTableProductPrice($uid_product);
         return Datatables::of($data)->addIndexColumn()
-            ->addColumn('action', function($row) {
+            ->addColumn('action', function ($row) {
                 $btn = '';
-                if(Gate::allows('crudAccess', 'MD3', $row)) {
-                    if($row->status == 1) {
+                if (Gate::allows('crudAccess', 'MD3', $row)) {
+                    if ($row->status == 1) {
                         $btn = '<a class="btn btn-dim btn-outline-secondary btn-sm" onclick="edit_price(\'' . $row->uid . '\')"><em class="icon ni ni-edit"></em><span>Edit</span></a>&nbsp;
                                 <a class="btn btn-dim btn-outline-secondary btn-sm" onclick="hapus_price(\'' . $row->uid . '\')"><em class="icon ni ni-trash"></em><span>Delete</span></a>
                             ';
@@ -166,8 +166,8 @@ class MasterProductController extends BaseController
             'price' => 'required',
         ]);
 
-        if($validator->stopOnFirstFailure()->fails()){
-            return $this->ajaxResponse(false, $validator->errors()->first());        
+        if ($validator->stopOnFirstFailure()->fails()) {
+            return $this->ajaxResponse(false, $validator->errors()->first());
         }
 
         $user = Auth::user();
@@ -183,13 +183,13 @@ class MasterProductController extends BaseController
             'price' => $price,
         ];
 
-        if(!empty($uid)) {
+        if (!empty($uid)) {
             $data['update_at'] = Carbon::now();
             $data['update_by'] = $user->username;
-        }else{
+        } else {
             $data['insert_at'] = Carbon::now();
             $data['insert_by'] = $user->username;
-            $uid_product_price = 'P'.Carbon::now()->format('YmdHisu');
+            $uid_product_price = 'P' . Carbon::now()->format('YmdHisu');
             $data['uid'] = $uid_product_price;
         }
 
@@ -198,14 +198,14 @@ class MasterProductController extends BaseController
             $data
         );
 
-        if($process) {
+        if ($process) {
             return $this->ajaxResponse(true, 'Data save successfully');
-        }else{
+        } else {
             return $this->ajaxResponse(false, 'Failed to save data');
         }
     }
 
-    public function edit_product_price(Request $request) 
+    public function edit_product_price(Request $request)
     {
         $uid = $request->uid;
         $data = $this->product->editProductPrice($uid);
@@ -219,10 +219,23 @@ class MasterProductController extends BaseController
         $process = DB::table('product_price')->where('uid', $uid)
             ->update(['status' => 0, 'update_at' => Carbon::now(), 'update_by' => $user->username]);
 
-        if($process) {
+        if ($process) {
             return $this->ajaxResponse(true, 'Data save successfully');
-        }else{
+        } else {
             return $this->ajaxResponse(false, 'Failed to save data');
         }
     }
+
+    public function get_grosir_price(Request $request)
+    {
+        $product = $request->uid;
+        $qty = $request->get('qty');
+        $data = DB::table('product_price')->where('uid_product', $product)->where('first_quantity', '<=', $qty)->where('last_quantity', '>=', $qty)->where('status', 1)->first();
+        if (!empty($data)) {
+            return $this->ajaxResponse(true, 'Success!', $data);
+        } else {
+            return $this->ajaxResponse(false, 'No Wholesale Price');
+        }
+    }
+
 }

@@ -127,6 +127,7 @@ Route::group(['middleware' => ['web', 'auth']], function () {
                 Route::post('/store-price', 'store_product_price');
                 Route::get('/edit-price/{uid}', 'edit_product_price');
                 Route::get('/delete-price/{uid}', 'delete_product_price');
+                Route::get('/get-price/{uid}', 'get_grosir_price');
             });
         });
 
@@ -192,7 +193,7 @@ Route::group(['middleware' => ['web', 'auth']], function () {
 
         Route::group(['prefix' => 'purchase', 'middleware' => ["can:SubMenu, 'TX1'"]], function () {
             Route::controller(PurchaseController::class)->group(function () {
-                // Company
+                // Purchase Order
                 Route::get('/', 'index');
                 Route::get('/datatable', 'datatable_purchase_order');
                 Route::get('/add', 'add_purchase_order');
@@ -204,15 +205,25 @@ Route::group(['middleware' => ['web', 'auth']], function () {
 
         Route::group(['prefix' => 'sales', 'middleware' => ["can:SubMenu, 'TX2'"]], function () {
             Route::controller(SalesController::class)->group(function () {
-                // Company
+                // Sales Order
                 Route::get('/', 'index');
                 Route::get('/datatable', 'datatable_sales_order');
                 Route::get('/add', 'add_sales_order');
                 Route::post('/store', 'store_sales_order');
                 Route::get('/edit/{uid}', 'edit_sales_order');
                 Route::get('/delete/{uid}', 'delete_sales_order');
+                Route::get('/invoice/{uid}', 'print_pdf');
             });
         });
+
+        Route::group(['prefix' => 'pending', 'middleware' => ["can:SubMenu, 'TX3'"]], function () {
+            Route::controller(SalesController::class)->group(function () {
+                // Pending
+                Route::get('/', 'pending');
+                Route::get('/datatable', 'datatable_pending');
+            });
+        });
+
 
     });
 

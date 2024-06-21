@@ -18,17 +18,19 @@
                                 <div class="preview-block">
                                     <form class="form-validate is-alter" id="form-data">
                                         @csrf
-                                        <input type="hidden" name="uid_purchase_order" id="uid_purchase_order"
+                                        <input type="hidden" name="uid_sales_order" id="uid_sales_order"
                                             value="{{ isset($uid) ? $uid : null }}">
+                                            <input type="hidden" name="invoice_number" id="invoice_number">
+
                                         <div class="row gy-4">
                                             <div class="col-sm-6">
 
                                                 <div class="form-group">
-                                                    <label class="form-label">Customer</label>
+                                                    <label class="form-label">Pelanggan</label>
                                                     <div class="form-control-wrap">
-                                                        <select class="form-control" name="supplier" id="supplier">
-                                                            <option value="">-- Pilih Customer --</option>
+                                                        <select class="form-control" name="customer" id="customer">
                                                         </select>
+                                                        <input type="hidden" name="customer_type" id="customer_type">
                                                     </div>
                                                 </div>
 
@@ -51,8 +53,8 @@
                                                 <div class="form-group">
                                                     <label class="form-label">Tgl Pengambilan</label>
                                                     <div class="form-control-wrap">
-                                                        <input type="date" class="form-control" id="taken_date"
-                                                            name="taken_date" required>
+                                                        <input type="date" class="form-control" id="collection_date" value="{{ date('Y-m-d') }}"
+                                                            name="collection_date" required>
                                                     </div>
                                                 </div>
 
@@ -70,7 +72,7 @@
 
                                             </div>
                                             <div class="col-sm-6">
-                                                <h1 class="text-end mt-3" id="grand_total">Rp. 0,-</h1>
+                                                <h2 class="text-end mt-3" id="grand_total">Rp. 0,-</h2>
                                                 <input type="hidden" name="grand_total" />
 
                                                 <div class="form-group">
@@ -80,7 +82,7 @@
                                                             <div class="input-group">
                                                                 <input type="number" class="form-control" value="0"
                                                                     id="disc_global" name="disc_global"
-                                                                    aria-describedby="basic-addon2">
+                                                                    aria-describedby="basic-addon2" max="100">
                                                                 <div class="input-group-append">
                                                                     <span class="input-group-text"
                                                                         id="basic-addon2">%</span>
@@ -88,8 +90,8 @@
                                                             </div>
                                                         </div>
                                                         <div class="form-control-wrap col-md-8">
-                                                            <input type="number" class="form-control"
-                                                                id="disc_global_value" name="disc_global_value" min="0"
+                                                            <input type="text" class="form-control formated_number"
+                                                                id="disc" name="disc"
                                                                 value="0" required>
                                                         </div>
                                                     </div>
@@ -101,7 +103,7 @@
                                                         <div class="form-control-wrap col-md-4">
                                                             <div class="input-group">
                                                                 <input type="number" class="form-control" value="0"
-                                                                    aria-describedby="basic-addon2">
+                                                                    aria-describedby="basic-addon2" id="ppn" name="ppn">
                                                                 <div class="input-group-append">
                                                                     <span class="input-group-text"
                                                                         id="basic-addon2">%</span>
@@ -109,8 +111,8 @@
                                                             </div>
                                                         </div>
                                                         <div class="form-control-wrap col-md-8">
-                                                            <input type="number" class="form-control" id="ppn_value"
-                                                                name="ppn_value" min="0" value="0" required>
+                                                            <input type="text" class="form-control formated_number" id="ppn_value"
+                                                                name="ppn_value" value="0" required>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -140,8 +142,7 @@
                                                 <div class="form-group">
                                                     <label class="form-label">Produk</label>
                                                     <div class="form-control-wrap">
-                                                        <select class="form-control" name="produk" id="produk">
-                                                            <option value="">-- Pilih Produk --</option>
+                                                        <select class="form-control" name="product" id="product">
                                                         </select>
                                                     </div>
                                                 </div>
@@ -150,7 +151,7 @@
                                                 <div class="form-group">
                                                     <label class="form-label">Harga</label>
                                                     <div class="form-control-wrap">
-                                                        <input type="number" class="form-control" id="price"
+                                                        <input type="text" class="form-control formated_number" id="price"
                                                             placeholder="0" min="0" name="price">
                                                     </div>
                                                 </div>
@@ -159,8 +160,8 @@
                                                 <div class="form-group">
                                                     <label class="form-label">Satuan</label>
                                                     <div class="form-control-wrap">
-                                                        <input type="text" class="form-control" id="uom" name="uom"
-                                                            placeholder="pcs">
+                                                    <select class="form-control" name="unit" id="unit">
+                                                        </select>
                                                     </div>
                                                 </div>
                                             </div>
@@ -175,7 +176,7 @@
                                             </div>
                                             <div class="col-md-2 d-flex align-items-end">
                                                 <div class="form-group">
-                                                    <button class="btn btn-dim btn-outline-secondary"
+                                                    <button class="btn btn-dim btn-outline-secondary" id="add_product"
                                                         type="button">Tambah</button>
                                                 </div>
                                             </div>
@@ -192,28 +193,21 @@
                                                         <th>Action</th>
                                                     </tr>
                                                 </thead>
-                                                <tbody>
+                                                <tbody id="tbody_product">
                                                     <tr>
-                                                        <td>Produk A</td>
-                                                        <td class="text-end">1.000.000</td>
-                                                        <td class="text-end">2</td>
-                                                        <td>pcs</td>
-                                                        <td class="text-end">2.000.000</td>
-                                                        <td class="text-center">
-                                                            <a class="btn btn-sm btn-dim btn-outline-secondary"
-                                                                type="button"><em class="icon ni ni-trash"></em>
-                                                            </a>
+                                                        <td class="text-center text-muted" id="nodata" colspan="6">Tidak
+                                                            ada
+                                                            product
                                                         </td>
                                                     </tr>
                                                 </tbody>
                                             </table>
                                         </div>
                                         <hr class="preview-hr">
-                                        <button name="status" value="1" type="submit" class="btn btn-theme-sml"
+                                        <button type="submit" class="btn btn-theme-sml submit"
                                             id="btn-submit">Simpan</button>
-                                        <button name="status" value="0" type="submit"
-                                            class="btn btn-outline-secondary btn-dim" id="btn-submit">Simpan
-                                            Bill</button>
+                                        <button type="submit"
+                                            class="btn btn-outline-secondary btn-dim submit" id="btn-pending">Pending</button>
                                     </form>
                                 </div>
                             </div>

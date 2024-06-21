@@ -20,14 +20,17 @@
                                         @csrf
                                         <input type="hidden" name="uid_purchase_order" id="uid_purchase_order"
                                             value="{{ isset($uid) ? $uid : null }}">
+
+                                        <input type="hidden" name="po_number" id="po_number">
+
                                         <div class="row gy-4">
                                             <div class="col-sm-6">
 
                                                 <div class="form-group">
                                                     <label class="form-label">Supplier</label>
                                                     <div class="form-control-wrap">
-                                                        <select class="form-control" name="supplier" id="supplier">
-                                                            <option value="">-- Pilih Supplier --</option>
+                                                        <select class="form-control" name="supplier" id="supplier"
+                                                            required>
                                                         </select>
                                                     </div>
                                                 </div>
@@ -50,7 +53,7 @@
 
                                             </div>
                                             <div class="col-sm-6">
-                                                <h1 class="text-end mt-3" id="grand_total">Rp. 0,-</h1>
+                                                <h2 class="text-end mt-3" id="grand_total">Rp. 0,-</h2>
                                                 <input type="hidden" name="grand_total" />
 
                                                 <div class="form-group">
@@ -58,8 +61,8 @@
                                                         <input class="form-check-input" type="checkbox" id="en_disc">
                                                         Diskon</label>
                                                     <div class="form-control-wrap">
-                                                        <input type="number" class="form-control" id="disc" name="disc"
-                                                            min="0" value="0" required disbaled>
+                                                        <input type="text" class="form-control formated_number"
+                                                            id="disc" name="disc" value="0" required disbaled>
                                                     </div>
                                                 </div>
                                                 <!-- <div class="form-group">
@@ -79,8 +82,7 @@
                                                 <div class="form-group">
                                                     <label class="form-label">Produk</label>
                                                     <div class="form-control-wrap">
-                                                        <select class="form-control" name="produk" id="produk">
-                                                            <option value="">-- Pilih Produk --</option>
+                                                        <select class="form-control" name="material" id="material">
                                                         </select>
                                                     </div>
                                                 </div>
@@ -89,8 +91,8 @@
                                                 <div class="form-group">
                                                     <label class="form-label">Harga</label>
                                                     <div class="form-control-wrap">
-                                                        <input type="number" class="form-control" id="price"
-                                                            placeholder="0" min="0" name="price">
+                                                        <input type="text" class="form-control formated_number"
+                                                            id="price" placeholder="0" name="price" value="0">
                                                     </div>
                                                 </div>
                                             </div>
@@ -98,8 +100,8 @@
                                                 <div class="form-group">
                                                     <label class="form-label">Satuan</label>
                                                     <div class="form-control-wrap">
-                                                        <input type="text" class="form-control" id="uom" name="uom"
-                                                            placeholder="pcs">
+                                                        <select class="form-control" name="unit" id="unit">
+                                                        </select>
                                                     </div>
                                                 </div>
                                             </div>
@@ -108,13 +110,14 @@
                                                     <label class="form-label">Qty</label>
                                                     <div class="form-control-wrap">
                                                         <input type="number" class="form-control" id="qty" name="qty"
-                                                            placeholder="0" min="0">
+                                                            placeholder="0" min="0" value="0">
                                                     </div>
                                                 </div>
                                             </div>
                                             <div class="col-md-2 d-flex align-items-end">
                                                 <div class="form-group">
-                                                    <button class="btn btn-light" type="button">Tambah</button>
+                                                    <button class="btn btn-light" type="button"
+                                                        id="add_material">Tambah</button>
                                                 </div>
                                             </div>
                                         </div>
@@ -123,24 +126,18 @@
                                                 <thead class="table-light">
                                                     <tr>
                                                         <th>Nama</th>
-                                                        <th>Jenis</th>
+                                                        <th>Satuan</th>
                                                         <th>Harga</th>
                                                         <th>Qty</th>
                                                         <th>Subtotal</th>
                                                         <th>Action</th>
                                                     </tr>
                                                 </thead>
-                                                <tbody>
+                                                <tbody id="tbody_material">
                                                     <tr>
-                                                        <td>Produk A</td>
-                                                        <td>Consumable</td>
-                                                        <td class="text-end">1.000.000</td>
-                                                        <td class="text-end">2</td>
-                                                        <td class="text-end">2.000.000</td>
-                                                        <td class="text-center">
-                                                            <a class="btn btn-sm btn-dim btn-outline-secondary"
-                                                                type="button"><em class="icon ni ni-trash"></em>
-                                                                Delete</a>
+                                                        <td class="text-center text-muted" id="nodata" colspan="6">Tidak
+                                                            ada
+                                                            produk
                                                         </td>
                                                     </tr>
                                                 </tbody>

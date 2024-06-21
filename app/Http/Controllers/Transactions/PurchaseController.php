@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use App\Models\PurchaseOrder;
+use App\Models\Material;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\DataTables;
@@ -27,7 +28,7 @@ class PurchaseController extends BaseController
     {
         $title = 'Pembelian';
         $js = 'js/apps/transactions/purchase_order.js?_=' . rand();
-        return view('transactions.purchase_order.index', compact('title'));
+        return view('transactions.purchase_order.index', compact('title', 'js'));
     }
 
     /**
@@ -40,11 +41,9 @@ class PurchaseController extends BaseController
             ->addColumn('action', function ($row) {
                 $btn = '';
                 if (Gate::allows('crudAccess', 'TX1', $row)) {
-                    if ($row->status == 1) {
-                        $btn = '<a href="/transaction/purchase?uid=' . $row->uid . '" class="btn btn-dim btn-outline-secondary btn-sm"><em class="icon ni ni-edit"></em><span>Edit</span></a>&nbsp;
-                                <a class="btn btn-dim btn-outline-secondary btn-sm" onclick="hapus(' . $row->uid . ')"><em class="icon ni ni-trash"></em><span>Delete</span></a>
-                            ';
-                    }
+                    $btn = '<a href="/transaction/purchase/add?uid=' . $row->uid . '" class="btn btn-dim btn-outline-secondary btn-sm"><em class="icon ni ni-edit"></em><span>Edit</span></a>&nbsp;
+                                <a class="btn btn-dim btn-outline-secondary btn-sm" onclick="hapus(\'' . $row->uid . '\')"><em class="icon ni ni-trash"></em><span>Delete</span></a>';
+
                 }
 
                 return $btn;
@@ -72,15 +71,70 @@ class PurchaseController extends BaseController
             return $this->ajaxResponse(false, $validator->errors()->first());
         }
 
+
+        $user = Auth::user();
+
+        if (!empty($uid)) {
+            $no_po = $request->po_number;
+            try {
+                //delete detail
+                $del_detail = DB::table('purchase_order_details')->where('po_number', $no_po)->delete();
+            } catch (\Throwable $e) {
+                DB::rollBack();
+                return $this->ajaxResponse(false, 'Failed to save data', $e);
+            }
+
+        } else {
+            $no_po = "PO" . date('mdY');
+            $get_last_number = DB::table("purchase_orders")->where("po_number", "like", "$no_po%")->orderBy('po_number', 'desc')->count();
+            $no_po .= '-' . ++$get_last_number;
+
+        }
+
+        //insert detail
+        $subtotal = 0;
+        $grand_total = 0;
+        $disc = 0;
+        for ($i = 0; $i < sizeof($request->details['products']); $i++) {
+            try {
+                $insert_detail = DB::table('purchase_order_details')->updateOrInsert([
+                    'uid' => 'PD' . Carbon::now()->format('YmdHisu'),
+                    'po_number' => $no_po,
+                    'uid_product' => $request->details['products'][$i],
+                    'qty' => $request->details['qty'][$i],
+                    'uid_unit' => $request->details['units'][$i],
+                    'price' => $request->details['prices'][$i],
+                    'discount' => 0,
+                    'note' => '',
+                    'insert_at' => Carbon::now(),
+                    'insert_by' => $user->username
+                ]);
+            } catch (\Throwable $e) {
+                DB::rollBack();
+                return $this->ajaxResponse(false, 'Failed to save data', $e);
+            }
+
+            $subtotal += ($request->details['qty'][$i] * $request->details['prices'][$i]);
+        }
+
+
+
         DB::beginTransaction();
         try {
 
-            $user = Auth::user();
-
+            $disc = isset($request->disc) ? $this->origin_number($request->disc) : 0;
+            $grand_total = $subtotal - $disc;
             $data = [
-                'name' => $request->name,
-                'phone' => $request->phone,
-                'address' => $request->address,
+                'po_number' => $no_po,
+                'uid_supplier' => $request->supplier,
+                'transaction_date' => Carbon::now(),
+                'note' => '',
+                'subtotal' => $subtotal,
+                'discount' => $disc,
+                'tax_rate' => 0,
+                'tax_value' => 0,
+                'grand_total' => $grand_total,
+                'status' => 1
             ];
 
             if (!empty($uid)) {
@@ -89,42 +143,12 @@ class PurchaseController extends BaseController
             } else {
                 $data['insert_at'] = Carbon::now();
                 $data['insert_by'] = $user->username;
-                $uid_company = 'C' . Carbon::now()->format('YmdHisu');
-                $data['uid'] = $uid_company;
+                $uid_purchase_order = 'PO' . Carbon::now()->format('YmdHisu');
+                $data['uid'] = $uid_purchase_order;
             }
 
-            // remove old photo
-            if (!empty($uid) && $request->file('photo')) {
-                $data_company = Company::where('uid', $uid)->first();
-                $oldFile = $data_company->photo;
 
-                if (!empty($oldFile)) {
-                    if (Storage::disk('public')->exists($oldFile)) {
-                        // Delete the file
-                        Storage::disk('public')->delete($oldFile);
-                    }
-                }
-
-            }
-
-            // upload photo
-            if ($request->file('photo')) {
-
-                $file = $request->file('photo');
-                $fileName = $file->getClientOriginalName();
-                $fileName = str_replace(' ', '', $fileName);
-
-                // Define a file path
-                $filePath = 'uploads/company/photo/' . uniqid() . '_' . $fileName;
-
-                // Store the file in the local storage
-                $upload = Storage::disk('public')->put($filePath, file_get_contents($file));
-                if ($upload) {
-                    $data['photo'] = $filePath;
-                }
-            }
-
-            DB::table('company')->updateOrInsert(
+            DB::table('purchase_orders')->updateOrInsert(
                 ['uid' => $uid],
                 $data
             );
@@ -137,21 +161,27 @@ class PurchaseController extends BaseController
         }
     }
 
-    public function edit_company(Request $request)
+    public function edit_purchase_order(Request $request)
     {
         $uid = $request->uid;
-        $data = Company::where('uid', $uid)->first();
+        $data['header'] = db::table('purchase_orders as po')->join('supplier as sup', 'sup.uid', 'po.uid_supplier')->select('po.uid', 'po.po_number', 'po.uid_supplier', 'po.transaction_date', 'sup.name', 'po.discount')->where('po.uid', $uid)->first();
+        $data['detail'] = db::table('purchase_order_details as pd')->join('product as p', 'p.uid', 'pd.uid_product')->join('unit as u', 'u.uid', 'pd.uid_unit')->select('pd.po_number', 'pd.uid_product', 'p.name as product_name', 'pd.uid_unit', 'u.name as unit_name', 'pd.qty', 'pd.price')->where('pd.po_number', $data['header']->po_number)->get()->toArray();
         return $this->ajaxResponse(true, 'Success!', $data);
     }
 
-    public function delete_company(Request $request)
+    public function delete_purchase_order(Request $request)
     {
         $uid = $request->uid;
         $user = Auth::user();
-        $process = DB::table('company')->where('uid', $uid)
+        $process = DB::table('purchase_orders')->where('uid', $uid)
             ->update(['status' => 0, 'update_at' => Carbon::now(), 'update_by' => $user->username]);
 
-        if ($process) {
+        $get_po_number = DB::table('purchase_orders')->select('po_number')->where('uid', $uid)->first();
+        $po_number = $get_po_number->po_number;
+        $del_detail = DB::table('purchase_order_details')->where('po_number', $po_number)
+            ->update(['status' => 0, 'update_at' => Carbon::now(), 'update_by' => $user->username]);
+
+        if ($process && $del_detail) {
             return $this->ajaxResponse(true, 'Data save successfully');
         } else {
             return $this->ajaxResponse(false, 'Failed to save data');
@@ -164,4 +194,12 @@ class PurchaseController extends BaseController
         $data = $this->company->listDataCompany($q);
         return response()->json($data);
     }
+
+    public function origin_number($number = 0)
+    {
+        $number = str_replace('.', '', $number);
+        $number = str_replace(',', '.', $number);
+        return $number;
+    }
+
 }

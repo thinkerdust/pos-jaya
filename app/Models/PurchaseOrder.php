@@ -15,14 +15,14 @@ class PurchaseOrder extends Model
 
     public function dataTablePurchaseOrders()
     {
-        $query = DB::table('purchase_orders po')->join('supplier sup', 'po.uid_supplier', '=', 'sup.uid')->select('po.uid', 'po.invoice_number', 'sup.name', 'po.transaction_date', 'note', 'grand_total')->where('status', 1);
+        $query = DB::table('purchase_orders as po')->join('supplier as sup', 'po.uid_supplier', '=', 'sup.uid')->select('po.uid', 'po.po_number', 'sup.name', 'po.transaction_date', 'po.note', 'po.grand_total')->where('po.status', 1)->orderBy('po.uid', 'desc');
 
         return $query;
     }
 
     public function listDataPurchaseOrders($q)
     {
-        $data = DB::table('purchase_orders po')->join('supplier sup', 'po.uid_supplier', '=', 'sup.uid')->select('po.uid', 'po.invoice_number', 'sup.name', 'po.transaction_date', 'note', 'grand_total')->where('status', 1);
+        $data = DB::table('purchase_orders as po')->join('supplier as sup', 'po.uid_supplier', '=', 'sup.uid')->select('po.uid', 'po.invoice_number', 'sup.name', 'po.transaction_date', 'note', 'grand_total')->where('status', 1)->orderBy('po.uid', 'desc');
         if ($q) {
             $data = $data->where('sup.name', 'like', '%' . $q . '%');
         }

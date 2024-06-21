@@ -15,17 +15,17 @@
                     <div class="nk-block nk-block-lg">
                         <div class="card card-bordered card-preview">
                             <div class="card-inner">
-                                @can("crudAccess", "TX1")
-                                    <a href="/transaction/purchase/add" class="btn btn-theme-sml btn-sm"><em
+                                <!-- @can("crudAccess", "TX3")
+                                    <a href="/transaction/sales/add" class="btn btn-theme-sml btn-sm"><em
                                             class="icon ni ni-plus"></em><span>Add Data</span></a>
-                                @endcan
+                                @endcan -->
                                 <hr class="preview-hr">
                                 <table class="table table-striped nowrap" id="dt-table">
                                     <thead>
                                         <tr>
                                             <th>No</th>
                                             <th>No Faktur</th>
-                                            <th>Supplier</th>
+                                            <th>Customer</th>
                                             <th>Tanggal</th>
                                             <th>Total</th>
                                             <th>Action</th>

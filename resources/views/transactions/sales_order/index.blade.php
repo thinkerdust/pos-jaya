@@ -15,8 +15,8 @@
                     <div class="nk-block nk-block-lg">
                         <div class="card card-bordered card-preview">
                             <div class="card-inner">
-                                @can("crudAccess", "MD1")
-                                <a href="/transaction/sales/add" class="btn btn-theme-sml btn-sm"><em
+                                @can("crudAccess", "TX2")
+                                    <a href="/transaction/sales/add" class="btn btn-theme-sml btn-sm"><em
                                             class="icon ni ni-plus"></em><span>Add Data</span></a>
                                 @endcan
                                 <hr class="preview-hr">

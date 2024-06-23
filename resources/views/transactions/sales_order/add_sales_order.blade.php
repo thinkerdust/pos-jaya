@@ -185,17 +185,18 @@
                                             <table class="table table-hover">
                                                 <thead class="table-light">
                                                     <tr>
-                                                        <th>Nama</th>
-                                                        <th>Harga</th>
-                                                        <th>Qty</th>
-                                                        <th>Satuan</th>
-                                                        <th>Subtotal</th>
-                                                        <th>Action</th>
+                                                        <th class="text-center">Nama</th>
+                                                        <th class="text-center">Satuan</th>
+                                                        <th class="text-center">Stock</th>
+                                                        <th class="text-center">Qty</th>
+                                                        <th class="text-center">Harga</th>
+                                                        <th class="text-center">Subtotal</th>
+                                                        <th class="text-center">Action</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody id="tbody_product">
                                                     <tr>
-                                                        <td class="text-center text-muted" id="nodata" colspan="6">Tidak
+                                                        <td class="text-center text-muted" id="nodata" colspan="7">Tidak
                                                             ada
                                                             product
                                                         </td>

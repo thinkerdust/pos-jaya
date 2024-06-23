@@ -9,7 +9,7 @@
                 <div class="components-preview wide-md mx-auto">
                     <div class="nk-block-head nk-block-head-lg wide-sm">
                         <div class="nk-block-head-content">
-                            <h2 class="nk-block-title fw-normal">Form Pembelian</h2>
+                            <h2 class="nk-block-title fw-normal">Form Penerimaan</h2>
                         </div>
                     </div><!-- .nk-block-head -->
                     <div class="nk-block nk-block-lg">
@@ -18,36 +18,41 @@
                                 <div class="preview-block">
                                     <form class="form-validate is-alter" id="form-data">
                                         @csrf
-                                        <input type="hidden" name="uid_purchase_order" id="uid_purchase_order"
+                                        <input type="hidden" name="uid_payment" id="uid_payment"
                                             value="{{ isset($uid) ? $uid : null }}">
-
-                                        <input type="hidden" name="po_number" id="po_number">
 
                                         <div class="row gy-4">
                                             <div class="col-sm-6">
 
                                                 <div class="form-group">
-                                                    <label class="form-label">Supplier</label>
+                                                    <label class="form-label">No. Invoice</label>
                                                     <div class="form-control-wrap">
-                                                        <select class="form-control" name="supplier" id="supplier"
-                                                            required>
-                                                        </select>
+                                                        <input class="form-control" name="invoice_number"
+                                                            id="invoice_number" required>
                                                     </div>
                                                 </div>
 
                                                 <div class="form-group">
-                                                    <label class="form-label">No Telp</label>
+                                                    <label class="form-label">Customer</label>
                                                     <div class="form-control-wrap">
-                                                        <input type="text" class="form-control" id="phone" name="phone"
-                                                            required>
+                                                        <input type="text" class="form-control" id="customer"
+                                                            name="customer" readonly>
                                                     </div>
                                                 </div>
 
                                                 <div class="form-group">
-                                                    <label class="form-label">Alamat</label>
+                                                    <label class="form-label">Metode Pembayaran</label>
                                                     <div class="form-control-wrap">
-                                                        <textarea class="form-control" id="address" name="address"
-                                                            rows="5" required></textarea>
+                                                        <select class="form-control" id="payment_method"
+                                                            name="payment_method" required></select>
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label class="form-label">Nominal</label>
+                                                    <div class="form-control-wrap">
+                                                        <input type="text" class="form-control formated_number"
+                                                            id="nominal" name="nominal" required>
                                                     </div>
                                                 </div>
 

@@ -7,15 +7,19 @@ $('.formated_number').on('keyup', (evt) => {
 
 $('#price').change(function(){
     let value = $(this).val()
-    $(this).val(thousandView(value));
+    $(this).val(typeThousandView(value));
 })
 
 
 const keyUpThousandView = (evt) => {
     let currentValue = (evt.currentTarget.value != '') ? evt.currentTarget.value.replaceAll('.','') : '0';
     let iNumber = parseInt(currentValue);
-    let result = isNaN(iNumber) == false ? thousandView(iNumber) : '0';
+    let result = isNaN(iNumber) == false ? typeThousandView(iNumber) : '0';
     evt.currentTarget.value = result;
+}
+
+const typeThousandView = (number = 0) => {
+    return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 }
 
 const thousandView = (number = 0) => {
@@ -53,11 +57,11 @@ $(document).ready(function() {
                             let subtotal_formated =  new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(subtotal);
                             let price_formated =  new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(detail[i].price);
                             html += '<tr>';
-                            html += '<td><input type="hidden" name="details[products][]" value="'+detail[i].uid_product+'"/>'+detail[i].product_name+'</td>';
-                            html += '<td><input type="hidden" name="details[units][]" value="'+detail[i].uid_unit+'"/>'+detail[i].unit_name+'</td>';
-                            html += '<td class="text-end"><input type="hidden" name="details[prices][]" value="'+detail[i].price+'"/>'+price_formated+'</td>';
-                            html += '<td class="text-end"><input type="hidden" name="details[qty][]" value="'+detail[i].qty+'"/>'+detail[i].qty+'</td>';
-                            html += '<td class="text-end"><input class="subtotal" type="hidden" name="details[subtotal][]" value="'+subtotal+'"/>'+subtotal_formated+'</td>';
+                            html += '<td class="text-center"><input class="input_product" type="hidden" name="details[products][]" value="'+detail[i].uid_product+'"/>'+detail[i].product_name+'</td>';
+                            html += '<td class="text-center"><input type="hidden" name="details[units][]" value="'+detail[i].uid_unit+'"/>'+detail[i].unit_name+'</td>';
+                            html += '<td class="text-center"><input type="hidden" name="details[prices][]" value="'+detail[i].price+'"/>'+price_formated+'</td>';
+                            html += '<td class="text-center"><input type="hidden" name="details[qty][]" value="'+detail[i].qty+'"/>'+detail[i].qty+'</td>';
+                            html += '<td class="text-center"><input class="subtotal" type="hidden" name="details[subtotal][]" value="'+subtotal+'"/>'+subtotal_formated+'</td>';
                             html += '<td class="text-center">';
                             html += '<a class="btn btn-sm btn-dim btn-outline-secondary" type="button" onclick="delMaterial(this)"><em class="icon ni ni-trash"></em>Delete</a>';
                             html += '</td></tr>';  
@@ -327,11 +331,11 @@ $("#add_material").click(function(){
                 unit = data.name_unit;
 
                 html += '<tr>';
-                html += '<td><input type="hidden" name="details[products][]" value="'+uid_material+'"/>'+material+'</td>';
-                html += '<td><input type="hidden" name="details[units][]" value="'+uid_unit+'"/>'+unit+'</td>';
-                html += '<td class="text-end"><input type="hidden" name="details[prices][]" value="'+price+'"/>'+price_formated+'</td>';
-                html += '<td class="text-end"><input type="hidden" name="details[qty][]" value="'+qty+'"/>'+qty+'</td>';
-                html += '<td class="text-end"><input class="subtotal" type="hidden" name="details[subtotal][]" value="'+subtotal+'"/>'+subtotal_formated+'</td>';
+                html += '<td class="text-center"><input class="input_product" type="hidden" name="details[products][]" value="'+uid_material+'"/>'+material+'</td>';
+                html += '<td class="text-center"><input type="hidden" name="details[units][]" value="'+uid_unit+'"/>'+unit+'</td>';
+                html += '<td class="text-center"><input type="hidden" name="details[prices][]" value="'+price+'"/>'+price_formated+'</td>';
+                html += '<td class="text-center"><input type="hidden" name="details[qty][]" value="'+qty+'"/>'+qty+'</td>';
+                html += '<td class="text-center"><input class="subtotal" type="hidden" name="details[subtotal][]" value="'+subtotal+'"/>'+subtotal_formated+'</td>';
                 html += '<td class="text-center">';
                 html += '<a class="btn btn-sm btn-dim btn-outline-secondary" type="button" onclick="delMaterial(this)"><em class="icon ni ni-trash"></em>Delete</a>';
                 html += '</td></tr>';  
@@ -382,13 +386,55 @@ $('#form-data').submit(function(e) {
     formData = new FormData($(this)[0]);
     var btn = $('#btn-submit');
 
+    var check = checkStock(formData);
+    if (check) {
+        $.ajax({
+            url : "/transaction/purchase/store",  
+            data : formData,
+            type : "POST",
+            dataType : "JSON",
+            cache:false,
+            async : true,
+            contentType: false,
+            processData: false,
+            beforeSend: function() {
+                btn.attr('disabled', true);
+                btn.html(`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span><span>Loading ...</span>`);
+            },
+            success: function(response) {
+                if(response.status){
+                    NioApp.Toast(response.message, 'success', {position: 'top-right'});
+                    setTimeout(function(){
+                        window.location.href = '/transaction/purchase';
+                    }, 2000)
+                }else{
+                    NioApp.Toast(response.message, 'warning', {position: 'top-right'});
+                }
+                btn.attr('disabled', false);
+                btn.html('Save');
+            },
+            error: function(error) {
+                console.log(error)
+                btn.attr('disabled', false);
+                btn.html('Save');
+                NioApp.Toast('Error while fetching data', 'error', {position: 'top-right'});
+            }
+        });
+    }
+});
+
+
+function checkStock(formData){
+    let btn = $('#btn-submit');
+    var status_stock;
+
     $.ajax({
-        url : "/transaction/purchase/store",  
+        url : "/transaction/purchase/check_stock",  
         data : formData,
         type : "POST",
         dataType : "JSON",
         cache:false,
-        async : true,
+        async : false,
         contentType: false,
         processData: false,
         beforeSend: function() {
@@ -396,23 +442,34 @@ $('#form-data').submit(function(e) {
             btn.html(`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span><span>Loading ...</span>`);
         },
         success: function(response) {
-            if(response.status){
-                NioApp.Toast(response.message, 'success', {position: 'top-right'});
-                setTimeout(function(){
-                    window.location.href = '/transaction/purchase';
-                }, 2000)
-            }else{
-                NioApp.Toast(response.message, 'warning', {position: 'top-right'});
+            status_stock = true;
+            if(!response.status){
+                NioApp.Toast(response.message, 'error', {position: 'top-right'});
+                for (let i = 0; i < response.data.length; i++) {
+                    var valueToFind = response.data[i].product;
+                    var stock = response.data[i].stock;
+                    var closestTr = $('.input_product').filter(function() {
+                        return $(this).val() === valueToFind;
+                    }).parent().closest('tr');
+                    closestTr.addClass('table-danger');
+                    // closestTr.find(".input_stock").val(stock)
+                    // closestTr.find(".view_stock").html(stock)
+                }
+
+                btn.attr('disabled', false);
+                btn.html(`Simpan`);
+                status_stock = false;
             }
-            btn.attr('disabled', false);
-            btn.html('Save');
         },
         error: function(error) {
             console.log(error)
             btn.attr('disabled', false);
-            btn.html('Save');
+            // btn.html('Save');
             NioApp.Toast('Error while fetching data', 'error', {position: 'top-right'});
         }
     });
-});
+
+    return status_stock;
+
+}
 

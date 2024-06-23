@@ -9,7 +9,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use App\Models\PurchaseOrder;
-use App\Models\Material;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\DataTables;
@@ -78,6 +77,17 @@ class PurchaseController extends BaseController
 
         if (!empty($uid)) {
             $no_po = $request->po_number;
+            $get_existing_detail = DB::table('purchase_order_details')->where('po_number', $no_po)->get();
+            foreach ($get_existing_detail as $old) {
+                //update stock back
+                try {
+                    $update_stock = DB::table('product')->where('uid', $old->uid_product)->decrement('stock', $old->qty);
+                } catch (\Throwable $e) {
+                    DB::rollBack();
+                    return $this->ajaxResponse(false, 'Failed to update stock', $e);
+                }
+            }
+
             try {
                 //delete detail
                 $del_detail = DB::table('purchase_order_details')->where('po_number', $no_po)->delete();
@@ -114,6 +124,14 @@ class PurchaseController extends BaseController
             } catch (\Throwable $e) {
                 DB::rollBack();
                 return $this->ajaxResponse(false, 'Failed to save data', $e);
+            }
+
+            try {
+                //update stock
+                $update_stock = DB::table('product')->where('uid', $request->details['products'][$i])->increment('stock', $request->details['qty'][$i]);
+            } catch (\Throwable $e) {
+                DB::rollBack();
+                return $this->ajaxResponse(false, 'Failed to update stock', $e);
             }
 
             $subtotal += ($request->details['qty'][$i] * $request->details['prices'][$i]);
@@ -175,13 +193,40 @@ class PurchaseController extends BaseController
     {
         $uid = $request->uid;
         $user = Auth::user();
+        $get_po_number = DB::table('purchase_orders')->select('po_number')->where('uid', $uid)->first();
+        $po_number = $get_po_number->po_number;
+
+        //check future stock
+        $detail_po = DB::table('purchase_order_details')->where('po_number', $po_number)->get();
+        foreach ($detail_po as $po) {
+            $get_existing_stock = DB::table('product')->where('uid', $po->uid_product)->first();
+            $existing_stock = $get_existing_stock->stock;
+            $qty = $po->qty;
+            $future_stock = $existing_stock - $qty;
+
+            if ($future_stock < 0) {
+                return $this->ajaxResponse(false, 'Failed to delete, Out of Stock');
+            }
+        }
+
+
         $process = DB::table('purchase_orders')->where('uid', $uid)
             ->update(['status' => 0, 'update_at' => Carbon::now(), 'update_by' => $user->username]);
 
-        $get_po_number = DB::table('purchase_orders')->select('po_number')->where('uid', $uid)->first();
-        $po_number = $get_po_number->po_number;
         $del_detail = DB::table('purchase_order_details')->where('po_number', $po_number)
             ->update(['status' => 0, 'update_at' => Carbon::now(), 'update_by' => $user->username]);
+
+        $get_existing_detail = DB::table('purchase_order_details')->where('po_number', $po_number)->get();
+        foreach ($get_existing_detail as $old) {
+            //update stock back
+            try {
+                $update_stock = DB::table('product')->where('uid', $old->uid_product)->decrement('stock', $old->qty);
+            } catch (\Throwable $e) {
+                DB::rollBack();
+                return $this->ajaxResponse(false, 'Failed to update stock', $e);
+            }
+        }
+
 
         if ($process && $del_detail) {
             return $this->ajaxResponse(true, 'Data save successfully');
@@ -195,6 +240,42 @@ class PurchaseController extends BaseController
         return Excel::download(new PurchaseOrderExport, 'Pembelian.xlsx');
     }
 
+
+    public function check_stock(Request $request)
+    {
+        $response_status = true;
+        $response_message = "Ready Stock";
+        $data = array();
+        if (!empty($uid)) {
+
+            $no_po = $request->po_number;
+            for ($i = 0; $i < sizeof($request->details['products']); $i++) {
+
+                $uid_product = $request->details['products'][$i];
+                $get_stock = DB::table('product')->where('uid', $uid_product)->first();
+                $get_existing = DB::table('purchase_order_details')->where('uid_product', $uid_product)->where('po_number', $no_po)->first();
+
+                $qty = $request->details['qty'][$i];
+                $stock = $get_stock->stock;
+                $existing = $get_existing->qty;
+
+                $future_stock = $stock - $existing + $qty;
+
+                if ($future_stock < 0) {
+                    $low_stock = array();
+                    $low_stock['product'] = $uid_product;
+                    $low_stock['stock'] = $future_stock;
+                    $data[] = $low_stock;
+                    $response_status = false;
+                    $response_message = "Out of Stock";
+                }
+
+            }
+
+        }
+        return $this->ajaxResponse($response_status, $response_message, $data);
+
+    }
 
 
     public function origin_number($number = 0)

@@ -105,14 +105,16 @@ var table = NioApp.DataTable('#dt-table', {
     responsive: true,
     searchDelay: 500,
     ajax: {
-        url: '/transaction/sales/datatable'
+        url: '/transaction/receivable_payment/datatable'
     },
     columns: [
         {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false},
-        {data: 'invoice_number', name:'so.invoice_number'},
-        {data: 'name', name:'cus.name' },
-        {data: 'transaction_date', name:'so.transaction_date'},
-        {data: 'grand_total', name:'so.grand_total', className:'text-end'},
+        {data: 'invoice_number', name:'rp.invoice_number'},
+        {data: 'name', name:'customer_name' },
+        {data: 'transaction_date', name:'rp.transaction_date'},
+        {data: 'amount', name:'rp.amount', className:'text-end'},
+        {data: 'term', name:'rp.term', className:'text-end'},
+        {data: 'payment_method', name:'payment_method', className:'text-end'},
         {data: 'action', orderable: false, searchable: false},
     ],
     columnDefs: [

@@ -54,7 +54,8 @@ class SalesController extends BaseController
                 if (Gate::allows('crudAccess', 'TX2', $row)) {
                     $btn = '<a href="/transaction/sales/add?uid=' . $row->uid . '" class="btn btn-dim btn-outline-secondary btn-sm"><em class="icon ni ni-edit"></em><span>Edit</span></a>&nbsp;
                     <a class="btn btn-dim btn-outline-secondary btn-sm" onclick="hapus(\'' . $row->uid . '\')"><em class="icon ni ni-trash"></em><span>Delete</span></a>
-                    <a class="btn btn-dim btn-outline-secondary btn-sm" target="_blank" href="/transaction/sales/invoice/' . $row->uid . '"><em class="icon ni ni-send"></em><span>Invoice</span></a>';
+                    <a class="btn btn-dim btn-outline-secondary btn-sm" target="_blank" href="/transaction/sales/invoice/' . $row->uid . '"><em class="icon ni ni-send"></em><span>Invoice</span></a>
+                    <a class="btn btn-dim btn-outline-secondary btn-sm" onclick="bayar(\'' . $row->uid . '\')"><em class="icon ni ni-money"></em><span>Pembayaran</span></a>';
 
                 }
 
@@ -110,6 +111,21 @@ class SalesController extends BaseController
 
         if (!empty($uid)) {
             $no_inv = $request->invoice_number;
+            $get_existing_header = DB::table('sales_orders')->where('uid', $uid)->first();
+            $get_existing_detail = DB::table('sales_order_details')->where('invoice_number', $no_inv)->get();
+            if ($get_existing_header->pending == 0) {
+                foreach ($get_existing_detail as $old) {
+                    if ($request->pending == 0) {
+                        //update stock back
+                        try {
+                            $update_stock = DB::table('product')->where('uid', $old->uid_product)->increment('stock', $old->qty);
+                        } catch (\Throwable $e) {
+                            DB::rollBack();
+                            return $this->ajaxResponse(false, 'Failed to update stock', $e);
+                        }
+                    }
+                }
+            }
             try {
                 //delete detail
                 $del_detail = DB::table('sales_order_details')->where('invoice_number', $no_inv)->delete();
@@ -149,6 +165,17 @@ class SalesController extends BaseController
             }
 
             $subtotal += ($request->details['qty'][$i] * $request->details['prices'][$i]);
+
+            if ($request->pending == 0) {
+                try {
+                    //update stock
+                    $update_stock = DB::table('product')->where('uid', $request->details['products'][$i])->decrement('stock', $request->details['qty'][$i]);
+                } catch (\Throwable $e) {
+                    DB::rollBack();
+                    return $this->ajaxResponse(false, 'Failed to update stock', $e);
+                }
+
+            }
         }
 
 
@@ -207,7 +234,7 @@ class SalesController extends BaseController
     {
         $uid = $request->uid;
         $data['header'] = db::table('sales_orders as so')->join('customer as cus', 'cus.uid', 'so.uid_customer')->select('so.uid', 'so.invoice_number', 'so.uid_customer', 'so.transaction_date', 'cus.name', 'so.discount', 'so.disc_rate', 'so.tax_rate', 'so.tax_value', 'so.grand_total', 'so.collection_date', 'so.priority')->where('so.uid', $uid)->first();
-        $data['detail'] = db::table('sales_order_details as pd')->join('product as p', 'p.uid', 'pd.uid_product')->join('unit as u', 'u.uid', 'pd.uid_unit')->select('pd.invoice_number', 'pd.uid_product', 'p.name as product_name', 'pd.uid_unit', 'u.name as unit_name', 'pd.qty', 'pd.price')->where('pd.invoice_number', $data['header']->invoice_number)->get()->toArray();
+        $data['detail'] = db::table('sales_order_details as pd')->join('product as p', 'p.uid', 'pd.uid_product')->join('unit as u', 'u.uid', 'pd.uid_unit')->select('pd.invoice_number', 'pd.uid_product', 'p.name as product_name', 'pd.uid_unit', 'u.name as unit_name', 'pd.qty', 'pd.price', 'p.stock')->where('pd.invoice_number', $data['header']->invoice_number)->get()->toArray();
         return $this->ajaxResponse(true, 'Success!', $data);
     }
 
@@ -218,10 +245,26 @@ class SalesController extends BaseController
         $process = DB::table('sales_orders')->where('uid', $uid)
             ->update(['status' => 0, 'update_at' => Carbon::now(), 'update_by' => $user->username]);
 
-        $get_invoice_number = DB::table('sales_orders')->select('invoice_number')->where('uid', $uid)->first();
+        $get_invoice_number = DB::table('sales_orders')->select('invoice_number', 'pending')->where('uid', $uid)->first();
         $invoice_number = $get_invoice_number->invoice_number;
+        $pending = $get_invoice_number->pending;
         $del_detail = DB::table('sales_order_details')->where('invoice_number', $invoice_number)
             ->update(['status' => 0, 'update_at' => Carbon::now(), 'update_by' => $user->username]);
+
+        //update stock
+        $get_existing_detail = DB::table('sales_order_details')->where('invoice_number', $invoice_number)->get();
+        foreach ($get_existing_detail as $old) {
+            if ($pending == 0) {
+                //update stock back
+                try {
+                    $update_stock = DB::table('product')->where('uid', $old->uid_product)->increment('stock', $old->qty);
+                } catch (\Throwable $e) {
+                    DB::rollBack();
+                    return $this->ajaxResponse(false, 'Failed to update stock', $e);
+                }
+            }
+        }
+
 
         if ($process && $del_detail) {
             return $this->ajaxResponse(true, 'Data save successfully');
@@ -251,6 +294,32 @@ class SalesController extends BaseController
     {
         return Excel::download(new PendingTransactionExport, 'Pending.xlsx');
     }
+
+    public function check_stock(Request $request)
+    {
+        $response_status = true;
+        $response_message = "Ready Stock";
+        $data = array();
+        for ($i = 0; $i < sizeof($request->details['products']); $i++) {
+
+            $uid_product = $request->details['products'][$i];
+            $qty = $request->details['qty'][$i];
+            $get_stock = DB::table('product')->where('uid', $uid_product)->first();
+            if ($get_stock->stock < $qty) {
+                $low_stock = array();
+                $low_stock['product'] = $uid_product;
+                $low_stock['stock'] = $get_stock->stock;
+                $data[] = $low_stock;
+                $response_status = false;
+                $response_message = "Out of Stock";
+            }
+
+        }
+
+        return $this->ajaxResponse($response_status, $response_message, $data);
+
+    }
+
 
 
     public function origin_number($number = 0)

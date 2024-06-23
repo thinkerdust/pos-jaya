@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Transactions\PurchaseController;
 use App\Http\Controllers\Transactions\SalesController;
+use App\Http\Controllers\Transactions\ReceivablePaymentController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
@@ -201,6 +202,7 @@ Route::group(['middleware' => ['web', 'auth']], function () {
                 Route::get('/edit/{uid}', 'edit_purchase_order');
                 Route::get('/delete/{uid}', 'delete_purchase_order');
                 Route::get('/export_excel', 'export_excel');
+                Route::post('/check_stock', 'check_stock');
             });
         });
 
@@ -216,6 +218,7 @@ Route::group(['middleware' => ['web', 'auth']], function () {
                 Route::get('/invoice/{uid}', 'print_pdf');
                 Route::get('/export_excel', 'export_excel');
                 Route::get('/export_excel_pending', 'export_excel_pending');
+                Route::post('/check_stock', 'check_stock');
             });
         });
 
@@ -226,6 +229,21 @@ Route::group(['middleware' => ['web', 'auth']], function () {
                 Route::get('/datatable', 'datatable_pending');
             });
         });
+
+
+        Route::group(['prefix' => 'receivable_payment', 'middleware' => ["can:SubMenu, 'TX4'"]], function () {
+            Route::controller(ReceivablePaymentController::class)->group(function () {
+                // Purchase Order
+                Route::get('/', 'index');
+                Route::get('/datatable', 'datatable_receivable_payment');
+                Route::get('/add', 'add_receivable_payment');
+                Route::post('/store', 'store_receivable_payment');
+                Route::get('/edit/{uid}', 'edit_receivable_payment');
+                Route::get('/delete/{uid}', 'delete_receivable_payment');
+                Route::get('/export_excel', 'export_excel');
+            });
+        });
+
 
 
     });

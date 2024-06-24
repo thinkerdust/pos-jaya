@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Controllers\Transactions\PurchaseController;
+use App\Http\Controllers\Transactions\SalesController;
+use App\Http\Controllers\Transactions\ReceivablePaymentController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
@@ -27,7 +30,9 @@ use App\Http\Controllers\Master\ProductCategoriesController;
 */
 
 
-Route::get('/', function () { return redirect('login'); });
+Route::get('/', function () {
+    return redirect('login');
+});
 
 Route::controller(AuthController::class)->group(function () {
     Route::get('/login', 'login')->name('login');
@@ -35,7 +40,7 @@ Route::controller(AuthController::class)->group(function () {
     Route::get('/logout', 'logout')->name('logout');
 });
 
-Route::group(['middleware' => ['web', 'auth']], function() {
+Route::group(['middleware' => ['web', 'auth']], function () {
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
@@ -53,7 +58,7 @@ Route::group(['middleware' => ['web', 'auth']], function() {
             Route::get('/edit-user/{id}', 'edit_user');
         });
 
-        Route::controller(UserManagementController::class)->group(function() {
+        Route::controller(UserManagementController::class)->group(function () {
             // user
             Route::get('/user-management', 'index')->middleware("can:SubMenu, 'UM1'");
             Route::get('/datatable-user-management', 'datatable_user_management');
@@ -75,7 +80,7 @@ Route::group(['middleware' => ['web', 'auth']], function() {
     });
 
     // Master Data
-    Route::middleware('ajax.request')->group(function() {
+    Route::middleware('ajax.request')->group(function () {
         Route::get('/data-company', [MasterCompanyController::class, 'list_data_company']);
         Route::get('/data-role', [UserManagementController::class, 'list_data_role']);
         Route::get('/data-payment-method', [MasterPaymentController::class, 'list_data_payment_method']);
@@ -88,11 +93,10 @@ Route::group(['middleware' => ['web', 'auth']], function() {
     });
 
     // Master Data
-    Route::group(['middleware' => ["can:Menu, 'MD'"]], function() {
-
+    Route::group(['middleware' => ["can:Menu, 'MD'"]], function () {
         // Company
-        Route::group(['prefix' => 'company', 'middleware' => ["can:SubMenu, 'MD1'"]], function() {
-            Route::controller(MasterCompanyController::class)->group(function() {
+        Route::group(['prefix' => 'company', 'middleware' => ["can:SubMenu, 'MD1'"]], function () {
+            Route::controller(MasterCompanyController::class)->group(function () {
                 Route::get('/', 'index')->name('company');
                 Route::get('/datatable', 'datatable_company');
                 Route::get('/add', 'add_company');
@@ -102,8 +106,8 @@ Route::group(['middleware' => ['web', 'auth']], function() {
             });
         });
 
-        Route::group(['prefix' => 'customer', 'middleware' => ["can:SubMenu, 'MD2'"]], function() {
-            Route::controller(MasterCustomerController::class)->group(function() {
+        Route::group(['prefix' => 'customer', 'middleware' => ["can:SubMenu, 'MD2'"]], function () {
+            Route::controller(MasterCustomerController::class)->group(function () {
                 Route::get('/', 'index')->name('customer');
                 Route::get('/datatable', 'datatable_customer');
                 Route::post('/store', 'store_customer');
@@ -113,8 +117,8 @@ Route::group(['middleware' => ['web', 'auth']], function() {
         });
 
         // Product
-        Route::group(['prefix' => 'product', 'middleware' => ["can:SubMenu, 'MD3'"]], function() {
-            Route::controller(MasterProductController::class)->group(function() {
+        Route::group(['prefix' => 'product', 'middleware' => ["can:SubMenu, 'MD3'"]], function () {
+            Route::controller(MasterProductController::class)->group(function () {
                 Route::get('/', 'index')->name('product');
                 Route::get('/datatable', 'datatable_product');
                 Route::post('/store', 'store_product');
@@ -124,12 +128,13 @@ Route::group(['middleware' => ['web', 'auth']], function() {
                 Route::post('/store-price', 'store_product_price');
                 Route::get('/edit-price/{uid}', 'edit_product_price');
                 Route::get('/delete-price/{uid}', 'delete_product_price');
+                Route::get('/get-price/{uid}', 'get_grosir_price');
             });
         });
 
         // Payment Method
-        Route::group(['prefix' => 'payment-method', 'middleware' => ["can:SubMenu, 'MD4'"]], function() {
-            Route::controller(MasterPaymentController::class)->group(function() {
+        Route::group(['prefix' => 'payment-method', 'middleware' => ["can:SubMenu, 'MD4'"]], function () {
+            Route::controller(MasterPaymentController::class)->group(function () {
                 Route::get('/', 'payment_method')->name('payment-method');
                 Route::get('/datatable', 'datatable_payment_method');
                 Route::post('/store', 'store_payment_method');
@@ -139,8 +144,8 @@ Route::group(['middleware' => ['web', 'auth']], function() {
         });
 
         // Unit
-        Route::group(['prefix' => 'unit', 'middleware' => ["can:SubMenu, 'MD5'"]], function() {
-            Route::controller(MasterUnitController::class)->group(function() {
+        Route::group(['prefix' => 'unit', 'middleware' => ["can:SubMenu, 'MD5'"]], function () {
+            Route::controller(MasterUnitController::class)->group(function () {
                 Route::get('/', 'index')->name('unit');
                 Route::get('/datatable', 'datatable_unit');
                 Route::post('/store', 'store_unit');
@@ -149,9 +154,9 @@ Route::group(['middleware' => ['web', 'auth']], function() {
             });
         });
 
-        // Material
-        Route::group(['prefix' => 'material', 'middleware' => ["can:SubMenu, 'MD6'"]], function() {
-            Route::controller(MasterMaterialController::class)->group(function() {
+        // Unit
+        Route::group(['prefix' => 'material', 'middleware' => ["can:SubMenu, 'MD6'"]], function () {
+            Route::controller(MasterMaterialController::class)->group(function () {
                 Route::get('/', 'index')->name('material');
                 Route::get('/datatable', 'datatable_material');
                 Route::post('/store', 'store_material');
@@ -161,8 +166,8 @@ Route::group(['middleware' => ['web', 'auth']], function() {
         });
 
         // Supplier
-        Route::group(['prefix' => 'supplier', 'middleware' => ["can:SubMenu, 'MD7'"]], function() {
-            Route::controller(MasterSupplierController::class)->group(function() {
+        Route::group(['prefix' => 'supplier', 'middleware' => ["can:SubMenu, 'MD7'"]], function () {
+            Route::controller(MasterSupplierController::class)->group(function () {
                 Route::get('/', 'index')->name('supplier');
                 Route::get('/datatable', 'datatable_supplier');
                 Route::post('/store', 'store_supplier');
@@ -172,8 +177,8 @@ Route::group(['middleware' => ['web', 'auth']], function() {
         });
 
         // Product Categories
-        Route::group(['prefix' => 'product-categories', 'middleware' => ["can:SubMenu, 'MD8'"]], function() {
-            Route::controller(ProductCategoriesController::class)->group(function() {
+        Route::group(['prefix' => 'product-categories', 'middleware' => ["can:SubMenu, 'MD8'"]], function () {
+            Route::controller(ProductCategoriesController::class)->group(function () {
                 Route::get('/', 'index')->name('product-categories');
                 Route::get('/datatable', 'datatable_product_categories');
                 Route::post('/store', 'store_product_categories');
@@ -181,7 +186,67 @@ Route::group(['middleware' => ['web', 'auth']], function() {
                 Route::get('/delete/{uid}', 'delete_product_categories');
             });
         });
-        
+
     });
+
+    // Transactions
+    Route::group(['prefix' => 'transaction', 'middleware' => ["can:Menu, 'TX'"]], function () {
+
+        Route::group(['prefix' => 'purchase', 'middleware' => ["can:SubMenu, 'TX1'"]], function () {
+            Route::controller(PurchaseController::class)->group(function () {
+                // Purchase Order
+                Route::get('/', 'index');
+                Route::get('/datatable', 'datatable_purchase_order');
+                Route::get('/add', 'add_purchase_order');
+                Route::post('/store', 'store_purchase_order');
+                Route::get('/edit/{uid}', 'edit_purchase_order');
+                Route::get('/delete/{uid}', 'delete_purchase_order');
+                Route::get('/export_excel', 'export_excel');
+                Route::post('/check_stock', 'check_stock');
+            });
+        });
+
+        Route::group(['prefix' => 'sales', 'middleware' => ["can:SubMenu, 'TX2'"]], function () {
+            Route::controller(SalesController::class)->group(function () {
+                // Sales Order
+                Route::get('/', 'index');
+                Route::get('/datatable', 'datatable_sales_order');
+                Route::get('/add', 'add_sales_order');
+                Route::post('/store', 'store_sales_order');
+                Route::get('/edit/{uid}', 'edit_sales_order');
+                Route::get('/delete/{uid}', 'delete_sales_order');
+                Route::get('/invoice/{uid}', 'print_pdf');
+                Route::get('/export_excel', 'export_excel');
+                Route::get('/export_excel_pending', 'export_excel_pending');
+                Route::post('/check_stock', 'check_stock');
+            });
+        });
+
+        Route::group(['prefix' => 'pending', 'middleware' => ["can:SubMenu, 'TX3'"]], function () {
+            Route::controller(SalesController::class)->group(function () {
+                // Pending
+                Route::get('/', 'pending');
+                Route::get('/datatable', 'datatable_pending');
+            });
+        });
+
+
+        Route::group(['prefix' => 'receivable_payment', 'middleware' => ["can:SubMenu, 'TX4'"]], function () {
+            Route::controller(ReceivablePaymentController::class)->group(function () {
+                // Purchase Order
+                Route::get('/', 'index');
+                Route::get('/datatable', 'datatable_receivable_payment');
+                Route::get('/add', 'add_receivable_payment');
+                Route::post('/store', 'store_receivable_payment');
+                Route::get('/edit/{uid}', 'edit_receivable_payment');
+                Route::get('/delete/{uid}', 'delete_receivable_payment');
+                Route::get('/export_excel', 'export_excel');
+            });
+        });
+
+
+
+    });
+
 
 });

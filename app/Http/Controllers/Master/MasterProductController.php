@@ -59,7 +59,6 @@ class MasterProductController extends BaseController
             'cost_price' => 'required',
             'sell_price' => 'required',
             'retail_member_price' => 'required',
-            'stock' => 'required',
             'description' => 'required',
         ]);
 
@@ -72,7 +71,6 @@ class MasterProductController extends BaseController
         $cost_price = Str::replace('.', '', $request->cost_price);
         $sell_price = Str::replace('.', '', $request->sell_price);
         $retail_member_price = Str::replace('.', '', $request->retail_member_price);
-        $stock = Str::replace('.', '', $request->stock);
 
         $data = [
             'name' => $request->name,
@@ -81,7 +79,6 @@ class MasterProductController extends BaseController
             'cost_price' => $cost_price,
             'sell_price' => $sell_price,
             'retail_member_price' => $retail_member_price,
-            'stock' => $stock,
             'description' => $request->description
         ];
 

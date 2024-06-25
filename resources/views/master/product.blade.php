@@ -96,7 +96,7 @@
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label class="form-label">Harga Produk</label>
+                                <label class="form-label">Harga Pokok</label>
                                 <div class="form-control-wrap">
                                     <input type="text" class="form-control number" name="cost_price" id="cost_price" required>
                                 </div>
@@ -119,7 +119,7 @@
                             <div class="form-group">
                                 <label class="form-label">Stock</label>
                                 <div class="form-control-wrap">
-                                    <input type="text" class="form-control number" name="stock" id="stock" required>
+                                    <input type="text" class="form-control number" name="stock" id="stock" value="0" readonly>
                                 </div>
                             </div>
                         </div>

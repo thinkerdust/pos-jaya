@@ -44,6 +44,16 @@ Route::group(['middleware' => ['web', 'auth']], function () {
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
+    Route::group(['prefix' => 'dashboard', 'middleware' => ['ajax.request']], function() {
+        Route::controller(DashboardController::class)->group(function () {
+            Route::post('/total-products', 'total_products');
+            Route::post('/total-purchase', 'total_purchase');
+            Route::post('/total-sales', 'total_sales');
+            Route::post('/purchase-statistics', 'purchase_statistics');
+            Route::post('/sales-statistics', 'sales_statistics');
+        });
+    });
+
     Route::controller(AuthController::class)->group(function () {
         Route::get('/user-authenticate', 'user_authenticate');
         Route::get('/change-password', 'change_password');

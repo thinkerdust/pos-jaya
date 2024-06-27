@@ -82,6 +82,10 @@ function integers($angka)
         #tfoot th {
             padding: 3px;
         }
+
+        @page {
+            margin: 20px;
+        }
     </style>
 
 
@@ -190,6 +194,13 @@ function integers($angka)
             <td align="right" style="font-weight:bold">Total</td>
             <td align="right" style="font-weight:bold">{{"Rp. " . integers($data['header']->grand_total)}}</td>
         </tr>
+
+        <tr>
+            <td style="width:60%;"></td>
+            <td align="right" style="font-weight:bold">Bayar</td>
+            <td align="right" style="font-weight:bold">{{"Rp. " . integers($data['receipt']->amount)}}</td>
+        </tr>
+
     </table>
     <div id="footer">
         <hr>
@@ -199,13 +210,15 @@ function integers($angka)
                     <p style="font-size:11px;font-style:italic;color:#555">Rek BCA 0152830031 <br> A/n Martinus Budi
                     </p>
                 </td>
-                <td style="width:60%"></td>
-                <td style="text-align:center">Petugas</td>
+                <td style="width:60%;border:1px solid #555;text-align:center" rowspan="2">Pembayaran ke
+                    {{$data['receipt']->term}}<br>
+                    <p>{{($data['header']->paid_off == 1) ? 'LUNAS' : 'BELUM LUNAS'}}</p>
+                </td>
+                <td style="text-align:center;vertical-align:text-top">Petugas</td>
             </tr>
             <tr>
                 <td></td>
-                <td style="width:60%"></td>
-                <td style="text-align:center">{{Auth::user()->username}}</td>
+                <td style="text-align:center;vertical-align:text-top">{{Auth::user()->username}}</td>
             </tr>
         </table>
     </div>

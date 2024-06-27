@@ -15,7 +15,12 @@ class ReceivablePayment extends Model
 
     public function dataTableReceivablePayments()
     {
-        $query = DB::table('receivable_payments as rp')->join('sales_orders as so', 'so.invoice_number', '=', 'rp.invoice_number')->join('customer as c', 'c.uid', '=', 'so.uid_customer')->join('payment_method as pm', 'pm.uid', '=', 'rp.uid_payment_method')->select('rp.uid', 'rp.invoice_number', 'c.name as customer_name', 'rp.transaction_date', 'rp.amount', 'rp.term', 'pm.name as payment_method')->where('rp.status', 1)->orderBy('rp.uid', 'desc');
+        $query = DB::table('receivable_payments as rp')->join('sales_orders as so', 'so.invoice_number', '=', 'rp.invoice_number')->join('customer as c', 'c.uid', '=', 'so.uid_customer')->join('payment_method as pm', 'pm.uid', '=', 'rp.uid_payment_method')->select('rp.uid', 'rp.invoice_number', 'c.name as customer_name', 'rp.transaction_date', 'rp.amount', 'rp.term', 'pm.name as payment_method')->where('rp.status', 1);
+
+        $order = request('order')[0];
+        if ($order['column'] == '0') {
+            $query->orderBy('rp.uid', 'DESC');
+        }
 
         return $query;
     }

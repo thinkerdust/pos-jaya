@@ -15,7 +15,11 @@ class PurchaseOrder extends Model
 
     public function dataTablePurchaseOrders()
     {
-        $query = DB::table('purchase_orders as po')->join('supplier as sup', 'po.uid_supplier', '=', 'sup.uid')->select('po.uid', 'po.po_number', 'sup.name', 'po.transaction_date', 'po.note', 'po.grand_total')->where('po.status', 1)->orderBy('po.uid', 'desc');
+        $query = DB::table('purchase_orders as po')->join('supplier as sup', 'po.uid_supplier', '=', 'sup.uid')->select('po.uid', 'po.po_number', 'sup.name', 'po.transaction_date', 'po.note', 'po.grand_total')->where('po.status', 1);
+        $order = request('order')[0];
+        if ($order['column'] == '0') {
+            $query->orderBy('po.uid', 'DESC');
+        }
 
         return $query;
     }

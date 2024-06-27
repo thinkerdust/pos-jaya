@@ -82,6 +82,10 @@ function integers($angka)
         #tfoot th {
             padding: 3px;
         }
+
+        @page {
+            margin: 20px;
+        }
     </style>
 
 
@@ -184,12 +188,29 @@ function integers($angka)
             </td>
             <td align="right">{{integers($data['header']->tax_value)}}</td>
         </tr>
-
         <tr>
             <td style="width:60%;"></td>
             <td align="right" style="font-weight:bold">Total</td>
-            <td align="right" style="font-weight:bold">{{"Rp. " . integers($data['header']->grand_total)}}</td>
+            <td align="right" style="font-weight:bold">{{"Rp." . integers($data['header']->grand_total)}}</td>
         </tr>
+        @if ($data['receipt'] !== 0)
+            <tr>
+                <td style="width:60%;"></td>
+                <td align="right" style="font-weight:bold">Bayar</td>
+                <td align="right" style="font-weight:bold">{{"Rp." . integers($data['receipt'])}}</td>
+            </tr>
+            <tr>
+                <td style="width:60%;"></td>
+                <td align="right" style="font-weight:bold">Tagihan</td>
+                <td align="right" style="font-weight:bold">
+                    {{"Rp. " . integers($data['header']->grand_total - $data['receipt'])}}
+                </td>
+            </tr>
+
+
+        @endif
+
+
     </table>
     <div id="footer">
         <hr>

@@ -51,12 +51,15 @@ class SalesController extends BaseController
         return Datatables::of($data)->addIndexColumn()
             ->addColumn('action', function ($row) {
                 $btn = '';
+                $cek_pembayaran = DB::table('receivable_payments')->where('invoice_number', $row->invoice_number)->where('status', 1)->count();
                 if (Gate::allows('crudAccess', 'TX2', $row)) {
-                    $btn = '<a href="/transaction/sales/add?uid=' . $row->uid . '" class="btn btn-dim btn-outline-secondary btn-sm"><em class="icon ni ni-edit"></em><span>Edit</span></a>&nbsp;
-                    <a class="btn btn-dim btn-outline-secondary btn-sm" onclick="hapus(\'' . $row->uid . '\')"><em class="icon ni ni-trash"></em><span>Delete</span></a>
-                    <a class="btn btn-dim btn-outline-secondary btn-sm" target="_blank" href="/transaction/sales/invoice/' . $row->uid . '"><em class="icon ni ni-send"></em><span>Invoice</span></a>
-                    <a class="btn btn-dim btn-outline-secondary btn-sm" onclick="bayar(\'' . $row->uid . '\')"><em class="icon ni ni-money"></em><span>Pembayaran</span></a>';
+                    if ($cek_pembayaran == 0) {
+                        $btn = '<a href="/transaction/sales/add?uid=' . $row->uid . '" class="btn btn-dim btn-outline-secondary btn-sm"><em class="icon ni ni-edit"></em><span>Edit</span></a>
+                        <a class="btn btn-dim btn-outline-secondary btn-sm" onclick="hapus(\'' . $row->uid . '\')"><em class="icon ni ni-trash"></em><span>Delete</span></a>';
+                    }
 
+                    $btn .= '<a class="btn btn-dim btn-outline-secondary btn-sm" target="_blank" href="/transaction/sales/invoice/' . $row->uid . '"><em class="icon ni ni-send"></em><span>Invoice</span></a>
+                    <a class="btn btn-dim btn-outline-secondary btn-sm" onclick="bayar(\'' . $row->uid . '\')"><em class="icon ni ni-money"></em><span>Pembayaran</span></a>';
                 }
 
                 return $btn;
@@ -279,7 +282,9 @@ class SalesController extends BaseController
         $uid = $request->uid;
         $data['header'] = db::table('sales_orders as so')->join('customer as cus', 'cus.uid', 'so.uid_customer')->select('so.uid', 'so.invoice_number', 'so.uid_customer', 'so.transaction_date', 'cus.name', 'cus.phone', 'so.discount', 'so.disc_rate', 'so.tax_rate', 'so.tax_value', 'so.grand_total', 'so.collection_date', 'so.priority')->where('so.uid', $uid)->first();
         $data['detail'] = db::table('sales_order_details as pd')->join('product as p', 'p.uid', 'pd.uid_product')->join('unit as u', 'u.uid', 'pd.uid_unit')->select('pd.invoice_number', 'pd.uid_product', 'p.name as product_name', 'pd.uid_unit', 'u.name as unit_name', 'pd.qty', 'pd.price')->where('pd.invoice_number', $data['header']->invoice_number)->get()->toArray();
+        $data['receipt'] = DB::table('receivable_payments as rp')->where('rp.invoice_number', $data['header']->invoice_number)->where('status', 1)->sum('amount');
 
+        // dd($data);
         $pdf = PDF::loadview('transactions.sales_order.invoice', ['data' => $data])->setPaper('A5', 'landscape');
         return $pdf->stream('Invoice-' . $data['header']->invoice_number);
         // return view('transactions.sales_order.invoice', ['data' => $data]);

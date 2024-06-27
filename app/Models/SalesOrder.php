@@ -14,14 +14,24 @@ class SalesOrder extends Model
 
     public function dataTableSalesOrders()
     {
-        $query = DB::table('sales_orders as so')->join('customer as cus', 'so.uid_customer', '=', 'cus.uid')->select('so.uid', 'so.invoice_number', 'cus.name', 'so.transaction_date', 'so.note', 'so.grand_total')->where('so.status', 1)->where('so.pending', 0)->orderBy('so.uid', 'desc');
+        $query = DB::table('sales_orders as so')->join('customer as cus', 'so.uid_customer', '=', 'cus.uid')->select('so.uid', 'so.invoice_number', 'cus.name', 'so.transaction_date', 'so.note', 'so.grand_total', 'so.paid_off')->where('so.status', 1)->where('so.pending', 0);
+
+        $order = request('order')[0];
+        if ($order['column'] == '0') {
+            $query->orderBy('so.uid', 'DESC');
+        }
 
         return $query;
     }
 
     public function dataTablePending()
     {
-        $query = DB::table('sales_orders as so')->join('customer as cus', 'so.uid_customer', '=', 'cus.uid')->select('so.uid', 'so.invoice_number', 'cus.name', 'so.transaction_date', 'so.note', 'so.grand_total')->where('so.status', 1)->where('so.pending', 1)->orderBy('so.uid', 'desc');
+        $query = DB::table('sales_orders as so')->join('customer as cus', 'so.uid_customer', '=', 'cus.uid')->select('so.uid', 'so.invoice_number', 'cus.name', 'so.transaction_date', 'so.note', 'so.grand_total')->where('so.status', 1)->where('so.pending', 1);
+
+        $order = request('order')[0];
+        if ($order['column'] == '0') {
+            $query->orderBy('so.uid', 'DESC');
+        }
 
         return $query;
     }

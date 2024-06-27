@@ -240,7 +240,9 @@ Route::group(['middleware' => ['web', 'auth']], function () {
                 Route::post('/store', 'store_receivable_payment');
                 Route::get('/edit/{uid}', 'edit_receivable_payment');
                 Route::get('/delete/{uid}', 'delete_receivable_payment');
+                Route::get('/receipt/{uid}', 'print_pdf');
                 Route::get('/export_excel', 'export_excel');
+                Route::get('/get_data_receipt/{uid}', 'get_receivable_payment');
             });
         });
 

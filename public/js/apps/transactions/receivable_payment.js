@@ -110,11 +110,11 @@ var table = NioApp.DataTable('#dt-table', {
     columns: [
         {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false},
         {data: 'invoice_number', name:'rp.invoice_number'},
-        {data: 'name', name:'customer_name' },
+        {data: 'customer_name', name:'c.name' },
         {data: 'transaction_date', name:'rp.transaction_date'},
         {data: 'amount', name:'rp.amount', className:'text-end'},
         {data: 'term', name:'rp.term', className:'text-end'},
-        {data: 'payment_method', name:'payment_method', className:'text-end'},
+        {data: 'payment_method', name:'pm.name', className:'text-end'},
         {data: 'action', orderable: false, searchable: false},
     ],
     columnDefs: [
@@ -122,7 +122,7 @@ var table = NioApp.DataTable('#dt-table', {
             targets: 4,
             orderable: false,
             render: function(data, type, full, meta) {
-                return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(full['grand_total']);
+                return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(full['amount']);
             }
         },
     ] 
@@ -138,16 +138,18 @@ function hapus(uid) {
     }).then((result) => {
         if (result.value) {
             $.ajax({
-                url: '/transaction/sales/delete/'+uid,
+                url: '/transaction/receivable_payment/delete/'+uid,
                 dataType: 'JSON',
                 success: function(response) {
                     if(response.status){
-                        $("#dt-table").DataTable().ajax.reload(null, false);
                         NioApp.Toast(response.message, 'success', {position: 'top-right'});
+                        setTimeout(function(){
+                            window.location.href = '/transaction/sales';
+                        }, 2000)
                     }else{
                         NioApp.Toast(response.message, 'warning', {position: 'top-right'});
                     }
-                },
+                    },
                 error: function(error) {
                     console.log(error)
                     NioApp.Toast('Error while fetching data', 'error', {position: 'top-right'});

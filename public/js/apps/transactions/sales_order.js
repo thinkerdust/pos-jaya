@@ -33,7 +33,7 @@ const thousandView = (number = 0) => {
 }
 
 const originView = (number = 0) => {
-    return number.replaceAll('.','');
+    return number.replace('.','');
 }
 
 $(document).ready(function() {    
@@ -113,6 +113,7 @@ var table = NioApp.DataTable('#dt-table', {
         {data: 'name', name:'cus.name' },
         {data: 'transaction_date', name:'so.transaction_date'},
         {data: 'grand_total', name:'so.grand_total', className:'text-end'},
+        {data: 'paid_off', name:'so.paid_off'},
         {data: 'action', orderable: false, searchable: false},
     ],
     columnDefs: [
@@ -123,6 +124,23 @@ var table = NioApp.DataTable('#dt-table', {
                 return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(full['grand_total']);
             }
         },
+        {
+            targets: -2,
+            orderable: false,
+            searchable: false,
+            render: function(data, type, full, meta) {
+                
+                var status = {
+                    0: {'title': 'Blm Lunas', 'class': ' bg-danger'},
+                    1: {'title': 'Lunas', 'class': ' bg-success'},
+                };
+                if (typeof status[full['paid_off']] === 'undefined') {
+                    return data;
+                }
+                return '<span class="badge '+ status[full['paid_off']].class +'">'+ status[full['paid_off']].title +'</span>';
+            }
+
+        }
     ] 
 });
 
@@ -566,4 +584,159 @@ function checkStock(formData){
     return status_stock;
 
 }
+
+function bayar(uid){
+    $.ajax({
+        url: '/transaction/receivable_payment/get_data_receipt/'+uid,
+        dataType: 'json',
+        success: function(response) {
+            if(response.status) {
+                let data = response.data.header;
+                let receipt = response.data.receipt;
+                let html = "";
+                $("#modal_noinv").val(data.invoice_number);
+                $("#modal_customer").val(data.name);
+                $("#modal_tanggal").val(data.transaction_date);
+                $("#modal_total").val(thousandView(data.grand_total));
+                $("#modal_selisih").val(thousandView(data.selisih));
+                $("#modal_payment_method").val('').trigger('change');
+                $("#modal_amount").val('');
+                $("#title_modal_pembayaran").html('Form Pembayaran '+data.invoice_number);
+                $("#modal_pembayaran").modal('show')
+
+                if (receipt != '') {
+                    let no =1;
+                    for (let i = 0; i < receipt.length; i++) {
+                        html += '<tr>';
+                        html += '<td>'+no+'</td>';
+                        html += '<td>'+receipt[i].transaction_date+'</td>';
+                        html += '<td>'+receipt[i].payment_method+'</td>';
+                        html += '<td class="text-end">'+thousandView(receipt[i].amount)+'</td>';
+                        // html += '<td><button class="btn btn-dim btn-outline-secondary btn-xs"><em class="icon ni ni-edit"></em></button>';
+                        html += '<td><button class="btn btn-dim btn-outline-secondary btn-xs" onclick="del_receipt(\''+receipt[i].uid+'\')"><em class="icon ni ni-trash"></em></button>';
+                        html += '<a class="btn btn-dim btn-outline-secondary btn-xs" target="_blank" href="/transaction/receivable_payment/receipt/'+receipt[i].uid+'"><em class="icon ni ni-send"></em></a></td>';
+                        html += '</tr>';
+                        no++;
+                    }
+
+                }else{
+                    html += "<tr>";
+                    html += "<td class='text-center' colspan='5'>Tidak ada data</td>";
+                    html += "</tr>";
+                }
+
+                $("#tbody_pembayaran").html(html);
+
+
+                console.log(data)
+            }
+        },
+        error: function(error) {
+            console.log(error)
+            NioApp.Toast('Error while fetching data', 'error', {position: 'top-right'});
+        }
+    })
+
+}
+
+
+$('#modal_payment_method').select2({
+    placeholder: 'Pilih Metode Pembayaran',
+    allowClear: true,
+    dropdownParent: $('#modal_pembayaran'),
+    ajax: {
+        url: '/data-payment-method',
+        dataType: "json",
+        type: "get",
+        delay: 250,
+        data: function (params) {
+            return { q: params.term };
+        },
+        processResults: function (data, params) {
+            return {
+                results: $.map(data, function (item) {
+                    return {
+                        text: item.name,
+                        id: item.uid
+                    }
+                })
+            };
+        },
+        cache: true,
+    }
+})
+
+$('#form-pembayaran').submit(function(e) {
+    e.preventDefault();
+    formData = new FormData($(this)[0]);
+
+    var btn = $('#modal_submit');
+
+        $.ajax({
+            url : "/transaction/receivable_payment/store",  
+            data : formData,
+            type : "POST",
+            dataType : "JSON",
+            cache:false,
+            async : true,
+            contentType: false,
+            processData: false,
+            beforeSend: function() {
+                btn.attr('disabled', true);
+                btn.html(`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span><span>Loading ...</span>`);
+            },
+            success: function(response) {
+                if(response.status){
+                    NioApp.Toast(response.message, 'success', {position: 'top-right'});
+                    setTimeout(function(){
+                        window.location.href = '/transaction/sales';
+                    }, 2000)
+                }else{
+                    NioApp.Toast(response.message, 'warning', {position: 'top-right'});
+                }
+                btn.attr('disabled', false);
+                btn.html('Bayar');
+            },
+            error: function(error) {
+                console.log(error)
+                btn.attr('disabled', false);
+                btn.html('Bayar');
+                NioApp.Toast('Error while fetching data', 'error', {position: 'top-right'});
+            }
+        });
+    
+});
+
+function del_receipt(uid) {
+    Swal.fire({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, delete it!'
+    }).then((result) => {
+        if (result.value) {
+            $.ajax({
+                url: '/transaction/receivable_payment/delete/'+uid,
+                dataType: 'JSON',
+                success: function(response) {
+                    if(response.status){
+                        NioApp.Toast(response.message, 'success', {position: 'top-right'});
+                        setTimeout(function(){
+                            window.location.href = '/transaction/sales';
+                        }, 2000)
+                    }else{
+                        NioApp.Toast(response.message, 'warning', {position: 'top-right'});
+                    }
+                    },
+                error: function(error) {
+                    console.log(error)
+                    NioApp.Toast('Error while fetching data', 'error', {position: 'top-right'});
+                }
+            })
+        }
+    });
+}
+
+
 

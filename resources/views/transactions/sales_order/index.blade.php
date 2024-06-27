@@ -30,6 +30,7 @@
                                             <th>Customer</th>
                                             <th>Tanggal</th>
                                             <th>Total</th>
+                                            <th>Status</th>
                                             <th>Action</th>
                                         </tr>
                                     </thead>
@@ -43,5 +44,105 @@
         </div>
     </div>
 </div>
+<div class="modal fade" tabindex="-1" id="modal_pembayaran">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <a href="#" class="close" data-bs-dismiss="modal" aria-label="Close">
+                <em class="icon ni ni-cross"></em>
+            </a>
+            <div class="modal-header">
+                <h5 class="modal-title" id="title_modal_pembayaran">Form Pembayaran</h5>
+            </div>
+            <div class="modal-body">
+                <form class="form-validate is-alter" id="form-pembayaran">
+                    @csrf
+                    <input type="hidden" name="modal_noinv" id="modal_noinv">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">Customer</label>
+                                <div class="form-control-wrap">
+                                    <input type="text" class="form-control" name="modal_customer" id="modal_customer"
+                                        readonly>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">Total</label>
+                                <div class="form-control-wrap">
+                                    <input type="text" class="form-control formated_number text-end" name="modal_total"
+                                        id="modal_total" readonly>
+                                </div>
+                            </div>
 
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">Tanggal</label>
+                                <div class="form-control-wrap">
+                                    <input type="text" class="form-control" name="modal_tanggal" id="modal_tanggal"
+                                        readonly>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">Sisa Tagihan</label>
+                                <div class="form-control-wrap">
+                                    <input type="text" class="form-control formated_number text-end"
+                                        name="modal_selisih" id="modal_selisih" readonly>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <hr class="preview-hr">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="form-label">Metode Pembayaran</label>
+                                <div class="form-control-wrap">
+                                    <select class="form-control" name="modal_payment_method" id="modal_payment_method"
+                                        required>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="form-label">Nominal Pembayaran</label>
+                                <div class="form-control-wrap">
+                                    <input type="text" class="form-control formated_number" name="modal_amount"
+                                        placeholder="0" id="modal_amount" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-2 d-flex align-items-end">
+                            <button type="submit" class="btn btn-theme-sml" id="modal_submit">Bayar</button>
+                        </div>
+                    </div>
+                </form>
+                <hr class="preview-hr">
+                <h6>Riwayat Pembayaran</h6>
+                <table class="table table-striped nowrap" id="dt-table-price">
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Tanggal</th>
+                            <th>Metode Pembayaran</th>
+                            <th>Bayar</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody_pembayaran"></tbody>
+
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection

@@ -57,6 +57,7 @@
                 <form class="form-validate is-alter" id="form-pembayaran">
                     @csrf
                     <input type="hidden" name="modal_noinv" id="modal_noinv">
+                    <input type="hidden" name="modal_uid" id="modal_uid">
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">

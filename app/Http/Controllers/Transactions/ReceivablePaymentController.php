@@ -63,7 +63,7 @@ class ReceivablePaymentController extends BaseController
 
     public function store_receivable_payment(Request $request)
     {
-        $uid = $request->input('uid_receivable_payment');
+        $uid = $request->input('modal_uid');
 
         $validator = Validator::make($request->all(), [
             'modal_noinv' => 'required',
@@ -77,12 +77,26 @@ class ReceivablePaymentController extends BaseController
         }
 
         $no_inv = $request->modal_noinv;
+
         $amount = $this->origin_number($request->modal_amount);
         $selisih = $this->origin_number($request->modal_selisih);
-        $paid_off = ($amount == $selisih) ? 1 : 0;
 
-        if ($amount > $selisih) {
-            return $this->ajaxResponse(false, 'Pembayaran melebihi tagihan');
+        if (empty($uid)) {
+            $paid_off = ($amount == $selisih) ? 1 : 0;
+
+            if ($amount > $selisih) {
+                return $this->ajaxResponse(false, 'Pembayaran melebihi tagihan');
+            }
+        } else {
+            $get_old_amount = DB::table('receivable_payments')->where('uid', $uid)->where('status', 1)->first();
+            $old_amount = $get_old_amount->amount;
+            $selisih += $old_amount;
+
+            $paid_off = ($amount == $selisih) ? 1 : 0;
+
+            if ($amount > $selisih) {
+                return $this->ajaxResponse(false, 'Pembayaran melebihi tagihan');
+            }
         }
 
         try {
@@ -132,7 +146,7 @@ class ReceivablePaymentController extends BaseController
     public function edit_receivable_payment(Request $request)
     {
         $uid = $request->uid;
-        $data = DB::table('receivable_payments as rp')->join('sales_orders as so', 'so.invoice_number', '=', 'rp.invoice_number')->join('customer c', 'c.uid', '=', 'so.uid_customer')->select('rp.uid', 'rp.invoice_number', 'c.name', 'rp.transaction_date', 'rp.term', 'rp.amount', 'rp.uid_payment_method')->where('rp.uid', $uid)->get();
+        $data = DB::table('receivable_payments as rp')->join('sales_orders as so', 'so.invoice_number', '=', 'rp.invoice_number')->join('customer as c', 'c.uid', '=', 'so.uid_customer')->join('payment_method as pm', 'pm.uid', 'rp.uid_payment_method')->select('rp.uid', 'rp.invoice_number', 'c.name', 'rp.transaction_date', 'rp.term', 'rp.amount', 'rp.uid_payment_method', 'pm.name as payment_method')->where('rp.uid', $uid)->get();
         return $this->ajaxResponse(true, 'Success!', $data);
     }
 

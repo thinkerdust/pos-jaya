@@ -595,6 +595,7 @@ function bayar(uid){
                 let receipt = response.data.receipt;
                 let html = "";
                 $("#modal_noinv").val(data.invoice_number);
+                $("#modal_uid").val('');
                 $("#modal_customer").val(data.name);
                 $("#modal_tanggal").val(data.transaction_date);
                 $("#modal_total").val(thousandView(data.grand_total));
@@ -612,8 +613,8 @@ function bayar(uid){
                         html += '<td>'+receipt[i].transaction_date+'</td>';
                         html += '<td>'+receipt[i].payment_method+'</td>';
                         html += '<td class="text-end">'+thousandView(receipt[i].amount)+'</td>';
-                        // html += '<td><button class="btn btn-dim btn-outline-secondary btn-xs"><em class="icon ni ni-edit"></em></button>';
-                        html += '<td><button class="btn btn-dim btn-outline-secondary btn-xs" onclick="del_receipt(\''+receipt[i].uid+'\')"><em class="icon ni ni-trash"></em></button>';
+                        html += '<td><button class="btn btn-dim btn-outline-secondary btn-xs" onclick="edit_receipt(\''+receipt[i].uid+'\')"><em class="icon ni ni-edit"></em></button>';
+                        html += '<button class="btn btn-dim btn-outline-secondary btn-xs" onclick="del_receipt(\''+receipt[i].uid+'\')"><em class="icon ni ni-trash"></em></button>';
                         html += '<a class="btn btn-dim btn-outline-secondary btn-xs" target="_blank" href="/transaction/receivable_payment/receipt/'+receipt[i].uid+'"><em class="icon ni ni-send"></em></a></td>';
                         html += '</tr>';
                         no++;
@@ -739,4 +740,23 @@ function del_receipt(uid) {
 }
 
 
+function edit_receipt(uid){
+    $.ajax({
+        url: '/transaction/receivable_payment/edit/'+uid,
+        dataType: 'JSON',
+        success: function(response) {
+            if(response.status){
+                $("#modal_uid").val(uid);
+                $("#modal_payment_method").empty().append(`<option value="${response.data[0].uid_payment_method}">${response.data[0].payment_method}</option>`).val(response.data[0].uid_payment_method).trigger('change');
+                $("#modal_amount").val(thousandView(response.data[0].amount));
+            }else{
+                NioApp.Toast(response.message, 'warning', {position: 'top-right'});
+            }
+            },
+        error: function(error) {
+            console.log(error)
+            NioApp.Toast('Error while fetching data', 'error', {position: 'top-right'});
+        }
+    })
 
+}

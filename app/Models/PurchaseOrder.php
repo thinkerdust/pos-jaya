@@ -13,9 +13,13 @@ class PurchaseOrder extends Model
     public $timestamps = false;
     protected $table = 'purchase_orders';
 
-    public function dataTablePurchaseOrders()
+    public function dataTablePurchaseOrders($min, $max)
     {
-        $query = DB::table('purchase_orders as po')->join('supplier as sup', 'po.uid_supplier', '=', 'sup.uid')->select('po.uid', 'po.po_number', 'sup.name', 'po.transaction_date', 'po.note', 'po.grand_total')->where('po.status', 1);
+        $query = DB::table('purchase_orders as po')->join('supplier as sup', 'po.uid_supplier', '=', 'sup.uid')->select('po.uid', 'po.po_number', 'sup.name', DB::raw('DATE_FORMAT(po.transaction_date, "%d/%m/%Y") as transaction_date'), 'po.note', 'po.grand_total')->where('po.status', 1);
+        if (!empty($min) && !empty($max)) {
+            $query->whereBetween('po.transaction_date', [$min, $max]);
+        }
+
         $order = request('order')[0];
         if ($order['column'] == '0') {
             $query->orderBy('po.uid', 'DESC');

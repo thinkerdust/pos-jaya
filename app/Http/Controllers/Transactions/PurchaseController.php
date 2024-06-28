@@ -37,7 +37,9 @@ class PurchaseController extends BaseController
      */
     public function datatable_purchase_order(Request $request)
     {
-        $data = $this->purchase_order->dataTablePurchaseOrders();
+        $min = !empty($request->min) ? date('Y-m-d', strtotime($request->min)) : '';
+        $max = !empty($request->max) ? date('Y-m-d', strtotime($request->max)) : '';
+        $data = $this->purchase_order->dataTablePurchaseOrders($min, $max);
         return Datatables::of($data)->addIndexColumn()
             ->addColumn('action', function ($row) {
                 $btn = '';

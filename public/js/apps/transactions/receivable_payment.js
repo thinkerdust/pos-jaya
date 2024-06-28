@@ -105,7 +105,11 @@ var table = NioApp.DataTable('#dt-table', {
     responsive: true,
     searchDelay: 500,
     ajax: {
-        url: '/transaction/receivable_payment/datatable'
+        url: '/transaction/receivable_payment/datatable',
+        data: function (d) {
+            d.min = $('#filter_date_from').val();
+            d.max = $('#filter_date_to').val();
+        },
     },
     columns: [
         {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false},
@@ -569,5 +573,21 @@ function checkStock(formData){
 
     return status_stock;
 
+}
+
+function filter(){
+    $("#modal_filter").modal('show');
+}
+
+function applyFilter(){
+    $("#dt-table").DataTable().ajax.reload();
+    $("#modal_filter").modal('hide');
+}
+
+function clearFilter(){
+    $("#filter_date_from").val('');
+    $("#filter_date_to").val('');
+    $("#dt-table").DataTable().ajax.reload();
+    $("#modal_filter").modal('hide');
 }
 

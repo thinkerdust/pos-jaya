@@ -47,7 +47,10 @@ class SalesController extends BaseController
      */
     public function datatable_sales_order(Request $request)
     {
-        $data = $this->sales_order->dataTableSalesOrders();
+        $min = !empty($request->min) ? date('Y-m-d', strtotime($request->min)) : '';
+        $max = !empty($request->max) ? date('Y-m-d', strtotime($request->max)) : '';
+        $status = $request->status;
+        $data = $this->sales_order->dataTableSalesOrders($min, $max, $status);
         return Datatables::of($data)->addIndexColumn()
             ->addColumn('action', function ($row) {
                 $btn = '';
@@ -71,7 +74,9 @@ class SalesController extends BaseController
 
     public function datatable_pending(Request $request)
     {
-        $data = $this->sales_order->dataTablePending();
+        $min = !empty($request->min) ? date('Y-m-d', strtotime($request->min)) : '';
+        $max = !empty($request->max) ? date('Y-m-d', strtotime($request->max)) : '';
+        $data = $this->sales_order->dataTablePending($min, $max);
         return Datatables::of($data)->addIndexColumn()
             ->addColumn('action', function ($row) {
                 $btn = '';

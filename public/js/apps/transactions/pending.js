@@ -4,7 +4,11 @@ var table = NioApp.DataTable('#dt-table', {
     responsive: true,
     searchDelay: 500,
     ajax: {
-        url: '/transaction/pending/datatable'
+        url: '/transaction/pending/datatable',
+        data: function (d) {
+            d.min = $('#filter_date_from').val();
+            d.max = $('#filter_date_to').val();
+        },
     },
     columns: [
         {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false},
@@ -24,3 +28,20 @@ var table = NioApp.DataTable('#dt-table', {
         },
     ] 
 });
+
+function filter(){
+    $("#modal_filter").modal('show');
+}
+
+function applyFilter(){
+    $("#dt-table").DataTable().ajax.reload();
+    $("#modal_filter").modal('hide');
+}
+
+function clearFilter(){
+    $("#filter_date_from").val('');
+    $("#filter_date_to").val('');
+    $("#filter_status").val('');
+    $("#dt-table").DataTable().ajax.reload();
+    $("#modal_filter").modal('hide');
+}

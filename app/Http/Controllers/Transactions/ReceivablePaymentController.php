@@ -36,7 +36,9 @@ class ReceivablePaymentController extends BaseController
      */
     public function datatable_receivable_payment(Request $request)
     {
-        $data = $this->receivable_payment->dataTableReceivablePayments();
+        $min = !empty($request->min) ? date('Y-m-d', strtotime($request->min)) : '';
+        $max = !empty($request->max) ? date('Y-m-d', strtotime($request->max)) : '';
+        $data = $this->receivable_payment->dataTableReceivablePayments($min, $max);
         return Datatables::of($data)->addIndexColumn()
             ->addColumn('action', function ($row) {
                 $btn = '';

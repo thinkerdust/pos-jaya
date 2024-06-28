@@ -12,9 +12,17 @@ class SalesOrder extends Model
     public $timestamps = false;
     protected $table = 'sales_orders';
 
-    public function dataTableSalesOrders()
+    public function dataTableSalesOrders($min, $max, $status)
     {
-        $query = DB::table('sales_orders as so')->join('customer as cus', 'so.uid_customer', '=', 'cus.uid')->select('so.uid', 'so.invoice_number', 'cus.name', 'so.transaction_date', 'so.note', 'so.grand_total', 'so.paid_off')->where('so.status', 1)->where('so.pending', 0);
+        $query = DB::table('sales_orders as so')->join('customer as cus', 'so.uid_customer', '=', 'cus.uid')->select('so.uid', 'so.invoice_number', 'cus.name', DB::raw('DATE_FORMAT(so.transaction_date, "%d/%m/%Y") as transaction_date'), 'so.note', 'so.grand_total', 'so.paid_off')->where('so.status', 1)->where('so.pending', 0);
+
+        if (!empty($min) && !empty($max)) {
+            $query->whereBetween('so.transaction_date', [$min, $max]);
+        }
+
+        if ($status !== null) {
+            $query->where('so.paid_off', $status);
+        }
 
         $order = request('order')[0];
         if ($order['column'] == '0') {
@@ -24,9 +32,13 @@ class SalesOrder extends Model
         return $query;
     }
 
-    public function dataTablePending()
+    public function dataTablePending($min, $max)
     {
-        $query = DB::table('sales_orders as so')->join('customer as cus', 'so.uid_customer', '=', 'cus.uid')->select('so.uid', 'so.invoice_number', 'cus.name', 'so.transaction_date', 'so.note', 'so.grand_total')->where('so.status', 1)->where('so.pending', 1);
+        $query = DB::table('sales_orders as so')->join('customer as cus', 'so.uid_customer', '=', 'cus.uid')->select('so.uid', 'so.invoice_number', 'cus.name', DB::raw('DATE_FORMAT(so.transaction_date, "%d/%m/%Y") as transaction_date'), 'so.note', 'so.grand_total')->where('so.status', 1)->where('so.pending', 1);
+
+        if (!empty($min) && !empty($max)) {
+            $query->whereBetween('so.transaction_date', [$min, $max]);
+        }
 
         $order = request('order')[0];
         if ($order['column'] == '0') {

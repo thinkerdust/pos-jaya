@@ -342,3 +342,65 @@ function hapus_price(uid) {
         }
     });
 }
+
+function addUnit()
+{
+    $('#modalFormUnit').modal('show');
+    $('#form-data-unit')[0].reset();
+    $('#name_unit').val('');
+}
+
+$('#btn-submit-unit').click(function(e) {
+    e.preventDefault();
+    let name = $('#name_unit').val();
+
+    $.ajax({
+        url: '/unit/store',
+        type: 'POST',
+        dataType: 'json',
+        data: { _token: token, name: name },
+        success: function(response) {
+            if(response.status){
+                $('#modalFormUnit').modal('hide');
+                NioApp.Toast(response.message, 'success', {position: 'top-right'});
+            }else{
+                NioApp.Toast(response.message, 'warning', {position: 'top-right'});
+            }
+        },
+        error: function(error) {
+            console.log(error);
+            NioApp.Toast('Error while fetching data', 'error', {position: 'top-right'});
+        }
+    })
+})
+
+function addCategory()
+{
+    $('#modalFormCategory').modal('show');
+    $('#form-data-category')[0].reset();
+    $('#name_category').val('');
+}
+
+$('#btn-submit-category').click(function(e) {
+    e.preventDefault();
+    let name = $('#name_category').val();
+
+    $.ajax({
+        url: '/product-categories/store',
+        type: 'POST',
+        dataType: 'json',
+        data: { _token: token, name: name },
+        success: function(response) {
+            if(response.status){
+                $('#modalFormCategory').modal('hide');
+                NioApp.Toast(response.message, 'success', {position: 'top-right'});
+            }else{
+                NioApp.Toast(response.message, 'warning', {position: 'top-right'});
+            }
+        },
+        error: function(error) {
+            console.log(error);
+            NioApp.Toast('Error while fetching data', 'error', {position: 'top-right'});
+        }
+    })
+})

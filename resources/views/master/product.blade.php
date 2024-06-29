@@ -71,18 +71,20 @@
                             <div class="form-group">
                                 <label class="form-label">Kategori</label>
                                 <div class="form-control-wrap">
-                                    <select class="form-control" name="product_categories" id="product_categories" required>
-
-                                    </select>
+                                    <select class="form-control" name="product_categories" id="product_categories" required></select>
+                                </div>
+                                <div class="my-1">
+                                    <button type="button" class="btn btn-primary btn-sm" onclick="addCategory()"><em class="icon ni ni-plus"></em><span>Add Data</span></button>
                                 </div>
                             </div>
 
                             <div class="form-group">
                                 <label class="form-label">Satuan</label>
                                 <div class="form-control-wrap">
-                                    <select class="form-control" name="unit" id="unit" required>
-
-                                    </select>
+                                    <select class="form-control" name="unit" id="unit" required></select>
+                                </div>
+                                <div class="my-1">
+                                    <button type="button" class="btn btn-primary btn-sm" onclick="addUnit()"><em class="icon ni ni-plus"></em><span>Add Data</span></button>
                                 </div>
                             </div>
 
@@ -191,6 +193,60 @@
                     </thead>
 
                 </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" tabindex="-1" id="modalFormCategory">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <a href="#" class="close" data-bs-dismiss="modal" aria-label="Close">
+                <em class="icon ni ni-cross"></em>
+            </a>
+            <div class="modal-header">
+                <h5 class="modal-title">Form Produk Kategori</h5>
+            </div>
+            <div class="modal-body">
+                <form class="form-validate is-alter" id="form-data-category">
+                    @csrf
+                    <div class="form-group">
+                        <label class="form-label">Nama</label>
+                        <div class="form-control-wrap">
+                            <input type="text" class="form-control" name="name_category" id="name_category" required>
+                        </div>
+                    </div>
+                    
+                    <hr class="preview-hr">
+                    <button type="button" class="btn btn-theme-sml" id="btn-submit-category">Save</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" tabindex="-1" id="modalFormUnit">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <a href="#" class="close" data-bs-dismiss="modal" aria-label="Close">
+                <em class="icon ni ni-cross"></em>
+            </a>
+            <div class="modal-header">
+                <h5 class="modal-title">Form Satuan</h5>
+            </div>
+            <div class="modal-body">
+                <form class="form-validate is-alter" id="form-data-unit">
+                    @csrf
+                    <div class="form-group">
+                        <label class="form-label">Nama</label>
+                        <div class="form-control-wrap">
+                            <input type="text" class="form-control" name="name_unit" id="name_unit" required>
+                        </div>
+                    </div>
+                    
+                    <hr class="preview-hr">
+                    <button type="button" class="btn btn-theme-sml" id="btn-submit-unit">Save</button>
+                </form>
             </div>
         </div>
     </div>

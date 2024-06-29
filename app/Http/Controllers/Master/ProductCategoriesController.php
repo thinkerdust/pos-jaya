@@ -22,7 +22,7 @@ class ProductCategoriesController extends BaseController
     public function index()
     {
         $title = 'Master Produk Kategori';
-        $js = 'js/apps/master/product_categories.js?_='.rand();
+        $js = 'js/apps/master/product-categories.js?_='.rand();
         return view('master.product_categories', compact('js', 'title'));
     }
 

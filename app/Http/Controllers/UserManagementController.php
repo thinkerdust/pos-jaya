@@ -76,10 +76,10 @@ class UserManagementController extends BaseController
 
         if(!empty($id)) {
             $data['update_at'] = Carbon::now();
-            $data['update_by'] = $user->username;
+            $data['update_by'] = $user->id;
         }else{
             $data['insert_at'] = Carbon::now();
-            $data['insert_by'] = $user->username;
+            $data['insert_by'] = $user->id;
         }
 
         $process = Menu::updateOrCreate(
@@ -106,7 +106,7 @@ class UserManagementController extends BaseController
         $id = $request->id;
         $user = Auth::user();
         $process = Menu::where('id', $id)
-            ->update(['status' => 0, 'update_at' => Carbon::now(), 'update_by' => $user->username]);
+            ->update(['status' => 0, 'update_at' => Carbon::now(), 'update_by' => $user->id]);
 
         if($process) {
             return $this->ajaxResponse(true, 'Data save successfully');
@@ -155,10 +155,10 @@ class UserManagementController extends BaseController
 
             if(!empty($id)) {
                 $data_role['update_at'] = Carbon::now();
-                $data_role['update_by'] = $user->username;
+                $data_role['update_by'] = $user->id;
             }else{
                 $data_role['insert_at'] = Carbon::now();
-                $data_role['insert_by'] = $user->username;
+                $data_role['insert_by'] = $user->id;
             }
 
             DB::table('role')->updateOrInsert(
@@ -183,11 +183,11 @@ class UserManagementController extends BaseController
                     $arr_akses['insert_at'] = $access_role->insert_at;
                     $arr_akses['insert_by'] = $access_role->insert_by;
                     $arr_akses['update_at'] = Carbon::now();
-                    $arr_akses['update_by'] = $user->username;
+                    $arr_akses['update_by'] = $user->id;
                 }else{
                     $arr_akses['id'] = null;
                     $arr_akses['insert_at'] = Carbon::now();
-                    $arr_akses['insert_by'] = $user->username;
+                    $arr_akses['insert_by'] = $user->id;
                     $arr_akses['update_at'] = null;
                     $arr_akses['update_by'] = null;
                 }

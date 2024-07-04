@@ -87,10 +87,10 @@ class MasterMaterialController extends BaseController
 
         if(!empty($uid)) {
             $data['update_at'] = Carbon::now();
-            $data['update_by'] = $user->username;
+            $data['update_by'] = $user->id;
         }else{
             $data['insert_at'] = Carbon::now();
-            $data['insert_by'] = $user->username;
+            $data['insert_by'] = $user->id;
             $uid_material = 'M'.Carbon::now()->format('YmdHisu');
             $data['uid'] = $uid_material;
         }
@@ -119,7 +119,7 @@ class MasterMaterialController extends BaseController
         $uid = $request->uid;
         $user = Auth::user();
         $process = DB::table('material')->where('uid', $uid)
-            ->update(['status' => 0, 'update_at' => Carbon::now(), 'update_by' => $user->username]);
+            ->update(['status' => 0, 'update_at' => Carbon::now(), 'update_by' => $user->id]);
 
         if($process) {
             return $this->ajaxResponse(true, 'Data save successfully');

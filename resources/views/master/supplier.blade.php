@@ -72,14 +72,14 @@
                     <div class="form-group">
                         <label class="form-label">Email</label>
                         <div class="form-control-wrap">
-                            <input type="text" class="form-control" name="email" id="email" required>
+                            <input type="text" class="form-control" name="email" id="email">
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label class="form-label">Alamat</label>
                         <div class="form-control-wrap">
-                            <textarea class="form-control" name="address" id="address" rows="5" required></textarea>
+                            <textarea class="form-control" name="address" id="address" rows="5"></textarea>
                         </div>
                     </div>
                     

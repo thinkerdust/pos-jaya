@@ -53,8 +53,6 @@ class MasterSupplierController extends BaseController
         $validator = Validator::make($request->all(), [
             'name' => 'required',
             'phone' => 'required',
-            'email' => 'required|email:rfc,dns',
-            'address' => 'required',
         ]);
 
         if($validator->stopOnFirstFailure()->fails()){
@@ -72,10 +70,10 @@ class MasterSupplierController extends BaseController
 
         if(!empty($uid)) {
             $data['update_at'] = Carbon::now();
-            $data['update_by'] = $user->username;
+            $data['update_by'] = $user->id;
         }else{
             $data['insert_at'] = Carbon::now();
-            $data['insert_by'] = $user->username;
+            $data['insert_by'] = $user->id;
             $uid_supplier = 'S'.Carbon::now()->format('YmdHisu');
             $data['uid'] = $uid_supplier;
         }
@@ -104,7 +102,7 @@ class MasterSupplierController extends BaseController
         $uid = $request->uid;
         $user = Auth::user();
         $process = DB::table('supplier')->where('uid', $uid)
-            ->update(['status' => 0, 'update_at' => Carbon::now(), 'update_by' => $user->username]);
+            ->update(['status' => 0, 'update_at' => Carbon::now(), 'update_by' => $user->id]);
 
         if($process) {
             return $this->ajaxResponse(true, 'Data save successfully');

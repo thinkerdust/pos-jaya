@@ -79,15 +79,16 @@ class MasterProductController extends BaseController
             'cost_price' => $cost_price,
             'sell_price' => $sell_price,
             'retail_member_price' => $retail_member_price,
-            'description' => $request->description
+            'description' => $request->description,
+            'uid_company' => $user->uid_company
         ];
 
         if (!empty($uid)) {
             $data['update_at'] = Carbon::now();
-            $data['update_by'] = $user->username;
+            $data['update_by'] = $user->id;
         } else {
             $data['insert_at'] = Carbon::now();
-            $data['insert_by'] = $user->username;
+            $data['insert_by'] = $user->id;
             $uid_product = 'P' . Carbon::now()->format('YmdHisu');
             $data['uid'] = $uid_product;
         }
@@ -116,7 +117,7 @@ class MasterProductController extends BaseController
         $uid = $request->uid;
         $user = Auth::user();
         $process = DB::table('product')->where('uid', $uid)
-            ->update(['status' => 0, 'update_at' => Carbon::now(), 'update_by' => $user->username]);
+            ->update(['status' => 0, 'update_at' => Carbon::now(), 'update_by' => $user->id]);
 
         if ($process) {
             return $this->ajaxResponse(true, 'Data save successfully');
@@ -182,10 +183,10 @@ class MasterProductController extends BaseController
 
         if (!empty($uid)) {
             $data['update_at'] = Carbon::now();
-            $data['update_by'] = $user->username;
+            $data['update_by'] = $user->id;
         } else {
             $data['insert_at'] = Carbon::now();
-            $data['insert_by'] = $user->username;
+            $data['insert_by'] = $user->id;
             $uid_product_price = 'P' . Carbon::now()->format('YmdHisu');
             $data['uid'] = $uid_product_price;
         }
@@ -214,7 +215,7 @@ class MasterProductController extends BaseController
         $uid = $request->uid;
         $user = Auth::user();
         $process = DB::table('product_price')->where('uid', $uid)
-            ->update(['status' => 0, 'update_at' => Carbon::now(), 'update_by' => $user->username]);
+            ->update(['status' => 0, 'update_at' => Carbon::now(), 'update_by' => $user->id]);
 
         if ($process) {
             return $this->ajaxResponse(true, 'Data save successfully');
@@ -232,6 +233,94 @@ class MasterProductController extends BaseController
             return $this->ajaxResponse(true, 'Success!', $data);
         } else {
             return $this->ajaxResponse(false, 'No Wholesale Price');
+        }
+    }
+
+    public function product_manual_Stock()
+    {
+        $title = 'Master Produk Khusus';
+        $js = 'js/apps/master/product-manual-stock.js?_=' . rand();
+        return view('master.product_manual_stock', compact('js', 'title'));
+    }
+
+    public function datatable_product_manual_stock(Request $request)
+    {
+        $data = $this->product->dataTableProductManualStock();
+        return Datatables::of($data)->addIndexColumn()
+            ->addColumn('action', function ($row) {
+                $btn = '';
+                if (Gate::allows('crudAccess', 'MD3', $row)) {
+                    if ($row->status == 1) {
+                        $btn = '<a class="btn btn-dim btn-outline-secondary btn-sm" onclick="edit(\'' . $row->uid . '\')"><em class="icon ni ni-edit"></em><span>Edit</span></a>&nbsp;
+                                <a class="btn btn-dim btn-outline-secondary btn-sm" onclick="hapus(\'' . $row->uid . '\')"><em class="icon ni ni-trash"></em><span>Delete</span></a>
+                                <a class="btn btn-dim btn-outline-secondary btn-sm" onclick="addprice(\'' . $row->uid . '\')"><em class="icon ni ni-coin-alt"></em><span>Harga Grosir</span></a>
+                            ';
+                    }
+                }
+
+                return $btn;
+            })
+            ->rawColumns(['action'])
+            ->make(true);
+    }
+
+    public function store_product_manual_stock(Request $request)
+    {
+        $uid = $request->input('uid');
+
+        $validator = Validator::make($request->all(), [
+            'name' => 'required',
+            'product_categories' => 'required',
+            'unit' => 'required',
+            'cost_price' => 'required',
+            'sell_price' => 'required',
+            'retail_member_price' => 'required',
+            'description' => 'required',
+            'stock' => 'required',
+        ]);
+
+        if ($validator->stopOnFirstFailure()->fails()) {
+            return $this->ajaxResponse(false, $validator->errors()->first());
+        }
+
+        $user = Auth::user();
+
+        $cost_price = Str::replace('.', '', $request->cost_price);
+        $sell_price = Str::replace('.', '', $request->sell_price);
+        $retail_member_price = Str::replace('.', '', $request->retail_member_price);
+
+        $data = [
+            'name' => $request->name,
+            'uid_product_categories' => $request->product_categories,
+            'uid_unit' => $request->unit,
+            'cost_price' => $cost_price,
+            'sell_price' => $sell_price,
+            'retail_member_price' => $retail_member_price,
+            'description' => $request->description,
+            'stock' => $request->stock,
+            'flag' => 2,
+            'uid_company' => $user->uid_company
+        ];
+
+        if (!empty($uid)) {
+            $data['update_at'] = Carbon::now();
+            $data['update_by'] = $user->id;
+        } else {
+            $data['insert_at'] = Carbon::now();
+            $data['insert_by'] = $user->id;
+            $uid_product = 'P' . Carbon::now()->format('YmdHisu');
+            $data['uid'] = $uid_product;
+        }
+
+        $process = DB::table('product')->updateOrInsert(
+            ['uid' => $uid],
+            $data
+        );
+
+        if ($process) {
+            return $this->ajaxResponse(true, 'Data save successfully');
+        } else {
+            return $this->ajaxResponse(false, 'Failed to save data');
         }
     }
 

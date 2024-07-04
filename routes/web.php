@@ -197,6 +197,15 @@ Route::group(['middleware' => ['web', 'auth']], function () {
             });
         });
 
+        // Product
+        Route::group(['prefix' => 'product-manual-stock', 'middleware' => ["can:SubMenu, 'MD9'"]], function () {
+            Route::controller(MasterProductController::class)->group(function () {
+                Route::get('/', 'product_manual_stock')->name('product-manual-stock');
+                Route::get('/datatable', 'datatable_product_manual_stock');
+                Route::post('/store', 'store_product_manual_stock');
+            });
+        });
+
     });
 
     // Transactions

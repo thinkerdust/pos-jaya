@@ -39,7 +39,9 @@ class PurchaseController extends BaseController
     {
         $min = !empty($request->min) ? date('Y-m-d', strtotime($request->min)) : '';
         $max = !empty($request->max) ? date('Y-m-d', strtotime($request->max)) : '';
-        $data = $this->purchase_order->dataTablePurchaseOrders($min, $max);
+        $role = Auth::user()->id_role;
+
+        $data = $this->purchase_order->dataTablePurchaseOrders($min, $max, $role);
         return Datatables::of($data)->addIndexColumn()
             ->addColumn('action', function ($row) {
                 $btn = '';
@@ -83,7 +85,7 @@ class PurchaseController extends BaseController
             foreach ($get_existing_detail as $old) {
                 //update stock back
                 try {
-                    $update_stock = DB::table('product')->where('uid', $old->uid_product)->decrement('stock', $old->qty);
+                    $update_stock = DB::table('product')->where('uid', $old->uid_product)->where('uid_company', $user->uid_company)->decrement('stock', $old->qty);
                 } catch (\Throwable $e) {
                     DB::rollBack();
                     return $this->ajaxResponse(false, 'Failed to update stock', $e);
@@ -103,6 +105,16 @@ class PurchaseController extends BaseController
             $get_last_number = DB::table("purchase_orders")->where("po_number", "like", "$no_po%")->orderBy('po_number', 'desc')->count();
             $no_po .= '-' . ++$get_last_number;
 
+            $loop = true;
+            while ($loop) {
+                $validate_po_number = DB::table('purchase_orders')->where("po_number", $no_po)->count();
+                if ($validate_po_number == 0) {
+                    $loop = false;
+                } else {
+                    $no_po = "PO" . date('mdY') . '-' . ++$get_last_number;
+                }
+            }
+
         }
 
         //insert detail
@@ -121,7 +133,7 @@ class PurchaseController extends BaseController
                     'discount' => 0,
                     'note' => '',
                     'insert_at' => Carbon::now(),
-                    'insert_by' => $user->username
+                    'insert_by' => $user->id,
                 ]);
             } catch (\Throwable $e) {
                 DB::rollBack();
@@ -130,7 +142,7 @@ class PurchaseController extends BaseController
 
             try {
                 //update stock
-                $update_stock = DB::table('product')->where('uid', $request->details['products'][$i])->increment('stock', $request->details['qty'][$i]);
+                $update_stock = DB::table('product')->where('uid', $request->details['products'][$i])->where('uid_company', $user->uid_company)->increment('stock', $request->details['qty'][$i]);
             } catch (\Throwable $e) {
                 DB::rollBack();
                 return $this->ajaxResponse(false, 'Failed to update stock', $e);
@@ -161,12 +173,15 @@ class PurchaseController extends BaseController
 
             if (!empty($uid)) {
                 $data['update_at'] = Carbon::now();
-                $data['update_by'] = $user->username;
+                $data['update_by'] = $user->id;
+                $data['uid_company'] = $user->uid_company;
+
             } else {
                 $data['insert_at'] = Carbon::now();
-                $data['insert_by'] = $user->username;
+                $data['insert_by'] = $user->id;
                 $uid_purchase_order = 'PO' . Carbon::now()->format('YmdHisu');
                 $data['uid'] = $uid_purchase_order;
+                $data['uid_company'] = $user->uid_company;
             }
 
 
@@ -213,16 +228,16 @@ class PurchaseController extends BaseController
 
 
         $process = DB::table('purchase_orders')->where('uid', $uid)
-            ->update(['status' => 0, 'update_at' => Carbon::now(), 'update_by' => $user->username]);
+            ->update(['status' => 0, 'update_at' => Carbon::now(), 'update_by' => $user->id]);
 
         $del_detail = DB::table('purchase_order_details')->where('po_number', $po_number)
-            ->update(['status' => 0, 'update_at' => Carbon::now(), 'update_by' => $user->username]);
+            ->update(['status' => 0, 'update_at' => Carbon::now(), 'update_by' => $user->id]);
 
         $get_existing_detail = DB::table('purchase_order_details')->where('po_number', $po_number)->get();
         foreach ($get_existing_detail as $old) {
             //update stock back
             try {
-                $update_stock = DB::table('product')->where('uid', $old->uid_product)->decrement('stock', $old->qty);
+                $update_stock = DB::table('product')->where('uid', $old->uid_product)->where('uid_company', $user->uid_company)->decrement('stock', $old->qty);
             } catch (\Throwable $e) {
                 DB::rollBack();
                 return $this->ajaxResponse(false, 'Failed to update stock', $e);
@@ -247,6 +262,7 @@ class PurchaseController extends BaseController
     {
         $response_status = true;
         $response_message = "Ready Stock";
+        $user = Auth::user();
         $data = array();
         if (!empty($uid)) {
 
@@ -254,7 +270,7 @@ class PurchaseController extends BaseController
             for ($i = 0; $i < sizeof($request->details['products']); $i++) {
 
                 $uid_product = $request->details['products'][$i];
-                $get_stock = DB::table('product')->where('uid', $uid_product)->first();
+                $get_stock = DB::table('product')->where('uid', $uid_product)->where('uid_company', $user->uid_company)->first();
                 $get_existing = DB::table('purchase_order_details')->where('uid_product', $uid_product)->where('po_number', $no_po)->first();
 
                 $qty = $request->details['qty'][$i];

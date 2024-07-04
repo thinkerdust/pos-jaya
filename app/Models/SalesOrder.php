@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use DB;
+use Auth;
 
 class SalesOrder extends Model
 {
@@ -12,8 +13,9 @@ class SalesOrder extends Model
     public $timestamps = false;
     protected $table = 'sales_orders';
 
-    public function dataTableSalesOrders($min, $max, $status)
+    public function dataTableSalesOrders($min, $max, $status, $role)
     {
+        $user = Auth::user();
         $query = DB::table('sales_orders as so')->join('customer as cus', 'so.uid_customer', '=', 'cus.uid')->select('so.uid', 'so.invoice_number', 'cus.name', DB::raw('DATE_FORMAT(so.transaction_date, "%d/%m/%Y") as transaction_date'), 'so.note', 'so.grand_total', 'so.paid_off')->where('so.status', 1)->where('so.pending', 0);
 
         if (!empty($min) && !empty($max)) {
@@ -24,6 +26,12 @@ class SalesOrder extends Model
             $query->where('so.paid_off', $status);
         }
 
+        if ($role == 2) {
+            $query->where('so.uid_company', $user->uid_company);
+        } elseif ($role == 3) {
+            $query->where('so.insert_by', $user->id);
+        }
+
         $order = request('order')[0];
         if ($order['column'] == '0') {
             $query->orderBy('so.uid', 'DESC');
@@ -32,13 +40,21 @@ class SalesOrder extends Model
         return $query;
     }
 
-    public function dataTablePending($min, $max)
+    public function dataTablePending($min, $max, $role)
     {
+        $user = Auth::user();
         $query = DB::table('sales_orders as so')->join('customer as cus', 'so.uid_customer', '=', 'cus.uid')->select('so.uid', 'so.invoice_number', 'cus.name', DB::raw('DATE_FORMAT(so.transaction_date, "%d/%m/%Y") as transaction_date'), 'so.note', 'so.grand_total')->where('so.status', 1)->where('so.pending', 1);
 
         if (!empty($min) && !empty($max)) {
             $query->whereBetween('so.transaction_date', [$min, $max]);
         }
+
+        if ($role == 2) {
+            $query->where('so.uid_company', $user->uid_company);
+        } elseif ($role == 3) {
+            $query->where('so.insert_by', $user->id);
+        }
+
 
         $order = request('order')[0];
         if ($order['column'] == '0') {

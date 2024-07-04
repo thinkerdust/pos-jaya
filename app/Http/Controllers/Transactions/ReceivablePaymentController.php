@@ -38,7 +38,9 @@ class ReceivablePaymentController extends BaseController
     {
         $min = !empty($request->min) ? date('Y-m-d', strtotime($request->min)) : '';
         $max = !empty($request->max) ? date('Y-m-d', strtotime($request->max)) : '';
-        $data = $this->receivable_payment->dataTableReceivablePayments($min, $max);
+        $role = Auth::user()->id_role;
+
+        $data = $this->receivable_payment->dataTableReceivablePayments($min, $max, $role);
         return Datatables::of($data)->addIndexColumn()
             ->addColumn('action', function ($row) {
                 $btn = '';
@@ -123,12 +125,14 @@ class ReceivablePaymentController extends BaseController
 
             if (!empty($uid)) {
                 $data['update_at'] = Carbon::now();
-                $data['update_by'] = $user->username;
+                $data['update_by'] = $user->id;
+                $data['uid_company'] = $user->uid_company;
             } else {
                 $data['insert_at'] = Carbon::now();
-                $data['insert_by'] = $user->username;
+                $data['insert_by'] = $user->id;
                 $uid_receivable_payment = 'RP' . Carbon::now()->format('YmdHisu');
                 $data['uid'] = $uid_receivable_payment;
+                $data['uid_company'] = $user->uid_company;
             }
 
 
@@ -161,7 +165,7 @@ class ReceivablePaymentController extends BaseController
         $noinv = $get_noinv->invoice_number;
 
         $process = DB::table('receivable_payments')->where('uid', $uid)
-            ->update(['status' => 0, 'update_at' => Carbon::now(), 'update_by' => $user->username]);
+            ->update(['status' => 0, 'update_at' => Carbon::now(), 'update_by' => $user->id]);
 
         $get_total_bayar = DB::table('receivable_payments')->where('invoice_number', $noinv)->where('status', 1)->sum('amount');
         $get_total_inv = DB::table('sales_orders')->where('invoice_number', $noinv)->where('status', 1)->first();
@@ -179,7 +183,8 @@ class ReceivablePaymentController extends BaseController
     public function print_pdf(Request $request)
     {
         $uid = $request->uid;
-        $data['receipt'] = DB::table('receivable_payments as rp')->where('rp.uid', $uid)->where('status', 1)->first();
+        $data['receipt'] = DB::table('receivable_payments as rp')->join('users as u', 'rp.insert_by', 'u.id')->where('rp.uid', $uid)->where('rp.status', 1)->select('rp.uid', 'rp.term', 'rp.amount', 'u.username', 'rp.invoice_number', 'rp.uid_company')->first();
+        $data['company'] = DB::table('company')->where('uid', $data['receipt']->uid_company)->first();
 
         $data['header'] = DB::table('sales_orders as so')->join('customer as cus', 'cus.uid', 'so.uid_customer')->select('so.uid', 'so.invoice_number', 'so.uid_customer', 'so.transaction_date', 'cus.name', 'cus.phone', 'so.discount', 'so.disc_rate', 'so.tax_rate', 'so.tax_value', 'so.grand_total', 'so.collection_date', 'so.priority', 'so.paid_off')->where('so.invoice_number', $data['receipt']->invoice_number)->first();
         $data['detail'] = DB::table('sales_order_details as pd')->join('product as p', 'p.uid', 'pd.uid_product')->join('unit as u', 'u.uid', 'pd.uid_unit')->select('pd.invoice_number', 'pd.uid_product', 'p.name as product_name', 'pd.uid_unit', 'u.name as unit_name', 'pd.qty', 'pd.price')->where('pd.invoice_number', $data['receipt']->invoice_number)->get()->toArray();

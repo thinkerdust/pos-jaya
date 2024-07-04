@@ -50,7 +50,9 @@ class SalesController extends BaseController
         $min = !empty($request->min) ? date('Y-m-d', strtotime($request->min)) : '';
         $max = !empty($request->max) ? date('Y-m-d', strtotime($request->max)) : '';
         $status = $request->status;
-        $data = $this->sales_order->dataTableSalesOrders($min, $max, $status);
+        $role = Auth::user()->id_role;
+
+        $data = $this->sales_order->dataTableSalesOrders($min, $max, $status, $role);
         return Datatables::of($data)->addIndexColumn()
             ->addColumn('action', function ($row) {
                 $btn = '';
@@ -76,7 +78,9 @@ class SalesController extends BaseController
     {
         $min = !empty($request->min) ? date('Y-m-d', strtotime($request->min)) : '';
         $max = !empty($request->max) ? date('Y-m-d', strtotime($request->max)) : '';
-        $data = $this->sales_order->dataTablePending($min, $max);
+        $role = Auth::user()->id_role;
+
+        $data = $this->sales_order->dataTablePending($min, $max, $role);
         return Datatables::of($data)->addIndexColumn()
             ->addColumn('action', function ($row) {
                 $btn = '';
@@ -126,7 +130,7 @@ class SalesController extends BaseController
                     if ($request->pending == 0) {
                         //update stock back
                         try {
-                            $update_stock = DB::table('product')->where('uid', $old->uid_product)->increment('stock', $old->qty);
+                            $update_stock = DB::table('product')->where('uid', $old->uid_product)->where('uid_company', $user->uid_company)->increment('stock', $old->qty);
                         } catch (\Throwable $e) {
                             DB::rollBack();
                             return $this->ajaxResponse(false, 'Failed to update stock', $e);
@@ -147,6 +151,17 @@ class SalesController extends BaseController
             $get_last_number = DB::table("sales_orders")->where("invoice_number", "like", "$no_inv%")->orderBy('invoice_number', 'desc')->count();
             $no_inv .= '-' . ++$get_last_number;
 
+            $loop = true;
+            while ($loop) {
+                $validate_inv_number = DB::table('sales_orders')->where("invoice_number", $no_inv)->count();
+                if ($validate_inv_number == 0) {
+                    $loop = false;
+                } else {
+                    $no_inv = "INV" . date('mdY') . '-' . ++$get_last_number;
+                }
+            }
+
+
         }
 
         //insert detail
@@ -165,7 +180,7 @@ class SalesController extends BaseController
                     'discount' => 0,
                     'note' => '',
                     'insert_at' => Carbon::now(),
-                    'insert_by' => $user->username
+                    'insert_by' => $user->id
                 ]);
             } catch (\Throwable $e) {
                 DB::rollBack();
@@ -177,7 +192,7 @@ class SalesController extends BaseController
             if ($request->pending == 0) {
                 try {
                     //update stock
-                    $update_stock = DB::table('product')->where('uid', $request->details['products'][$i])->decrement('stock', $request->details['qty'][$i]);
+                    $update_stock = DB::table('product')->where('uid', $request->details['products'][$i])->where('uid_company', $user->uid_company)->decrement('stock', $request->details['qty'][$i]);
                 } catch (\Throwable $e) {
                     DB::rollBack();
                     return $this->ajaxResponse(false, 'Failed to update stock', $e);
@@ -216,12 +231,14 @@ class SalesController extends BaseController
 
             if (!empty($uid)) {
                 $data['update_at'] = Carbon::now();
-                $data['update_by'] = $user->username;
+                $data['update_by'] = $user->id;
+                $data['uid_company'] = $user->uid_company;
             } else {
                 $data['insert_at'] = Carbon::now();
-                $data['insert_by'] = $user->username;
+                $data['insert_by'] = $user->id;
                 $uid_purchase_order = 'SO' . Carbon::now()->format('YmdHisu');
                 $data['uid'] = $uid_purchase_order;
+                $data['uid_company'] = $user->uid_company;
             }
 
 
@@ -251,13 +268,13 @@ class SalesController extends BaseController
         $uid = $request->uid;
         $user = Auth::user();
         $process = DB::table('sales_orders')->where('uid', $uid)
-            ->update(['status' => 0, 'update_at' => Carbon::now(), 'update_by' => $user->username]);
+            ->update(['status' => 0, 'update_at' => Carbon::now(), 'update_by' => $user->id]);
 
         $get_invoice_number = DB::table('sales_orders')->select('invoice_number', 'pending')->where('uid', $uid)->first();
         $invoice_number = $get_invoice_number->invoice_number;
         $pending = $get_invoice_number->pending;
         $del_detail = DB::table('sales_order_details')->where('invoice_number', $invoice_number)
-            ->update(['status' => 0, 'update_at' => Carbon::now(), 'update_by' => $user->username]);
+            ->update(['status' => 0, 'update_at' => Carbon::now(), 'update_by' => $user->id]);
 
         //update stock
         $get_existing_detail = DB::table('sales_order_details')->where('invoice_number', $invoice_number)->get();
@@ -265,7 +282,7 @@ class SalesController extends BaseController
             if ($pending == 0) {
                 //update stock back
                 try {
-                    $update_stock = DB::table('product')->where('uid', $old->uid_product)->increment('stock', $old->qty);
+                    $update_stock = DB::table('product')->where('uid', $old->uid_product)->where('uid_company', $user->uid_company)->increment('stock', $old->qty);
                 } catch (\Throwable $e) {
                     DB::rollBack();
                     return $this->ajaxResponse(false, 'Failed to update stock', $e);
@@ -285,9 +302,11 @@ class SalesController extends BaseController
     public function print_pdf(Request $request)
     {
         $uid = $request->uid;
-        $data['header'] = db::table('sales_orders as so')->join('customer as cus', 'cus.uid', 'so.uid_customer')->select('so.uid', 'so.invoice_number', 'so.uid_customer', 'so.transaction_date', 'cus.name', 'cus.phone', 'so.discount', 'so.disc_rate', 'so.tax_rate', 'so.tax_value', 'so.grand_total', 'so.collection_date', 'so.priority')->where('so.uid', $uid)->first();
+        $data['header'] = db::table('sales_orders as so')->join('customer as cus', 'cus.uid', 'so.uid_customer')->select('so.uid', 'so.invoice_number', 'so.uid_customer', 'so.transaction_date', 'cus.name', 'cus.phone', 'so.discount', 'so.disc_rate', 'so.tax_rate', 'so.tax_value', 'so.grand_total', 'so.collection_date', 'so.priority', 'so.uid_company')->where('so.uid', $uid)->first();
         $data['detail'] = db::table('sales_order_details as pd')->join('product as p', 'p.uid', 'pd.uid_product')->join('unit as u', 'u.uid', 'pd.uid_unit')->select('pd.invoice_number', 'pd.uid_product', 'p.name as product_name', 'pd.uid_unit', 'u.name as unit_name', 'pd.qty', 'pd.price')->where('pd.invoice_number', $data['header']->invoice_number)->get()->toArray();
         $data['receipt'] = DB::table('receivable_payments as rp')->where('rp.invoice_number', $data['header']->invoice_number)->where('status', 1)->sum('amount');
+        $data['company'] = DB::table('company')->where('uid', $data['header']->uid_company)->first();
+
 
         // dd($data);
         $pdf = PDF::loadview('transactions.sales_order.invoice', ['data' => $data])->setPaper('A5', 'landscape');
@@ -309,12 +328,13 @@ class SalesController extends BaseController
     {
         $response_status = true;
         $response_message = "Ready Stock";
+        $user = Auth::user();
         $data = array();
         for ($i = 0; $i < sizeof($request->details['products']); $i++) {
 
             $uid_product = $request->details['products'][$i];
             $qty = $request->details['qty'][$i];
-            $get_stock = DB::table('product')->where('uid', $uid_product)->first();
+            $get_stock = DB::table('product')->where('uid', $uid_product)->where('uid_company', $user->uid_company)->first();
             if ($get_stock->stock < $qty) {
                 $low_stock = array();
                 $low_stock['product'] = $uid_product;

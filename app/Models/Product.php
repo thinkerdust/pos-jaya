@@ -19,6 +19,7 @@ class Product extends Model
         $query = DB::table('product as p')
                     ->join('product_categories as pc', 'pc.uid', '=', 'p.uid_product_categories')
                     ->join('unit as u', 'u.uid', '=', 'p.uid_unit')
+                    ->where([['p.status', 1], ['p.flag', 1], ['pc.status', 1], ['u.status', 1]])
                     ->select('p.uid', 'p.name', 'p.cost_price', 'p.sell_price', 'p.retail_member_price', 'p.stock', 'p.status', 'pc.name as name_categories', 'u.name as name_unit');
 
         $user = Auth::user();
@@ -86,7 +87,7 @@ class Product extends Model
         $query = DB::table('product as p')
                     ->join('product_categories as pc', 'pc.uid', '=', 'p.uid_product_categories')
                     ->join('unit as u', 'u.uid', '=', 'p.uid_unit')
-                    ->where('p.flag', 2)
+                    ->where([['p.status', 1], ['p.flag', 2], ['pc.status', 1], ['u.status', 1]])
                     ->select('p.uid', 'p.name', 'p.cost_price', 'p.sell_price', 'p.retail_member_price', 'p.stock', 'p.status', 'pc.name as name_categories', 'u.name as name_unit');
 
         $order = request('order')[0];

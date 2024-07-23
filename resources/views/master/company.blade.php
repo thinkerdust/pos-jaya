@@ -26,7 +26,6 @@
                                             <th>Perusahaan</th> 
                                             <th>No Telp</th> 
                                             <th>Alamat</th> 
-                                            <th>Status</th> 
                                             <th>Action</th> 
                                         </tr>
                                     </thead>

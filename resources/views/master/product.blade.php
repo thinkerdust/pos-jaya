@@ -30,7 +30,6 @@
                                             <th>Harga Jual</th>
                                             <th>Harga Member Retail</th>
                                             <th>Stock</th>
-                                            <th>Status</th> 
                                             <th>Action</th> 
                                         </tr>
                                     </thead>
@@ -100,28 +99,28 @@
                             <div class="form-group">
                                 <label class="form-label">Harga Pokok</label>
                                 <div class="form-control-wrap">
-                                    <input type="text" class="form-control number" name="cost_price" id="cost_price" required>
+                                    <input type="text" class="form-control format-number" name="cost_price" id="cost_price" required>
                                 </div>
                             </div>
 
                             <div class="form-group">
                                 <label class="form-label">Harga Jual</label>
                                 <div class="form-control-wrap">
-                                    <input type="text" class="form-control number" name="sell_price" id="sell_price" required>
+                                    <input type="text" class="form-control format-number" name="sell_price" id="sell_price" required>
                                 </div>
                             </div>
 
                             <div class="form-group">
                                 <label class="form-label">Harga Member Retail</label>
                                 <div class="form-control-wrap">
-                                    <input type="text" class="form-control number" name="retail_member_price" id="retail_member_price" required>
+                                    <input type="text" class="form-control format-number" name="retail_member_price" id="retail_member_price" required>
                                 </div>
                             </div>
 
                             <div class="form-group">
                                 <label class="form-label">Stock</label>
                                 <div class="form-control-wrap">
-                                    <input type="text" class="form-control number" name="stock" id="stock" value="0" readonly>
+                                    <input type="text" class="form-control format-number" name="stock" id="stock" value="0" readonly>
                                 </div>
                             </div>
                         </div>
@@ -154,7 +153,7 @@
                             <div class="form-group">
                                 <label class="form-label">Qty 1</label>
                                 <div class="form-control-wrap">
-                                    <input type="text" class="form-control number text-end" name="first_quantity" id="first_quantity" required>
+                                    <input type="text" class="form-control format-number text-end" name="first_quantity" id="first_quantity" required>
                                 </div>
                             </div>
                         </div>
@@ -162,7 +161,7 @@
                             <div class="form-group">
                                     <label class="form-label">Qty 2</label>
                                     <div class="form-control-wrap">
-                                        <input type="text" class="form-control number text-end" name="last_quantity" id="last_quantity" required>
+                                        <input type="text" class="form-control format-number text-end" name="last_quantity" id="last_quantity" required>
                                     </div>
                                 </div>
                             </div>
@@ -170,7 +169,7 @@
                             <div class="form-group">
                                 <label class="form-label">Harga</label>
                                 <div class="form-control-wrap">
-                                    <input type="text" class="form-control number text-end" name="price" id="price" required>
+                                    <input type="text" class="form-control format-number text-end" name="price" id="price" required>
                                 </div>
                             </div>
                         </div>

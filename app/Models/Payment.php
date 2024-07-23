@@ -13,7 +13,9 @@ class Payment extends Model
 
     public function dataTablePaymentMethod()
     {
-        $query = DB::table('payment_method')->select('uid', 'name', 'account_number', 'status');
+        $query = DB::table('payment_method')
+                    ->where('status', 1)
+                    ->select('uid', 'name', 'account_number', 'status');
 
         $order = request('order')[0];
         if($order['column'] == '0') {

@@ -139,6 +139,7 @@ Route::group(['middleware' => ['web', 'auth']], function () {
                 Route::get('/edit-price/{uid}', 'edit_product_price');
                 Route::get('/delete-price/{uid}', 'delete_product_price');
                 Route::get('/get-price/{uid}', 'get_grosir_price');
+                Route::get('/get-retail-price/{uid}', 'get_retail_price');
             });
         });
 

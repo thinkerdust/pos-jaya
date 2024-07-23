@@ -15,7 +15,7 @@ class Supplier extends Model
 
     public function dataTableSupplier()
     {
-        $query = DB::table('supplier')->select('uid', 'name', 'phone', 'email', 'address', 'status');
+        $query = DB::table('supplier')->where('status', 1)->select('uid', 'name', 'phone', 'email', 'address', 'status');
 
         $order = request('order')[0];
         if($order['column'] == '0') {

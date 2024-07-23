@@ -15,7 +15,9 @@ class Customer extends Model
 
     public function dataTableCustomer()
     {
-        $query = DB::table('customer')->select('uid', 'name', 'organisation', 'phone', 'address', 'email', 'type', 'status');
+        $query = DB::table('customer')
+                    ->where('status', 1)
+                    ->select('uid', 'name', 'organisation', 'phone', 'address', 'email', 'type', 'status');
 
         $order = request('order')[0];
         if($order['column'] == '0') {

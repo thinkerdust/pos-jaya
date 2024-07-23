@@ -14,7 +14,6 @@ var table = NioApp.DataTable('#dt-table', {
         {data: 'email'},
         {data: 'address'},
         {data: 'type'},
-        {data: 'status'},
         {data: 'action', orderable: false, searchable: false},
     ],
     columnDefs: [

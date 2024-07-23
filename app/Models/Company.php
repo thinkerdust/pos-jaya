@@ -16,7 +16,9 @@ class Company extends Model
 
     public function dataTableCompany()
     {
-        $query = DB::table('company')->select('uid', 'name', 'address', 'phone', 'status');
+        $query = DB::table('company')
+                    ->where('status', 1)
+                    ->select('uid', 'name', 'address', 'phone', 'status');
 
         $user = Auth::user();
         if(!in_array($user->id_role, [1,2])) {

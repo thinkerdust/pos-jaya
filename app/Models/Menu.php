@@ -183,6 +183,7 @@ class Menu extends Model
             join access_role ta on u.id_role = ta.id_role 
             join menu m on ta.code_menu = m.code 
             where ta.flag_access != 9 and u.id = $user->id
+                and m.status = 1
             group by m.parent 
         ) sq on m.code = sq.code");
 
@@ -199,7 +200,8 @@ class Menu extends Model
             from users u 
             join access_role ta on u.id_role = ta.id_role 
             join menu m on ta.code_menu = m.code 
-            where ta.flag_access != 9 and u.id = $user->id and m.parent = '$row->code' ");
+            where ta.flag_access != 9 and u.id = $user->id and m.parent = '$row->code' 
+                and m.status = 1");
 
             foreach($detail_menu as $key) {
                 $menu .= '<li class="nk-menu-item">

@@ -35,7 +35,7 @@ class MasterCompanyController extends BaseController
                 $btn = '';
                 if(Gate::allows('crudAccess', 'MD1', $row)) {
                     if($row->status == 1) {
-                        $btn = '<a href="/company/add?uid='.$row->uid.'" class="btn btn-dim btn-outline-secondary btn-sm"><em class="icon ni ni-edit"></em><span>Edit</span></a>&nbsp;
+                        $btn = '<a href="/company/add?uid='.$row->uid.'" class="btn btn-dim btn-outline-secondary btn-sm"><em class="icon ni ni-edit"></em><span>Edit</span></a>
                                 <a class="btn btn-dim btn-outline-secondary btn-sm" onclick="hapus('.$row->uid.')"><em class="icon ni ni-trash"></em><span>Delete</span></a>
                             ';
                     }

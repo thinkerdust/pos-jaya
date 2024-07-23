@@ -29,7 +29,6 @@
                                             <th>Email</th> 
                                             <th>Alamat</th> 
                                             <th>Tipe</th> 
-                                            <th>Status</th> 
                                             <th>Action</th> 
                                         </tr>
                                     </thead>

@@ -15,7 +15,7 @@ class Unit extends Model
 
     public function dataTableUnit()
     {
-        $query = DB::table('unit')->select('uid', 'name', 'status');
+        $query = DB::table('unit')->where('status', 1)->select('uid', 'name', 'status');
 
         $order = request('order')[0];
         if($order['column'] == '0') {

@@ -24,7 +24,6 @@
                                         <tr>
                                             <th>No</th>
                                             <th>Nama</th> 
-                                            <th>Status</th> 
                                             <th>Action</th> 
                                         </tr>
                                     </thead>

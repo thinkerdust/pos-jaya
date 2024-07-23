@@ -11,7 +11,6 @@ var table = NioApp.DataTable('#dt-table', {
         {data: 'name'},
         {data: 'phone'},
         {data: 'address'},
-        {data: 'status'},
         {data: 'action', orderable: false, searchable: false},
     ],
     columnDefs: [
@@ -20,22 +19,6 @@ var table = NioApp.DataTable('#dt-table', {
             orderable: false,
             render: function(data, type, full, meta) {
                 return limitString(full['address'], 50);
-            }
-        },
-        {
-            targets: -2,
-            orderable: false,
-            searchable: false,
-            render: function(data, type, full, meta) {
-                
-                var status = {
-                    0: {'title': 'Non-Aktif', 'class': ' bg-danger'},
-                    1: {'title': 'Aktif', 'class': ' bg-success'},
-                };
-                if (typeof status[full['status']] === 'undefined') {
-                    return data;
-                }
-                return '<span class="badge '+ status[full['status']].class +'">'+ status[full['status']].title +'</span>';
             }
         },
     ] 

@@ -9,27 +9,9 @@ var table = NioApp.DataTable('#dt-table', {
     columns: [
         {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false},
         {data: 'name'},
-        {data: 'status'},
         {data: 'action', orderable: false, searchable: false},
     ],
-    columnDefs: [
-        {
-            targets: -2,
-            orderable: false,
-            searchable: false,
-            render: function(data, type, full, meta) {
-                
-                var status = {
-                    0: {'title': 'Non-Aktif', 'class': ' bg-danger'},
-                    1: {'title': 'Aktif', 'class': ' bg-success'},
-                };
-                if (typeof status[full['status']] === 'undefined') {
-                    return data;
-                }
-                return '<span class="badge '+ status[full['status']].class +'">'+ status[full['status']].title +'</span>';
-            }
-        },
-    ] 
+    columnDefs: [] 
 });
 
 function hapus(uid) {

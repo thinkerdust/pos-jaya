@@ -15,30 +15,12 @@ var table = NioApp.DataTable('#dt-table', {
         {data: 'sell_price', name: 'p.sell_price', render: $.fn.dataTable.render.number( ',', '.', 0, 'Rp. ' )},
         {data: 'retail_member_price', name: 'p.retail_member_price', render: $.fn.dataTable.render.number( ',', '.', 0, 'Rp. ' )},
         {data: 'stock', name: 'p.stock', render: $.fn.dataTable.render.number( ',', '.', 0)},
-        {data: 'status'},
         {data: 'action', orderable: false, searchable: false},
     ],
-    columnDefs: [
-        {
-            targets: -2,
-            orderable: false,
-            searchable: false,
-            render: function(data, type, full, meta) {
-                
-                var status = {
-                    0: {'title': 'Non-Aktif', 'class': ' bg-danger'},
-                    1: {'title': 'Aktif', 'class': ' bg-success'},
-                };
-                if (typeof status[full['status']] === 'undefined') {
-                    return data;
-                }
-                return '<span class="badge '+ status[full['status']].class +'">'+ status[full['status']].title +'</span>';
-            }
-        },
-    ] 
+    columnDefs: [] 
 });
 
-$('.number').on('keyup', (evt) => {
+$('.format-number').on('keyup', (evt) => {
     keyUpThousandView(evt)
 })
 
@@ -403,4 +385,32 @@ $('#btn-submit-category').click(function(e) {
             NioApp.Toast('Error while fetching data', 'error', {position: 'top-right'});
         }
     })
+})
+
+$('#first_quantity').keyup(function() {
+    let qty = $(this).val();
+    qty = qty.replaceAll('.', '');
+    qty = parseInt(qty);
+    let uid_product = $('#uid_product').val();
+
+    if(qty >= 100){
+        $.ajax({
+            url: '/product/get-retail-price/'+uid_product,
+            dataType: 'json',
+            success: function(response) {
+                if(response.status){
+                    $('#price').val(thousandView(response.data.retail_member_price));
+                }else{
+                    $('#price').val(0);
+                }
+            },
+            error: function(error) {
+                $('#price').val(0);
+                console.log(error);
+                NioApp.Toast('Error while fetching data', 'error', {position: 'top-right'});
+            }
+        })
+    }else{
+        $('#price').val(0);
+    }
 })

@@ -15,7 +15,7 @@ class ProductCategories extends Model
 
     public function dataTableProductCategories()
     {
-        $query = DB::table('product_categories')->select('uid', 'name', 'status');
+        $query = DB::table('product_categories')->where('status', 1)->select('uid', 'name', 'status');
 
         $order = request('order')[0];
         if($order['column'] == '0') {

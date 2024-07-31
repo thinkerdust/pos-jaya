@@ -58,7 +58,7 @@ function integers($angka)
 
         #table td,
         #table th {
-            border: 1px solid #ddd;
+            border: 1px solid #333;
             padding: 8px;
         }
 

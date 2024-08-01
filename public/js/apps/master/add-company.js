@@ -20,6 +20,8 @@ $(document).ready(function() {
                     $('#name').val(data.name);
                     $('#phone').val(data.phone);
                     $('#address').val(data.address);
+                    $('#account_number').val(data.account_number);
+                    $('#account_name').val(data.account_name);
                 }
             },
             error: function(error) {

@@ -23,6 +23,7 @@
                                     <thead>
                                         <tr>
                                             <th>No</th>
+                                            <th>Kode</th> 
                                             <th>Nama</th> 
                                             <th>Kategori</th>
                                             <th>Satuan</th>
@@ -60,6 +61,12 @@
                     <input type="hidden" name="uid" id="uid">
                     <div class="row">
                         <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">Kode</label>
+                                <div class="form-control-wrap">
+                                    <input type="text" class="form-control" name="kode" id="kode" required>
+                                </div>
+                            </div>
                             <div class="form-group">
                                 <label class="form-label">Nama</label>
                                 <div class="form-control-wrap">

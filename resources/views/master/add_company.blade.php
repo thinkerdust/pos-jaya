@@ -43,6 +43,20 @@
                                                 </div>
                                             </div>
 
+                                            <div class="form-group">
+                                                <label class="form-label">Atas Nama Rekening</label>
+                                                <div class="form-control-wrap">
+                                                    <input type="text" class="form-control" id="account_name" name="account_name">
+                                                </div>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label class="form-label">Nomor Rekening</label>
+                                                <div class="form-control-wrap">
+                                                    <input type="text" class="form-control" id="account_number" name="account_number">
+                                                </div>
+                                            </div>
+
                                         </div>
                                         <div class="col-sm-6">
                                             <label class="form-label">Foto Logo</label>

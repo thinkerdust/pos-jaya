@@ -53,6 +53,7 @@ class MasterProductController extends BaseController
         $uid = $request->input('uid');
 
         $validator = Validator::make($request->all(), [
+            'kode' => 'required',
             'name' => 'required',
             'product_categories' => 'required',
             'unit' => 'required',
@@ -73,6 +74,7 @@ class MasterProductController extends BaseController
         $retail_member_price = Str::replace('.', '', $request->retail_member_price);
 
         $data = [
+            'kode' => $request->kode,
             'name' => $request->name,
             'uid_product_categories' => $request->product_categories,
             'uid_unit' => $request->unit,
@@ -269,6 +271,7 @@ class MasterProductController extends BaseController
         $uid = $request->input('uid');
 
         $validator = Validator::make($request->all(), [
+            'kode' => 'required',
             'name' => 'required',
             'product_categories' => 'required',
             'unit' => 'required',
@@ -290,6 +293,7 @@ class MasterProductController extends BaseController
         $retail_member_price = Str::replace('.', '', $request->retail_member_price);
 
         $data = [
+            'kode' => $request->kode,
             'name' => $request->name,
             'uid_product_categories' => $request->product_categories,
             'uid_unit' => $request->unit,

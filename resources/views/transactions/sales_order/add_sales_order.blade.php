@@ -138,7 +138,7 @@
                                         </div>
                                         <hr class="preview-hr">
                                         <div class="row gy-4">
-                                            <div class="col-md-4">
+                                            <div class="col-md-3">
                                                 <div class="form-group">
                                                     <label class="form-label">Produk</label>
                                                     <div class="form-control-wrap">
@@ -174,10 +174,20 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="col-md-2 d-flex align-items-end">
+                                            <div class="col-md-2">
+                                                <div class="form-group">
+                                                    <label class="form-label">Notes</label>
+                                                    <div class="form-control-wrap">
+                                                        <input type="text" class="form-control" id="notes" name="notes"
+                                                            placeholder="notes">
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-1 d-flex align-items-end">
                                                 <div class="form-group">
                                                     <button class="btn btn-dim btn-outline-secondary" id="add_product"
-                                                        type="button">Tambah</button>
+                                                        type="button"><i class="icon ni ni-plus"></i></button>
                                                 </div>
                                             </div>
                                         </div>
@@ -191,6 +201,7 @@
                                                         <th class="text-center">Qty</th>
                                                         <th class="text-center">Harga</th>
                                                         <th class="text-center">Subtotal</th>
+                                                        <th class="text-center">Notes</th>
                                                         <th class="text-center">Action</th>
                                                     </tr>
                                                 </thead>

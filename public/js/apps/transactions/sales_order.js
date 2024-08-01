@@ -65,6 +65,7 @@ $(document).ready(function() {
                             let subtotal = detail[i].price * detail[i].qty;
                             let subtotal_formated =  new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(subtotal);
                             let price_formated =  new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(detail[i].price);
+                            let notes = detail[i].note ?? "";
                             html += '<tr>';
                             html += '<td><input type="hidden" name="details[products][]" value="'+detail[i].uid_product+'"/>'+detail[i].product_name+'</td>';
                             html += '<td><input type="hidden" name="details[units][]" value="'+detail[i].uid_unit+'"/>'+detail[i].unit_name+'</td>';
@@ -72,8 +73,9 @@ $(document).ready(function() {
                             html += '<td class="text-end"><input type="hidden" name="details[stock][]" value="'+detail[i].qty+'"/>'+detail[i].qty+'</td>';
                             html += '<td class="text-end"><input type="hidden" name="details[prices][]" value="'+detail[i].price+'"/>'+price_formated+'</td>';
                             html += '<td class="text-end"><input class="subtotal" type="hidden" name="details[subtotal][]" value="'+subtotal+'"/>'+subtotal_formated+'</td>';
+                            html += '<td class="text-end"><input class="notes" type="hidden" name="details[notes][]" value="'+notes+'"/>'+notes+'</td>';
                             html += '<td class="text-center">';
-                            html += '<a class="btn btn-sm btn-dim btn-outline-secondary" type="button" onclick="delMaterial(this)"><em class="icon ni ni-trash"></em>Delete</a>';
+                            html += '<a class="btn btn-sm btn-dim btn-outline-secondary" type="button" onclick="delMaterial(this)"><em class="icon ni ni-trash"></em></a>';
                             html += '</td></tr>';  
                             grand_total += subtotal;
 
@@ -400,6 +402,7 @@ $("#add_product").click(function(){
     var uid_material = $("#product").val();
     var price = originView($("#price").val());
     var qty = $("#qty").val();
+    var notes = $("#notes").val();
 
     console.log(uid_material);
     //validate
@@ -445,8 +448,9 @@ $("#add_product").click(function(){
                 html += '<td class="text-center"><input type="hidden" name="details[qty][]" value="'+qty+'"/>'+qty+'</td>';
                 html += '<td class="text-center"><input type="hidden" name="details[prices][]" value="'+price+'"/>'+price_formated+'</td>';
                 html += '<td class="text-center"><input class="subtotal" type="hidden" name="details[subtotal][]" value="'+subtotal+'"/>'+subtotal_formated+'</td>';
+                html += '<td class="text-center"><input class="notes" type="hidden" name="details[notes][]" value="'+notes+'"/>'+notes+'</td>';
                 html += '<td class="text-center">';
-                html += '<a class="btn btn-sm btn-dim btn-outline-secondary" type="button" onclick="delMaterial(this)"><em class="icon ni ni-trash"></em>Delete</a>';
+                html += '<a class="btn btn-sm btn-dim btn-outline-secondary" type="button" onclick="delMaterial(this)"><em class="icon ni ni-trash"></em></a>';
                 html += '</td></tr>';  
 
                 $("#tbody_product").find("#nodata").closest("tr").remove();
@@ -458,6 +462,7 @@ $("#add_product").click(function(){
                 $("#price").val(0);
                 $("#unit").val('').trigger('change');
                 $("#qty").val(0);
+                $("#notes").val('');
 
                 //set grand total
                 grand_total += subtotal;

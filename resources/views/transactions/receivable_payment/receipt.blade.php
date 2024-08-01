@@ -47,7 +47,9 @@ function integers($angka)
 
         #footer {
             position: fixed;
-            bottom: 0;
+            bottom: -80px;
+            left: 0px;
+            right: 0px;
             width: 100%;
         }
 
@@ -84,7 +86,7 @@ function integers($angka)
         }
 
         @page {
-            margin: 20px;
+            margin: 20px 20px 100px 20px;
         }
     </style>
 
@@ -149,21 +151,28 @@ function integers($angka)
             </tr>
         </thead>
         <tbody>
-            @php $no = 1; @endphp
+            @php $no = 1;
+            $grand_total = 0; @endphp
             @foreach ($data['detail'] as $d)
-                @php 
-                    $subtotal = $d->qty * $d->price;
-                @endphp
+                        @php 
+                                            $subtotal = $d->qty * $d->price;
+                            $grand_total += $subtotal;
+                        @endphp
 
-                <tr>
-                    <td scope="row">{{ $no++ }}</td>
-                    <td>{{$d->product_name}}</td>
-                    <td align="right">{{integers($d->price)}}</td>
-                    <td align="center">-</td>
-                    <td align="right">{{integers($d->qty)}}</td>
-                    <td align="left"></td>
-                    <td align="right">{{integers($subtotal)}}</td>
-                </tr>
+                        <tr>
+                            <td scope="row">{{ $no++ }}</td>
+                            <td>{{$d->product_name}}</td>
+                            <td align="right">{{integers($d->price)}}</td>
+                            <td align="center">-</td>
+                            <td align="right">{{integers($d->qty)}}</td>
+                            <td align="left"></td>
+                            <td align="right">{{integers($subtotal)}}</td>
+                        </tr>
+                        @if ($d->note != "")
+                            <tr>
+                                <td colspan="7">{{ "Ket : " . $d->note }}</td>
+                            </tr>
+                        @endif
             @endforeach
         </tbody>
     </table>
@@ -171,19 +180,23 @@ function integers($angka)
         <tr>
             <td style="width:60%"></td>
             <td align="right">Subtotal</td>
-            <td align="right">{{ integers($subtotal)}}</td>
+            <td align="right">{{ integers($grand_total)}}</td>
         </tr>
-        <tr>
-            <td style="width:60%"></td>
-            <td align="right">Discount</td>
-            <td align="right">{{ integers($data['header']->discount)}}</td>
-        </tr>
-        <tr>
-            <td style="width:60%"></td>
-            <td align="right">Ppn {{$data['header']->tax_rate != 0 ? "(" . $data['header']->tax_rate . "%)" : ""}}
-            </td>
-            <td align="right">{{integers($data['header']->tax_value)}}</td>
-        </tr>
+        @if ($data['header']->discount != 0)
+            <tr>
+                <td style="width:60%"></td>
+                <td align="right">Discount</td>
+                <td align="right">{{ integers($data['header']->discount)}}</td>
+            </tr>
+        @endif
+        @if ($data['header']->tax_rate != 0)
+            <tr>
+                <td style="width:60%"></td>
+                <td align="right">Ppn {{$data['header']->tax_rate != 0 ? "(" . $data['header']->tax_rate . "%)" : ""}}
+                </td>
+                <td align="right">{{integers($data['header']->tax_value)}}</td>
+            </tr>
+        @endif
 
         <tr>
             <td style="width:60%;"></td>
@@ -203,7 +216,8 @@ function integers($angka)
         <table style="width:100%">
             <tr>
                 <td>
-                    <p style="font-size:11px;font-style:italic;color:#555">Rek BCA 0152830031 <br> A/n Martinus Budi
+                    <p style="font-size:11px;font-style:italic;font-weight:bold">Rek
+                        {{$data['company']->account_number}} <br>{{'a/n ' . $data['company']->account_name}}
                     </p>
                 </td>
                 <td style="width:60%;border:1px solid #555;text-align:center" rowspan="2">Pembayaran ke

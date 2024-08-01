@@ -39,7 +39,7 @@ class Product extends Model
 
     public function listDataProduct($q)
     {
-        $data = DB::table('product')->where([['status', 1], ['flag', 1]])->select('uid', 'name');
+        $data = DB::table('product')->where('status', 1)->select('uid', 'name');
         if($q) {
             $data = $data->where('name', 'like', '%'.$q.'%');
         }

@@ -78,6 +78,8 @@ class MasterCompanyController extends BaseController
                 'name' => $request->name,
                 'phone' => $request->phone,
                 'address' => $request->address,
+                'account_number' => $request->account_number,
+                'account_name' => $request->account_name
             ];
 
             if(!empty($uid)) {

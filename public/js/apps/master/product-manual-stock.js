@@ -8,6 +8,7 @@ var table = NioApp.DataTable('#dt-table', {
     },
     columns: [
         {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false},
+        {data: 'kode', name: 'p.kode'},
         {data: 'name', name: 'p.name'},
         {data: 'name_categories', name: 'pc.name'},
         {data: 'name_unit', name: 'u.name'},
@@ -20,7 +21,7 @@ var table = NioApp.DataTable('#dt-table', {
     columnDefs: [] 
 });
 
-$('.number').on('keyup', (evt) => {
+$('.format-number').on('keyup', (evt) => {
     keyUpThousandView(evt)
 })
 
@@ -172,6 +173,7 @@ function edit(uid) {
                 $('#modalForm').modal('show');
                 let data = response.data;
                 $('#uid').val(uid);
+                $('#kode').val(data.kode);
                 $('#name').val(data.name);
                 $('#description').val(data.description);
                 $('#cost_price').val(thousandView(data.cost_price));

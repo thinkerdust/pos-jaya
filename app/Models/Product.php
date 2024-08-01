@@ -20,7 +20,7 @@ class Product extends Model
                     ->join('product_categories as pc', 'pc.uid', '=', 'p.uid_product_categories')
                     ->join('unit as u', 'u.uid', '=', 'p.uid_unit')
                     ->where([['p.status', 1], ['p.flag', 1], ['pc.status', 1], ['u.status', 1]])
-                    ->select('p.uid', 'p.name', 'p.cost_price', 'p.sell_price', 'p.retail_member_price', 'p.stock', 'p.status', 'pc.name as name_categories', 'u.name as name_unit');
+                    ->select('p.uid', 'p.kode', 'p.name', 'p.cost_price', 'p.sell_price', 'p.retail_member_price', 'p.stock', 'p.status', 'pc.name as name_categories', 'u.name as name_unit');
 
         $user = Auth::user();
         if($user->id_role == 2) {
@@ -39,9 +39,9 @@ class Product extends Model
 
     public function listDataProduct($q)
     {
-        $data = DB::table('product')->where('status', 1)->select('uid', 'name');
+        $data = DB::table('product')->where('status', 1)->selectRaw("uid, CONCAT(kode, ' - ', name) as name");
         if($q) {
-            $data = $data->where('name', 'like', '%'.$q.'%');
+            $data = $data->where('name', 'like', '%'.$q.'%')->orWhere('kode', 'like', '%'.$q.'%');
         }
         return $data->get();
     }
@@ -52,7 +52,7 @@ class Product extends Model
                     ->join('product_categories as pc', 'pc.uid', '=', 'p.uid_product_categories')
                     ->join('unit as u', 'u.uid', '=', 'p.uid_unit')
                     ->where('p.uid', $uid)
-                    ->select('p.uid', 'p.name', 'p.uid_product_categories', 'p.uid_unit', 'p.cost_price', 'p.sell_price', 'p.retail_member_price', 'p.stock', 'p.status', 'p.description', 'pc.name as name_categories', 'u.name as name_unit')
+                    ->select('p.uid', 'p.kode', 'p.name', 'p.uid_product_categories', 'p.uid_unit', 'p.cost_price', 'p.sell_price', 'p.retail_member_price', 'p.stock', 'p.status', 'p.description', 'pc.name as name_categories', 'u.name as name_unit')
                     ->first();
         
         return $data;
@@ -88,7 +88,7 @@ class Product extends Model
                     ->join('product_categories as pc', 'pc.uid', '=', 'p.uid_product_categories')
                     ->join('unit as u', 'u.uid', '=', 'p.uid_unit')
                     ->where([['p.status', 1], ['p.flag', 2], ['pc.status', 1], ['u.status', 1]])
-                    ->select('p.uid', 'p.name', 'p.cost_price', 'p.sell_price', 'p.retail_member_price', 'p.stock', 'p.status', 'pc.name as name_categories', 'u.name as name_unit');
+                    ->select('p.uid', 'p.kode', 'p.name', 'p.cost_price', 'p.sell_price', 'p.retail_member_price', 'p.stock', 'p.status', 'pc.name as name_categories', 'u.name as name_unit');
 
         $order = request('order')[0];
         if($order['column'] == '0') {

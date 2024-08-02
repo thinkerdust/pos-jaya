@@ -342,13 +342,18 @@ class SalesController extends BaseController
             $uid_product = $request->details['products'][$i];
             $qty = $request->details['qty'][$i];
             $get_stock = DB::table('product')->where('uid', $uid_product)->where('uid_company', $user->uid_company)->first();
-            if ($get_stock->stock < $qty) {
-                $low_stock = array();
-                $low_stock['product'] = $uid_product;
-                $low_stock['stock'] = $get_stock->stock;
-                $data[] = $low_stock;
+            if (!empty($get_stock)) {
+                if ($get_stock->stock < $qty) {
+                    $low_stock = array();
+                    $low_stock['product'] = $uid_product;
+                    $low_stock['stock'] = $get_stock->stock;
+                    $data[] = $low_stock;
+                    $response_status = false;
+                    $response_message = "Out of Stock";
+                }
+            } else {
                 $response_status = false;
-                $response_message = "Out of Stock";
+                $response_message = "Product not Found";
             }
 
         }

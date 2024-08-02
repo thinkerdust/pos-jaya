@@ -46,7 +46,7 @@
                                                     <label class="form-label">Alamat</label>
                                                     <div class="form-control-wrap">
                                                         <textarea class="form-control" id="address" name="address"
-                                                            rows="5" required></textarea>
+                                                            rows="5"></textarea>
                                                     </div>
                                                 </div>
 

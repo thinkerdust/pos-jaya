@@ -291,6 +291,7 @@ class MasterProductController extends BaseController
         $cost_price = Str::replace('.', '', $request->cost_price);
         $sell_price = Str::replace('.', '', $request->sell_price);
         $retail_member_price = Str::replace('.', '', $request->retail_member_price);
+        $stock = Str::replace('.', '', $request->stock);
 
         $data = [
             'kode' => $request->kode,
@@ -301,7 +302,7 @@ class MasterProductController extends BaseController
             'sell_price' => $sell_price,
             'retail_member_price' => $retail_member_price,
             'description' => $request->description,
-            'stock' => $request->stock,
+            'stock' => $stock,
             'flag' => 2,
             'uid_company' => $user->uid_company
         ];

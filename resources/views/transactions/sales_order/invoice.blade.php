@@ -61,7 +61,7 @@ function integers($angka)
         #table td,
         #table th {
             border: 1px solid #333;
-            padding: 8px;
+            padding: 5px;
         }
 
         /* #table tr:nth-child(even) {
@@ -69,8 +69,8 @@ function integers($angka)
         } */
 
         #table th {
-            padding-top: 12px;
-            padding-bottom: 12px;
+            padding-top: 5px;
+            padding-bottom: 5px;
             text-align: left;
         }
 
@@ -156,7 +156,7 @@ function integers($angka)
             @endphp
             @foreach ($data['detail'] as $d)
                         @php 
-                                                                                                                                                                                                    $subtotal = $d->qty * $d->price;
+                                                                                                                                                                                                                            $subtotal = $d->qty * $d->price;
                             $grand_total += $subtotal;
                         @endphp
 

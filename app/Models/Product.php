@@ -42,7 +42,10 @@ class Product extends Model
         $user = Auth::user();
         $data = DB::table('product')->where([['status', 1], ['uid_company', $user->uid_company]])->selectRaw("uid, CONCAT(kode, ' - ', name) as name");
         if($q) {
-            $data = $data->where('name', 'like', '%'.$q.'%')->orWhere('kode', 'like', '%'.$q.'%');
+            $data = $data->where(function ($query) use ($q) {
+                        $query->where('name', 'like', '%'.$q.'%')
+                            ->orWhere('kode', 'like', '%'.$q.'%');
+                    });
         }
         return $data->get();
     }

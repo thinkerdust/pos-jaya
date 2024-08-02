@@ -470,7 +470,7 @@ $("#add_product").click(function(){
                 uid_unit = data.uid_unit;
                 unit = data.name_unit;
 
-                if (data.stock < qty) {
+                if (parseFloat(data.stock) < parseFloat(qty)) {
                     NioApp.Toast('Stock produk '+material+' tidak mencukupi', 'warning', {position: 'top-right'});
                     class_stock = "table-danger";
                 }

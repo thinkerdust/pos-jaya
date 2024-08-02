@@ -354,6 +354,7 @@ class SalesController extends BaseController
             } else {
                 $response_status = false;
                 $response_message = "Product not Found";
+                $data[] = $uid_product;
             }
 
         }

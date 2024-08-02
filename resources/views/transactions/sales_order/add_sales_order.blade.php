@@ -116,6 +116,46 @@
                                                         </div>
                                                     </div>
                                                 </div>
+                                                <div class="form-group">
+                                                    <label class="form-label">Laminating</label>
+                                                    <div class="row">
+                                                        <div class="form-control-wrap col-md-12">
+                                                            <input type="text" class="form-control formated_number" id="laminating"
+                                                                name="laminating" value="0" required>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="form-label">Packing</label>
+                                                    <div class="row">
+                                                        <div class="form-control-wrap col-md-12">
+                                                            <input type="text" class="form-control formated_number" id="packing"
+                                                                name="packing" value="0" required>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label class="form-label">Proofing</label>
+                                                    <div class="row">
+                                                        <div class="form-control-wrap col-md-12">
+                                                            <input type="text" class="form-control formated_number" id="proofing"
+                                                                name="proofing" value="0" required>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label class="form-label">Cutting</label>
+                                                    <div class="row">
+                                                        <div class="form-control-wrap col-md-12">
+                                                            <input type="text" class="form-control formated_number" id="cutting"
+                                                                name="cutting" value="0" required>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+
 
                                                 <!-- <div class="form-group">
                                                     <label class="form-label">

@@ -155,7 +155,7 @@ function integers($angka)
             $grand_total = 0; @endphp
             @foreach ($data['detail'] as $d)
                         @php 
-                                            $subtotal = $d->qty * $d->price;
+                                                                    $subtotal = $d->qty * $d->price;
                             $grand_total += $subtotal;
                         @endphp
 
@@ -195,6 +195,34 @@ function integers($angka)
                 <td align="right">Ppn {{$data['header']->tax_rate != 0 ? "(" . $data['header']->tax_rate . "%)" : ""}}
                 </td>
                 <td align="right">{{integers($data['header']->tax_value)}}</td>
+            </tr>
+        @endif
+        @if ($data['header']->laminating != 0)
+            <tr>
+                <td style="width:60%"></td>
+                <td align="right">Laminasi</td>
+                <td align="right">{{ integers($data['header']->laminating)}}</td>
+            </tr>
+        @endif
+        @if ($data['header']->packing != 0)
+            <tr>
+                <td style="width:60%"></td>
+                <td align="right">Packing</td>
+                <td align="right">{{ integers($data['header']->packing)}}</td>
+            </tr>
+        @endif
+        @if ($data['header']->proofing != 0)
+            <tr>
+                <td style="width:60%"></td>
+                <td align="right">Proofing</td>
+                <td align="right">{{ integers($data['header']->proofing)}}</td>
+            </tr>
+        @endif
+        @if ($data['header']->cutting != 0)
+            <tr>
+                <td style="width:60%"></td>
+                <td align="right">Cutting</td>
+                <td align="right">{{ integers($data['header']->cutting)}}</td>
             </tr>
         @endif
 

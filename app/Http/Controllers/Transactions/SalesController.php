@@ -178,7 +178,7 @@ class SalesController extends BaseController
                     'uid_unit' => $request->details['units'][$i],
                     'price' => $request->details['prices'][$i],
                     'discount' => 0,
-                    'note' => '',
+                    'note' => $request->details['notes'][$i],
                     'insert_at' => Carbon::now(),
                     'insert_by' => $user->id
                 ]);
@@ -209,9 +209,12 @@ class SalesController extends BaseController
             $disc = isset($request->disc) ? $this->origin_number($request->disc) : 0;
             $tax_rate = isset($request->ppn) ? $request->ppn : 0;
             $tax_value = isset($request->ppn_value) ? $this->origin_number($request->ppn_value) : 0;
-
+            $laminating = $this->origin_number($request->laminating);
+            $proofing = $this->origin_number($request->proofing);
+            $packing = $this->origin_number($request->packing);
+            $cutting = $this->origin_number($request->cutting);
             // dd($tax_value);
-            $grand_total = $subtotal - $disc + $tax_value;
+            $grand_total = $subtotal - $disc + $tax_value + $laminating + $packing + $proofing + $cutting;
             $data = [
                 'invoice_number' => $no_inv,
                 'uid_customer' => $request->customer,
@@ -226,7 +229,11 @@ class SalesController extends BaseController
                 'tax_value' => $tax_value,
                 'grand_total' => $grand_total,
                 'pending' => $request->pending,
-                'status' => 1
+                'status' => 1,
+                'laminating' => $laminating,
+                'proofing' => $proofing,
+                'packing' => $packing,
+                'cutting' => $cutting,
             ];
 
             if (!empty($uid)) {
@@ -258,8 +265,8 @@ class SalesController extends BaseController
     public function edit_sales_order(Request $request)
     {
         $uid = $request->uid;
-        $data['header'] = db::table('sales_orders as so')->join('customer as cus', 'cus.uid', 'so.uid_customer')->select('so.uid', 'so.invoice_number', 'so.uid_customer', 'so.transaction_date', 'cus.name', 'so.discount', 'so.disc_rate', 'so.tax_rate', 'so.tax_value', 'so.grand_total', 'so.collection_date', 'so.priority')->where('so.uid', $uid)->first();
-        $data['detail'] = db::table('sales_order_details as pd')->join('product as p', 'p.uid', 'pd.uid_product')->join('unit as u', 'u.uid', 'pd.uid_unit')->select('pd.invoice_number', 'pd.uid_product', 'p.name as product_name', 'pd.uid_unit', 'u.name as unit_name', 'pd.qty', 'pd.price', 'p.stock')->where('pd.invoice_number', $data['header']->invoice_number)->get()->toArray();
+        $data['header'] = db::table('sales_orders as so')->join('customer as cus', 'cus.uid', 'so.uid_customer')->select('so.uid', 'so.invoice_number', 'so.uid_customer', 'so.transaction_date', 'cus.name', 'so.discount', 'so.disc_rate', 'so.tax_rate', 'so.tax_value', 'so.grand_total', 'so.collection_date', 'so.priority', 'so.laminating', 'so.packing', 'so.proofing', 'so.cutting')->where('so.uid', $uid)->first();
+        $data['detail'] = db::table('sales_order_details as pd')->join('product as p', 'p.uid', 'pd.uid_product')->join('unit as u', 'u.uid', 'pd.uid_unit')->select('pd.invoice_number', 'pd.uid_product', 'p.name as product_name', 'pd.uid_unit', 'u.name as unit_name', 'pd.qty', 'pd.price', 'p.stock', 'pd.note')->where('pd.invoice_number', $data['header']->invoice_number)->get()->toArray();
         return $this->ajaxResponse(true, 'Success!', $data);
     }
 
@@ -302,8 +309,8 @@ class SalesController extends BaseController
     public function print_pdf(Request $request)
     {
         $uid = $request->uid;
-        $data['header'] = db::table('sales_orders as so')->join('customer as cus', 'cus.uid', 'so.uid_customer')->select('so.uid', 'so.invoice_number', 'so.uid_customer', 'so.transaction_date', 'cus.name', 'cus.phone', 'so.discount', 'so.disc_rate', 'so.tax_rate', 'so.tax_value', 'so.grand_total', 'so.collection_date', 'so.priority', 'so.uid_company')->where('so.uid', $uid)->first();
-        $data['detail'] = db::table('sales_order_details as pd')->join('product as p', 'p.uid', 'pd.uid_product')->join('unit as u', 'u.uid', 'pd.uid_unit')->select('pd.invoice_number', 'pd.uid_product', 'p.name as product_name', 'pd.uid_unit', 'u.name as unit_name', 'pd.qty', 'pd.price')->where('pd.invoice_number', $data['header']->invoice_number)->get()->toArray();
+        $data['header'] = db::table('sales_orders as so')->join('customer as cus', 'cus.uid', 'so.uid_customer')->select('so.uid', 'so.invoice_number', 'so.uid_customer', 'so.transaction_date', 'cus.name', 'cus.phone', 'so.discount', 'so.disc_rate', 'so.tax_rate', 'so.tax_value', 'so.grand_total', 'so.collection_date', 'so.priority', 'so.uid_company', 'so.laminating', 'so.packing', 'so.proofing', 'so.cutting')->where('so.uid', $uid)->first();
+        $data['detail'] = db::table('sales_order_details as pd')->join('product as p', 'p.uid', 'pd.uid_product')->join('unit as u', 'u.uid', 'pd.uid_unit')->select('pd.invoice_number', 'pd.uid_product', 'p.name as product_name', 'pd.uid_unit', 'u.name as unit_name', 'pd.qty', 'pd.price', 'pd.note')->where('pd.invoice_number', $data['header']->invoice_number)->get()->toArray();
         $data['receipt'] = DB::table('receivable_payments as rp')->where('rp.invoice_number', $data['header']->invoice_number)->where('status', 1)->sum('amount');
         $data['company'] = DB::table('company')->where('uid', $data['header']->uid_company)->first();
 

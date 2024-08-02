@@ -116,6 +116,46 @@
                                                         </div>
                                                     </div>
                                                 </div>
+                                                <div class="form-group">
+                                                    <label class="form-label">Laminating</label>
+                                                    <div class="row">
+                                                        <div class="form-control-wrap col-md-12">
+                                                            <input type="text" class="form-control formated_number" id="laminating"
+                                                                name="laminating" value="0" required>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="form-label">Packing</label>
+                                                    <div class="row">
+                                                        <div class="form-control-wrap col-md-12">
+                                                            <input type="text" class="form-control formated_number" id="packing"
+                                                                name="packing" value="0" required>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label class="form-label">Proofing</label>
+                                                    <div class="row">
+                                                        <div class="form-control-wrap col-md-12">
+                                                            <input type="text" class="form-control formated_number" id="proofing"
+                                                                name="proofing" value="0" required>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label class="form-label">Cutting</label>
+                                                    <div class="row">
+                                                        <div class="form-control-wrap col-md-12">
+                                                            <input type="text" class="form-control formated_number" id="cutting"
+                                                                name="cutting" value="0" required>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+
 
                                                 <!-- <div class="form-group">
                                                     <label class="form-label">
@@ -138,7 +178,7 @@
                                         </div>
                                         <hr class="preview-hr">
                                         <div class="row gy-4">
-                                            <div class="col-md-4">
+                                            <div class="col-md-3">
                                                 <div class="form-group">
                                                     <label class="form-label">Produk</label>
                                                     <div class="form-control-wrap">
@@ -174,10 +214,20 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="col-md-2 d-flex align-items-end">
+                                            <div class="col-md-2">
+                                                <div class="form-group">
+                                                    <label class="form-label">Notes</label>
+                                                    <div class="form-control-wrap">
+                                                        <input type="text" class="form-control" id="notes" name="notes"
+                                                            placeholder="notes">
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-1 d-flex align-items-end">
                                                 <div class="form-group">
                                                     <button class="btn btn-dim btn-outline-secondary" id="add_product"
-                                                        type="button">Tambah</button>
+                                                        type="button"><i class="icon ni ni-plus"></i></button>
                                                 </div>
                                             </div>
                                         </div>
@@ -191,6 +241,7 @@
                                                         <th class="text-center">Qty</th>
                                                         <th class="text-center">Harga</th>
                                                         <th class="text-center">Subtotal</th>
+                                                        <th class="text-center">Notes</th>
                                                         <th class="text-center">Action</th>
                                                     </tr>
                                                 </thead>

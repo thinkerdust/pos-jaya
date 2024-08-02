@@ -1,6 +1,10 @@
 var grand_total = 0;
 var disc = 0;
 var ppn = 0;
+var laminating = 0;
+var packing = 0;
+var proofing = 0;
+var cutting = 0;
 var which;
 
 $(".submit").click(function () {
@@ -54,9 +58,17 @@ $(document).ready(function() {
                         $('#ppn_value').val(thousandView(header.tax_value));
                         $('#disc_global').val(header.disc_rate);
                         $('#ppn').val(header.tax_rate);
+                        $('#laminating').val(thousandView(header.laminating));
+                        $('#packing').val(thousandView(header.packing));
+                        $('#proofing').val(thousandView(header.proofing));
+                        $('#cutting').val(thousandView(header.cutting));
 
                         disc = header.discount;
                         ppn = header.tax_value;
+                        laminating = header.laminating;
+                        packing = header.packing;
+                        proofing = header.proofing;
+                        cutting = header.cutting;
                         
                         $("#customer").empty().append(`<option value="${header.uid_customer}">${header.name}</option>`).val(header.uid_customer).trigger('change');
 
@@ -65,6 +77,7 @@ $(document).ready(function() {
                             let subtotal = detail[i].price * detail[i].qty;
                             let subtotal_formated =  new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(subtotal);
                             let price_formated =  new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(detail[i].price);
+                            let notes = detail[i].note ?? "";
                             html += '<tr>';
                             html += '<td><input type="hidden" name="details[products][]" value="'+detail[i].uid_product+'"/>'+detail[i].product_name+'</td>';
                             html += '<td><input type="hidden" name="details[units][]" value="'+detail[i].uid_unit+'"/>'+detail[i].unit_name+'</td>';
@@ -72,8 +85,9 @@ $(document).ready(function() {
                             html += '<td class="text-end"><input type="hidden" name="details[stock][]" value="'+detail[i].qty+'"/>'+detail[i].qty+'</td>';
                             html += '<td class="text-end"><input type="hidden" name="details[prices][]" value="'+detail[i].price+'"/>'+price_formated+'</td>';
                             html += '<td class="text-end"><input class="subtotal" type="hidden" name="details[subtotal][]" value="'+subtotal+'"/>'+subtotal_formated+'</td>';
+                            html += '<td class="text-end"><input class="notes" type="hidden" name="details[notes][]" value="'+notes+'"/>'+notes+'</td>';
                             html += '<td class="text-center">';
-                            html += '<a class="btn btn-sm btn-dim btn-outline-secondary" type="button" onclick="delMaterial(this)"><em class="icon ni ni-trash"></em>Delete</a>';
+                            html += '<a class="btn btn-sm btn-dim btn-outline-secondary" type="button" onclick="delMaterial(this)"><em class="icon ni ni-trash"></em></a>';
                             html += '</td></tr>';  
                             grand_total += subtotal;
 
@@ -204,9 +218,31 @@ $("#ppn_value").change(function(){
     setGrandTotal();
 })
 
+$("#laminating").change(function(){
+    laminating = originView($(this).val());
+    setGrandTotal();
+})
+
+$("#packing").change(function(){
+    packing = originView($(this).val());
+    setGrandTotal();
+})
+
+$("#proofing").change(function(){
+    proofing = originView($(this).val());
+    setGrandTotal();
+})
+
+$("#cutting").change(function(){
+    cutting = originView($(this).val());
+    setGrandTotal();
+})
+
+
+
 
 function setGrandTotal(){
-    let grand_total_min_disc = grand_total - disc + parseFloat(ppn);
+    let grand_total_min_disc = grand_total - disc + parseFloat(ppn) + parseFloat(laminating) + parseFloat(proofing) + parseFloat(packing) + parseFloat(cutting);
     let total = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(grand_total_min_disc);
     console.log(total);
     $("#grand_total").html(total);
@@ -400,6 +436,7 @@ $("#add_product").click(function(){
     var uid_material = $("#product").val();
     var price = originView($("#price").val());
     var qty = $("#qty").val();
+    var notes = $("#notes").val();
 
     console.log(uid_material);
     //validate
@@ -445,8 +482,9 @@ $("#add_product").click(function(){
                 html += '<td class="text-center"><input type="hidden" name="details[qty][]" value="'+qty+'"/>'+qty+'</td>';
                 html += '<td class="text-center"><input type="hidden" name="details[prices][]" value="'+price+'"/>'+price_formated+'</td>';
                 html += '<td class="text-center"><input class="subtotal" type="hidden" name="details[subtotal][]" value="'+subtotal+'"/>'+subtotal_formated+'</td>';
+                html += '<td class="text-center"><input class="notes" type="hidden" name="details[notes][]" value="'+notes+'"/>'+notes+'</td>';
                 html += '<td class="text-center">';
-                html += '<a class="btn btn-sm btn-dim btn-outline-secondary" type="button" onclick="delMaterial(this)"><em class="icon ni ni-trash"></em>Delete</a>';
+                html += '<a class="btn btn-sm btn-dim btn-outline-secondary" type="button" onclick="delMaterial(this)"><em class="icon ni ni-trash"></em></a>';
                 html += '</td></tr>';  
 
                 $("#tbody_product").find("#nodata").closest("tr").remove();
@@ -458,6 +496,7 @@ $("#add_product").click(function(){
                 $("#price").val(0);
                 $("#unit").val('').trigger('change');
                 $("#qty").val(0);
+                $("#notes").val('');
 
                 //set grand total
                 grand_total += subtotal;

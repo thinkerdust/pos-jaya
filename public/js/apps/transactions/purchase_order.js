@@ -150,7 +150,7 @@ function hapus(uid) {
 }
 
 
-$("#disc").change(function(){
+$("#disc").keyup(function(){
     disc = originView($(this).val());
     setGrandTotal();
 })

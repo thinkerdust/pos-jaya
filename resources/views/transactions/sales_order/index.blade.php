@@ -32,6 +32,7 @@
                                             <th>Customer</th>
                                             <th>Tanggal</th>
                                             <th>Total</th>
+                                            <th>Note</th>
                                             <th>Status</th>
                                             <th>Action</th>
                                         </tr>

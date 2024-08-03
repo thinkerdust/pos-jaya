@@ -37,18 +37,19 @@ class PurchaseController extends BaseController
      */
     public function datatable_purchase_order(Request $request)
     {
-        $min = !empty($request->min) ? date('Y-m-d', strtotime($request->min)) : '';
-        $max = !empty($request->max) ? date('Y-m-d', strtotime($request->max)) : '';
+        $min = !empty($request->min) ? date('Y-m-d', strtotime($request->min)) . ' 00:00:00' : '';
+        $max = !empty($request->max) ? date('Y-m-d', strtotime($request->max)) . ' 23:59:00' : '';
         $role = Auth::user()->id_role;
 
         $data = $this->purchase_order->dataTablePurchaseOrders($min, $max, $role);
         return Datatables::of($data)->addIndexColumn()
-            ->addColumn('action', function ($row) {
+            ->addColumn('action', function ($row, $role) {
                 $btn = '';
                 if (Gate::allows('crudAccess', 'TX1', $row)) {
-                    $btn = '<a href="/transaction/purchase/add?uid=' . $row->uid . '" class="btn btn-dim btn-outline-secondary btn-sm"><em class="icon ni ni-edit"></em><span>Edit</span></a>&nbsp;
+                    if ($role == 1) {
+                        $btn = '<a href="/transaction/purchase/add?uid=' . $row->uid . '" class="btn btn-dim btn-outline-secondary btn-sm"><em class="icon ni ni-edit"></em><span>Edit</span></a>&nbsp;
                                 <a class="btn btn-dim btn-outline-secondary btn-sm" onclick="hapus(\'' . $row->uid . '\')"><em class="icon ni ni-trash"></em><span>Delete</span></a>';
-
+                    }
                 }
 
                 return $btn;
@@ -174,7 +175,6 @@ class PurchaseController extends BaseController
             if (!empty($uid)) {
                 $data['update_at'] = Carbon::now();
                 $data['update_by'] = $user->id;
-                $data['uid_company'] = $user->uid_company;
 
             } else {
                 $data['insert_at'] = Carbon::now();

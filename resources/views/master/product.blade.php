@@ -107,28 +107,36 @@
                             <div class="form-group">
                                 <label class="form-label">Harga Pokok</label>
                                 <div class="form-control-wrap">
-                                    <input type="text" class="form-control format-number" name="cost_price" id="cost_price" required>
+                                    <input type="text" class="form-control format-number" name="cost_price" id="cost_price" value="0" required>
                                 </div>
                             </div>
 
                             <div class="form-group">
                                 <label class="form-label">Harga Jual</label>
                                 <div class="form-control-wrap">
-                                    <input type="text" class="form-control format-number" name="sell_price" id="sell_price" required>
+                                    <input type="text" class="form-control format-number" name="sell_price" id="sell_price" value="0" required>
                                 </div>
                             </div>
 
                             <div class="form-group">
                                 <label class="form-label">Harga Member Retail</label>
                                 <div class="form-control-wrap">
-                                    <input type="text" class="form-control format-number" name="retail_member_price" id="retail_member_price" required>
+                                    <input type="text" class="form-control format-number" name="retail_member_price" id="retail_member_price" value="0" required>
                                 </div>
                             </div>
+
+                            @php 
+                                if(in_array(Auth::user()->id_role, [1, 2])) {
+                                    $flag = '';
+                                }else{
+                                    $flag = 'readonly';
+                                }
+                            @endphp
 
                             <div class="form-group">
                                 <label class="form-label">Stock</label>
                                 <div class="form-control-wrap">
-                                    <input type="text" class="form-control format-number" name="stock" id="stock" value="0" readonly>
+                                    <input type="text" class="form-control format-number" name="stock" id="stock" value="0" {{ $flag }}>
                                 </div>
                             </div>
                         </div>

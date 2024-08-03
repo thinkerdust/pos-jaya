@@ -3,6 +3,7 @@
 use App\Http\Controllers\Transactions\PurchaseController;
 use App\Http\Controllers\Transactions\SalesController;
 use App\Http\Controllers\Transactions\ReceivablePaymentController;
+use App\Http\Controllers\Transactions\ProductDamageController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
@@ -266,7 +267,15 @@ Route::group(['middleware' => ['web', 'auth']], function () {
             });
         });
 
-
+        Route::group(['prefix' => 'product-damage', 'middleware' => ["can:SubMenu, 'TX5'"]], function () {
+            Route::controller(ProductDamageController::class)->group(function () {
+                Route::get('/', 'index')->name('product-damage');
+                Route::get('/datatable', 'datatable_product_damage');
+                Route::post('/store', 'store_product_damage');
+                Route::get('/edit/{uid}', 'edit_product_damage');
+                Route::get('/delete/{uid}', 'delete_product_damage');
+            });
+        });
 
     });
 

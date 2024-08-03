@@ -16,6 +16,7 @@ var table = NioApp.DataTable('#dt-table', {
         {data: 'name', name:'cus.name' },
         {data: 'transaction_date', name:'so.transaction_date'},
         {data: 'grand_total', name:'so.grand_total', className:'text-end'},
+        {data: 'note', name:'so.note'},
         {data: 'action', orderable: false, searchable: false},
     ],
     columnDefs: [

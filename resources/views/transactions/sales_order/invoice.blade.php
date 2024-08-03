@@ -155,18 +155,28 @@ function integers($angka)
                 $grand_total = 0;
             @endphp
             @foreach ($data['detail'] as $d)
-                        @php 
-                                                                                                                                                                                                                            $subtotal = $d->qty * $d->price;
-                            $grand_total += $subtotal;
-                        @endphp
+                        <?php 
+                                                                                    if ($d->length != 0 || $d->width != 0) {
+                    $size = $d->length . 'x' . $d->width;
+
+                    $subtotal = ($d->length * $d->width * $d->qty * $d->price / 10000) + $d->packing + $d->cutting;
+
+                } else {
+                    $size = "";
+
+                    $subtotal = ($d->qty * $d->price) + $d->packing + $d->cutting;
+
+                }
+                $grand_total += $subtotal;
+                                                                                                                        ?>
 
                         <tr>
                             <td scope="row">{{ $no++ }}</td>
                             <td>{{$d->product_name}}</td>
                             <td align="right">{{integers($d->price)}}</td>
-                            <td align="center">-</td>
+                            <td align="center">{{$size}}</td>
                             <td align="right">{{integers($d->qty)}}</td>
-                            <td align="left"></td>
+                            <td align="right">{{integers($d->packing + $d->cutting)}}</td>
                             <td align="right">{{integers($subtotal)}}</td>
                         </tr>
                         @if ($d->note != "")
@@ -199,32 +209,11 @@ function integers($angka)
                 <td align="right">{{integers($data['header']->tax_value)}}</td>
             </tr>
         @endif
-        @if ($data['header']->laminating != 0)
-            <tr>
-                <td style="width:60%"></td>
-                <td align="right">Laminasi</td>
-                <td align="right">{{ integers($data['header']->laminating)}}</td>
-            </tr>
-        @endif
-        @if ($data['header']->packing != 0)
-            <tr>
-                <td style="width:60%"></td>
-                <td align="right">Packing</td>
-                <td align="right">{{ integers($data['header']->packing)}}</td>
-            </tr>
-        @endif
         @if ($data['header']->proofing != 0)
             <tr>
                 <td style="width:60%"></td>
                 <td align="right">Proofing</td>
                 <td align="right">{{ integers($data['header']->proofing)}}</td>
-            </tr>
-        @endif
-        @if ($data['header']->cutting != 0)
-            <tr>
-                <td style="width:60%"></td>
-                <td align="right">Cutting</td>
-                <td align="right">{{ integers($data['header']->cutting)}}</td>
             </tr>
         @endif
 
@@ -257,7 +246,7 @@ function integers($angka)
         <table style="width:100%">
             <tr>
                 <td>
-                    <p style="font-size:11px;font-style:italic;font-weight:bold">Rek
+                    <p style="font-size:13px;font-style:italic;font-weight:bold">Rek
                         {{$data['company']->account_number}} <br>{{'a/n ' . $data['company']->account_name}}
                     </p>
                 </td>

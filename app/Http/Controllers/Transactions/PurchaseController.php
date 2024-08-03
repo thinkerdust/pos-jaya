@@ -43,8 +43,9 @@ class PurchaseController extends BaseController
 
         $data = $this->purchase_order->dataTablePurchaseOrders($min, $max, $role);
         return Datatables::of($data)->addIndexColumn()
-            ->addColumn('action', function ($row, $role) {
+            ->addColumn('action', function ($row) {
                 $btn = '';
+                $role = Auth::user()->id_role;
                 if (Gate::allows('crudAccess', 'TX1', $row)) {
                     if ($role == 1) {
                         $btn = '<a href="/transaction/purchase/add?uid=' . $row->uid . '" class="btn btn-dim btn-outline-secondary btn-sm"><em class="icon ni ni-edit"></em><span>Edit</span></a>&nbsp;

@@ -253,28 +253,28 @@ $("#proofing").keyup(function(){
 })
 
 
-$("#panjang").change(function(){
+$("#panjang").keyup(function(){
     setSubTotal()
 })
 
-$("#lebar").change(function(){
+$("#lebar").keyup(function(){
     setSubTotal()
 })
 
 
-$("#qty").change(function(){
+$("#qty").keyup(function(){
     setSubTotal()
 })
 
-$("#cutting_price").change(function(){
+$("#cutting_price").keyup(function(){
     setSubTotal()
 })
 
-$("#packing_price").change(function(){
+$("#packing_price").keyup(function(){
     setSubTotal()
 })
 
-$("#price").change(function(){
+$("#price").keyup(function(){
     setSubTotal()
 })
 

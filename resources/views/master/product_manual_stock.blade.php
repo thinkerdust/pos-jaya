@@ -87,7 +87,7 @@
                             <div class="form-group">
                                 <label class="form-label">Satuan</label>
                                 <div class="form-control-wrap">
-                                    <select class="form-control" name="unit" id="unit" required></select>
+                                    <select class="form-control" name="unit" id="unit" value="0" required></select>
                                 </div>
                                 <div class="my-1">
                                     <button type="button" class="btn btn-primary btn-sm" onclick="addUnit()"><em class="icon ni ni-plus"></em><span>Add Data</span></button>
@@ -106,21 +106,21 @@
                             <div class="form-group">
                                 <label class="form-label">Harga Pokok</label>
                                 <div class="form-control-wrap">
-                                    <input type="text" class="form-control format-number" name="cost_price" id="cost_price" required>
+                                    <input type="text" class="form-control format-number" name="cost_price" id="cost_price" value="0" required>
                                 </div>
                             </div>
 
                             <div class="form-group">
                                 <label class="form-label">Harga Jual</label>
                                 <div class="form-control-wrap">
-                                    <input type="text" class="form-control format-number" name="sell_price" id="sell_price" required>
+                                    <input type="text" class="form-control format-number" name="sell_price" id="sell_price" value="0" required>
                                 </div>
                             </div>
 
                             <div class="form-group">
                                 <label class="form-label">Harga Member Retail</label>
                                 <div class="form-control-wrap">
-                                    <input type="text" class="form-control format-number" name="retail_member_price" id="retail_member_price" required>
+                                    <input type="text" class="form-control format-number" name="retail_member_price" id="retail_member_price" value="0" required>
                                 </div>
                             </div>
 
@@ -130,6 +130,7 @@
                                     <input type="text" class="form-control format-number" name="stock" id="stock" value="0" required>
                                 </div>
                             </div>
+
                         </div>
                     </div>
                     

@@ -17,7 +17,7 @@ class Dashboard extends Model
         $year = $filter_date[1];
 
         $data = DB::table('product')
-                    ->where('status', 1)
+                    ->where([['status', 1], ['flag', 1]])
                     ->whereRaw('MONTH(insert_at) = ? AND YEAR(insert_at) = ?', [$month, $year])
                     ->count();
 
@@ -30,10 +30,13 @@ class Dashboard extends Model
         $month = $filter_date[0];
         $year = $filter_date[1];
 
-        $data = DB::table('purchase_orders')
-                    ->where('status', 1)
-                    ->whereRaw('MONTH(transaction_date) = ? AND YEAR(transaction_date) = ?', [$month, $year])
-                    ->sum('grand_total');
+        $data = DB::table('purchase_order_details as pod')
+                    ->join('purchase_orders as po', 'pod.po_number', '=', 'po.po_number')
+                    ->join('product as p', 'pod.uid_product', '=', 'p.uid')
+                    ->where([['pod.status', 1], ['po.status', 1], ['p.status', 1], ['p.flag', 1]])
+                    ->whereRaw('MONTH(po.transaction_date) = ? AND YEAR(po.transaction_date) = ?', [$month, $year])
+                    ->selectRaw('SUM(pod.qty * pod.price) as grand_total')
+                    ->value('grand_total');
 
         return $data;
     }
@@ -58,12 +61,14 @@ class Dashboard extends Model
         $month = $filter_date[0];
         $year = $filter_date[1];
 
-        $query = DB::table('purchase_orders')
-                    ->where('status', 1)
-                    ->whereRaw('MONTH(transaction_date) = ? AND YEAR(transaction_date) = ?', [$month, $year])
-                    ->groupBy(DB::raw('date(transaction_date)'))
-                    ->selectRaw("DATE_FORMAT(transaction_date, '%d/%m/%Y') as label, 
-	                    sum(grand_total) as total")
+        $query = DB::table('purchase_order_details as pod')
+                    ->join('purchase_orders as po', 'pod.po_number', '=', 'po.po_number')
+                    ->join('product as p', 'pod.uid_product', '=', 'p.uid')
+                    ->where([['pod.status', 1], ['po.status', 1], ['p.status', 1], ['p.flag', 1]])
+                    ->whereRaw('MONTH(po.transaction_date) = ? AND YEAR(po.transaction_date) = ?', [$month, $year])
+                    ->groupBy(DB::raw('date(po.transaction_date)'))
+                    ->selectRaw("DATE_FORMAT(po.transaction_date, '%d/%m/%Y') as label, 
+	                    SUM(pod.qty * pod.price) as total")
                     ->get();
 
         $data_collect = collect($query);

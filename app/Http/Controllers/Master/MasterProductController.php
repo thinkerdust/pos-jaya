@@ -81,8 +81,7 @@ class MasterProductController extends BaseController
             'cost_price' => $cost_price,
             'sell_price' => $sell_price,
             'retail_member_price' => $retail_member_price,
-            'description' => $request->description,
-            'uid_company' => $user->uid_company
+            'description' => $request->description
         ];
 
         if (!empty($uid)) {
@@ -93,6 +92,7 @@ class MasterProductController extends BaseController
             $data['insert_by'] = $user->id;
             $uid_product = 'P' . Carbon::now()->format('YmdHisu');
             $data['uid'] = $uid_product;
+            $data['uid_company'] = $user->uid_company;
         }
 
         $process = DB::table('product')->updateOrInsert(
@@ -240,7 +240,7 @@ class MasterProductController extends BaseController
 
     public function product_manual_Stock()
     {
-        $title = 'Master Produk Khusus';
+        $title = 'Master Jasa';
         $js = 'js/apps/master/product-manual-stock.js?_=' . rand();
         return view('master.product_manual_stock', compact('js', 'title'));
     }

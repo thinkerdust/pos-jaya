@@ -229,39 +229,50 @@
                                                     </div>
                                                 </div>
                                             </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label class="form-label">Keterangan</label>
+                                                    <div class="form-control-wrap">
+                                                    <input type="text" class="form-control" id="notes" name="notes"
+                                                            placeholder="notes">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                                                                                    
+
                                         </div>
                                         <hr class="preview-hr">
-                                        <h5 class="mb-2">Cutting & Packing</h5>
+                                        <!-- <h5 class="mb-2">Cutting & Packing</h5>
                                         <div class="row mt-2">
                                             <div class="col-md-2">
                                                 <div class="form-group">
                                                     <label class="form-label">Cutting Price</label>
-                                                    <div class="form-control-wrap">
-                                                    <input type="text" class="form-control formated_number" id="cutting_price"
-                                                            placeholder="0" min="0" name="cutting_price">
-                                                    </div>
+                                                    <div class="form-control-wrap"> -->
+                                                    <input type="hidden" class="form-control formated_number" id="cutting_price"
+                                                            placeholder="0" min="0" value="0" name="cutting_price">
+                                                    <!-- </div>
                                                 </div>
                                             </div>
                                             <div class="col-md-2">
                                                 <div class="form-group">
                                                     <label class="form-label">Packing Price</label>
-                                                    <div class="form-control-wrap">
-                                                    <input type="text" class="form-control formated_number" id="packing_price"
-                                                            placeholder="0" min="0" name="packing_price">
-                                                    </div>
+                                                    <div class="form-control-wrap"> -->
+                                                    <input type="hidden" class="form-control formated_number" id="packing_price"
+                                                            placeholder="0" min="0" value="0" name="packing_price">
+                                                    <!-- </div>
                                                 </div>
                                             </div>
 
                                             <div class="col-md-6">
                                                 <div class="form-group">
                                                     <label class="form-label">Notes</label>
-                                                    <div class="form-control-wrap">
-                                                        <input type="text" class="form-control" id="notes" name="notes"
-                                                            placeholder="notes">
-                                                    </div>
+                                                    <div class="form-control-wrap"> -->
+                                                        <!-- <input type="text" class="form-control" id="notes" name="notes"
+                                                            placeholder="notes"> -->
+                                                    <!-- </div>
                                                 </div>
-                                            </div>
-                                        </div>
+                                            </div> -->
+                                        <!-- </div> -->
                                         <hr class="preview-hr">
                                         <h5 class="mb-2">Subtotal</h5>
                                         <div class="row mt-2">

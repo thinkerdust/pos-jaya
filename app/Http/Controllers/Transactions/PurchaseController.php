@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
+use PDF;
 
 class PurchaseController extends BaseController
 {
@@ -49,8 +50,9 @@ class PurchaseController extends BaseController
                 if (Gate::allows('crudAccess', 'TX1', $row)) {
                     if ($role == 1) {
                         $btn = '<a href="/transaction/purchase/add?uid=' . $row->uid . '" class="btn btn-dim btn-outline-secondary btn-sm"><em class="icon ni ni-edit"></em><span>Edit</span></a>&nbsp;
-                                <a class="btn btn-dim btn-outline-secondary btn-sm" onclick="hapus(\'' . $row->uid . '\')"><em class="icon ni ni-trash"></em><span>Delete</span></a>';
+                                <a class="btn btn-dim btn-outline-secondary btn-sm" onclick="hapus(\'' . $row->uid . '\')"><em class="icon ni ni-trash"></em><span>Delete</span></a>&nbsp';
                     }
+                    $btn .= '<a class="btn btn-dim btn-outline-secondary btn-sm" target="_blank" href="/transaction/purchase/po/' . $row->uid . '"><em class="icon ni ni-send"></em><span>Purchase Order</span></a>';
                 }
 
                 return $btn;
@@ -257,6 +259,21 @@ class PurchaseController extends BaseController
     {
         return Excel::download(new PurchaseOrderExport, 'Pembelian.xlsx');
     }
+
+    public function print_pdf(Request $request)
+    {
+        $uid = $request->uid;
+        $data['header'] = db::table('purchase_orders as po')->join('supplier as sup', 'sup.uid', 'po.uid_supplier')->select('po.uid', 'po.po_number', 'po.uid_supplier', 'po.transaction_date', 'sup.name', 'sup.phone', 'po.discount', 'po.tax_rate', 'po.tax_value', 'po.grand_total', 'po.uid_company')->where('po.uid', $uid)->first();
+        $data['detail'] = db::table('purchase_order_details as pd')->join('product as p', 'p.uid', 'pd.uid_product')->join('unit as u', 'u.uid', 'pd.uid_unit')->select('pd.po_number', 'pd.uid_product', 'p.name as product_name', 'pd.uid_unit', 'u.name as unit_name', 'pd.qty', 'pd.price', 'pd.note')->where('pd.po_number', $data['header']->po_number)->get()->toArray();
+        $data['company'] = DB::table('company')->where('uid', $data['header']->uid_company)->first();
+
+
+        // dd($data);
+        $pdf = PDF::loadview('transactions.purchase_order.po', ['data' => $data])->setPaper('A5', 'landscape');
+        return $pdf->stream('PO-' . $data['header']->po_number);
+        // return view('transactions.sales_order.invoice', ['data' => $data]);
+    }
+
 
 
     public function check_stock(Request $request)

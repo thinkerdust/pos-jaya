@@ -45,7 +45,7 @@ Route::group(['middleware' => ['web', 'auth']], function () {
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    Route::group(['prefix' => 'dashboard', 'middleware' => ['ajax.request']], function() {
+    Route::group(['prefix' => 'dashboard', 'middleware' => ['ajax.request']], function () {
         Route::controller(DashboardController::class)->group(function () {
             Route::post('/total-products', 'total_products');
             Route::post('/total-purchase', 'total_purchase');
@@ -222,6 +222,7 @@ Route::group(['middleware' => ['web', 'auth']], function () {
                 Route::post('/store', 'store_purchase_order');
                 Route::get('/edit/{uid}', 'edit_purchase_order');
                 Route::get('/delete/{uid}', 'delete_purchase_order');
+                Route::get('/po/{uid}', 'print_pdf');
                 Route::get('/export_excel', 'export_excel');
                 Route::post('/check_stock', 'check_stock');
             });

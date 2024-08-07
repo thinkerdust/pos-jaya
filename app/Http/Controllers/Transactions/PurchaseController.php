@@ -52,6 +52,7 @@ class PurchaseController extends BaseController
                         $btn = '<a href="/transaction/purchase/add?uid=' . $row->uid . '" class="btn btn-dim btn-outline-secondary btn-sm"><em class="icon ni ni-edit"></em><span>Edit</span></a>&nbsp;
                                 <a class="btn btn-dim btn-outline-secondary btn-sm" onclick="hapus(\'' . $row->uid . '\')"><em class="icon ni ni-trash"></em><span>Delete</span></a>&nbsp';
                     }
+                    $btn .= '<a class="btn btn-dim btn-outline-secondary btn-sm" href="/transaction/purchase/add?uid=' . $row->uid . '"><em class="icon ni ni-eye"></em><span>View</span></a>&nbsp';
                     $btn .= '<a class="btn btn-dim btn-outline-secondary btn-sm" target="_blank" href="/transaction/purchase/po/' . $row->uid . '"><em class="icon ni ni-send"></em><span>Purchase Order</span></a>';
                 }
 
@@ -138,6 +139,7 @@ class PurchaseController extends BaseController
                     'note' => '',
                     'insert_at' => Carbon::now(),
                     'insert_by' => $user->id,
+                    'status' => 1
                 ]);
             } catch (\Throwable $e) {
                 DB::rollBack();
@@ -204,8 +206,8 @@ class PurchaseController extends BaseController
     public function edit_purchase_order(Request $request)
     {
         $uid = $request->uid;
-        $data['header'] = db::table('purchase_orders as po')->join('supplier as sup', 'sup.uid', 'po.uid_supplier')->select('po.uid', 'po.po_number', 'po.uid_supplier', 'po.transaction_date', 'sup.name', 'po.discount')->where('po.uid', $uid)->first();
-        $data['detail'] = db::table('purchase_order_details as pd')->join('product as p', 'p.uid', 'pd.uid_product')->join('unit as u', 'u.uid', 'pd.uid_unit')->select('pd.po_number', 'pd.uid_product', 'p.name as product_name', 'pd.uid_unit', 'u.name as unit_name', 'pd.qty', 'pd.price')->where('pd.po_number', $data['header']->po_number)->get()->toArray();
+        $data['header'] = db::table('purchase_orders as po')->join('supplier as sup', 'sup.uid', 'po.uid_supplier')->select('po.uid', 'po.po_number', 'po.uid_supplier', 'po.transaction_date', 'sup.name', 'po.discount')->where('po.uid', $uid)->where('po.status', 1)->first();
+        $data['detail'] = db::table('purchase_order_details as pd')->join('product as p', 'p.uid', 'pd.uid_product')->join('unit as u', 'u.uid', 'pd.uid_unit')->select('pd.po_number', 'pd.uid_product', 'p.name as product_name', 'pd.uid_unit', 'u.name as unit_name', 'pd.qty', 'pd.price')->where('pd.po_number', $data['header']->po_number)->where('pd.status', 1)->get()->toArray();
         return $this->ajaxResponse(true, 'Success!', $data);
     }
 
@@ -263,8 +265,8 @@ class PurchaseController extends BaseController
     public function print_pdf(Request $request)
     {
         $uid = $request->uid;
-        $data['header'] = db::table('purchase_orders as po')->join('supplier as sup', 'sup.uid', 'po.uid_supplier')->select('po.uid', 'po.po_number', 'po.uid_supplier', 'po.transaction_date', 'sup.name', 'sup.phone', 'po.discount', 'po.tax_rate', 'po.tax_value', 'po.grand_total', 'po.uid_company')->where('po.uid', $uid)->first();
-        $data['detail'] = db::table('purchase_order_details as pd')->join('product as p', 'p.uid', 'pd.uid_product')->join('unit as u', 'u.uid', 'pd.uid_unit')->select('pd.po_number', 'pd.uid_product', 'p.name as product_name', 'pd.uid_unit', 'u.name as unit_name', 'pd.qty', 'pd.price', 'pd.note')->where('pd.po_number', $data['header']->po_number)->get()->toArray();
+        $data['header'] = db::table('purchase_orders as po')->join('supplier as sup', 'sup.uid', 'po.uid_supplier')->select('po.uid', 'po.po_number', 'po.uid_supplier', 'po.transaction_date', 'sup.name', 'sup.phone', 'po.discount', 'po.tax_rate', 'po.tax_value', 'po.grand_total', 'po.uid_company')->where('po.uid', $uid)->where('po.status', 1)->first();
+        $data['detail'] = db::table('purchase_order_details as pd')->join('product as p', 'p.uid', 'pd.uid_product')->join('unit as u', 'u.uid', 'pd.uid_unit')->select('pd.po_number', 'pd.uid_product', 'p.name as product_name', 'pd.uid_unit', 'u.name as unit_name', 'pd.qty', 'pd.price', 'pd.note')->where('pd.po_number', $data['header']->po_number)->where('pd.status', 1)->get()->toArray();
         $data['company'] = DB::table('company')->where('uid', $data['header']->uid_company)->first();
 
 

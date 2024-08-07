@@ -327,4 +327,11 @@ class PurchaseController extends BaseController
         return $number;
     }
 
+    public function datatable_detail_purchase_order(Request $request) 
+    {
+        $uid = $request->uid;
+        $data = $this->purchase_order->dataTableDetailPurchaseOrder($uid);
+        return Datatables::of($data)->addIndexColumn()->make(true);
+    }
+
 }

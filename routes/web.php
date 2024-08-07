@@ -225,6 +225,7 @@ Route::group(['middleware' => ['web', 'auth']], function () {
                 Route::get('/po/{uid}', 'print_pdf');
                 Route::get('/export_excel', 'export_excel');
                 Route::post('/check_stock', 'check_stock');
+                Route::post('/datatable-detail', 'datatable_detail_purchase_order');
             });
         });
 

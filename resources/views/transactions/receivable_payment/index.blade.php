@@ -17,7 +17,7 @@
                             <div class="card-inner">
                                 @can("crudAccess", "TX1")
                                     <!-- <a href="/transaction/receivable_payment/add" class="btn btn-theme-sml btn-sm"><em
-                                                                class="icon ni ni-plus"></em><span>Add Data</span></a> -->
+                                                                                    class="icon ni ni-plus"></em><span>Add Data</span></a> -->
                                     <a href="/transaction/receivable_payment/export_excel"
                                         class="btn btn-success btn-sm"><em class="icon ni ni-download"></em><span>Export
                                             Excel</span></a>
@@ -72,6 +72,19 @@
                         </div>
                     </div>
                 </div>
+                <div class="row mt-2">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label class="form-label">Metode Pembayaran</label>
+                            <div class="form-control-wrap">
+                                <select class="form-control" name="modal_payment_method" id="modal_payment_method"
+                                    required>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-sm" onclick="clearFilter()">Clear</button>

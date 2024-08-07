@@ -21,6 +21,7 @@
                                         <input type="hidden" name="uid_sales_order" id="uid_sales_order"
                                             value="{{ isset($uid) ? $uid : null }}">
                                             <input type="hidden" name="invoice_number" id="invoice_number">
+                                            <input type="hidden" name="uid_company" id="uid_company" value="{{Auth::user()->uid_company}}">
 
                                         <div class="row gy-4">
                                             <div class="col-sm-6">
@@ -323,8 +324,6 @@
                                                         <th class="text-center">Qty</th>
                                                         <th class="text-center">Ukuran</th>
                                                         <th class="text-center">Harga</th>
-                                                        <th class="text-center">Cutting Price</th>
-                                                        <th class="text-center">Packing Price</th>
                                                         <th class="text-center">Subtotal</th>
                                                         <th class="text-center">Notes</th>
                                                         <th class="text-center">Action</th>

@@ -4,6 +4,7 @@ var ppn = 0;
 var laminating = 0;
 var proofing = 0;
 var which;
+var level = "{{Auth::user()->id_role}}";
 
 $(".submit").click(function () {
     which = $(this).attr("id");
@@ -50,6 +51,7 @@ $(document).ready(function() {
                         let detail = response.data.detail;
                         $('#uid_sales_order').val(header.uid);
                         $('#invoice_number').val(header.invoice_number);
+                        $('#uid_company').val(header.uid_company);
                         $('#collection_date').val(header.collection_date);
                         $('#priority').val(header.priority);
                         $('#disc').val(thousandView(header.discount));
@@ -95,8 +97,6 @@ $(document).ready(function() {
                             html += '<td class="text-center"><input type="hidden" name="details[stock][]" value="'+detail[i].qty+'"/>'+detail[i].qty+'</td>';
                             html += '<td class="text-center"><input type="hidden" name="details[length][]" value="'+length+'"/><input type="hidden" name="details[width][]" value="'+width+'"/>'+length+'x'+width+'</td>';
                             html += '<td class="text-center"><input type="hidden" name="details[prices][]" value="'+price+'"/>'+price_formated+'</td>';
-                            html += '<td class="text-center"><input type="hidden" name="details[cutting][]" value="'+cutting+'"/>'+cutting_formated+'</td>';
-                            html += '<td class="text-center"><input type="hidden" name="details[packing][]" value="'+packing+'"/>'+packing_formated+'</td>';            
                             html += '<td class="text-center"><input class="subtotal" type="hidden" name="details[subtotal][]" value="'+subtotal+'"/>'+subtotal_formated+'</td>';
                             html += '<td class="text-center"><input class="notes" type="hidden" name="details[notes][]" value="'+notes+'"/>'+notes+'</td>';
                             html += '<td class="text-center">';
@@ -572,8 +572,6 @@ $("#add_product").click(function(){
                 html += '<td class="text-center"><input type="hidden" name="details[qty][]" value="'+qty+'"/>'+qty+'</td>';
                 html += '<td class="text-center"><input type="hidden" name="details[length][]" value="'+length+'"/><input type="hidden" name="details[width][]" value="'+width+'"/>'+length+'x'+width+'</td>';
                 html += '<td class="text-center"><input type="hidden" name="details[prices][]" value="'+price+'"/>'+price_formated+'</td>';
-                html += '<td class="text-center"><input type="hidden" name="details[cutting][]" value="'+cutting+'"/>'+cutting_formated+'</td>';
-                html += '<td class="text-center"><input type="hidden" name="details[packing][]" value="'+packing+'"/>'+packing_formated+'</td>';
                 html += '<td class="text-center"><input class="subtotal" type="hidden" name="details[subtotal][]" value="'+subtotal+'"/>'+subtotal_formated+'</td>';
                 html += '<td class="text-center"><input class="notes" type="hidden" name="details[notes][]" value="'+notes+'"/>'+notes+'</td>';
                 html += '<td class="text-center">';

@@ -22,6 +22,8 @@
                                             value="{{ isset($uid) ? $uid : null }}">
 
                                         <input type="hidden" name="po_number" id="po_number">
+                                        <input type="hidden" name="uid_company" id="uid_company"
+                                            value="{{Auth::user()->uid_company}}">
 
                                         <div class="row gy-4">
                                             <div class="col-sm-6">

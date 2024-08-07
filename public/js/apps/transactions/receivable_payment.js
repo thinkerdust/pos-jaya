@@ -109,6 +109,7 @@ var table = NioApp.DataTable('#dt-table', {
         data: function (d) {
             d.min = $('#filter_date_from').val();
             d.max = $('#filter_date_to').val();
+            d.payment = $('#modal_payment_method').val();
         },
     },
     columns: [
@@ -590,4 +591,32 @@ function clearFilter(){
     $("#dt-table").DataTable().ajax.reload();
     $("#modal_filter").modal('hide');
 }
+
+$('#modal_payment_method').select2({
+    placeholder: 'Pilih Metode Pembayaran',
+    allowClear: true,
+    dropdownParent: $('#modal_filter'),
+    ajax: {
+        url: '/data-payment-method',
+        dataType: "json",
+        type: "get",
+        delay: 250,
+        data: function (params) {
+            return { q: params.term };
+        },
+        processResults: function (data, params) {
+            return {
+                results: $.map(data, function (item) {
+                    return {
+                        text: item.name,
+                        id: item.uid
+                    }
+                })
+            };
+        },
+        cache: true,
+    }
+})
+
+
 

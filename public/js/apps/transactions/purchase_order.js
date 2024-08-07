@@ -115,6 +115,12 @@ var table = NioApp.DataTable('#dt-table', {
     ],
     columnDefs: [
         {
+            targets: 1,
+            render: function(data, type, full, meta) {
+                return `<a href="javascript:;" onclick="view_detail('${full['uid']}')">${full['po_number']}</a>`;
+            }
+        },
+        {
             targets: 4,
             orderable: false,
             render: function(data, type, full, meta) {
@@ -497,3 +503,33 @@ function clearFilter(){
     $("#modal_filter").modal('hide');
 }
 
+function view_detail(uid) {
+    $('#modalDetail').modal('show');
+    $('#uid').val(uid);
+    $('#dt-table-detail').DataTable().ajax.reload();
+}
+
+var tableDetail = NioApp.DataTable('#dt-table-detail', {
+    serverSide: true,
+    processing: true,
+    responsive: true,
+    searchDelay: 500,
+    ajax: {
+        url: '/transaction/purchase/datatable-detail',
+        type: 'POST',
+        data: function (d) {
+            d._token = token;
+            d.uid = $('#uid').val();
+        },
+    },
+    columns: [
+        {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false},
+        {data: 'kode_product', name:'p.kode'},
+        {data: 'name_product', name:'p.name' },
+        {data: 'qty', name:'pod.qty', className:'text-end', render: $.fn.dataTable.render.number( ',', '.', 0, '' )},
+        {data: 'price', name:'pod.price', className:'text-end', render: $.fn.dataTable.render.number( ',', '.', 0, 'Rp. ' )},
+        {data: 'subtotal', name:'subtotal', className:'text-end', render: $.fn.dataTable.render.number( ',', '.', 0, 'Rp. ' )},
+        {data: 'note', orderable: false, searchable: false},
+    ],
+    columnDefs: [] 
+});

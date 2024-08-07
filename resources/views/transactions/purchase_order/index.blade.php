@@ -22,8 +22,6 @@
                                             class="icon ni ni-download"></em><span>Export Excel</span></a>
                                     <button class="btn btn-primary btn-sm" onclick="filter()"><em
                                             class="icon ni ni-filter"></em><span>Filter</span></button>
-
-
                                 @endcan
                                 <hr class="preview-hr">
                                 <table class="table table-striped nowrap" id="dt-table">
@@ -73,6 +71,39 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-sm" onclick="clearFilter()">Clear</button>
                 <button type="button" class="btn btn-sm btn-theme-sml" onclick="applyFilter()">Terapkan</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" tabindex="-1" id="modalDetail">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <a href="#" class="close" data-bs-dismiss="modal" aria-label="Close">
+                <em class="icon ni ni-cross"></em>
+            </a>
+            <div class="modal-header">
+                <h5 class="modal-title" id="title_modal_filter">Detail Data Penjualan</h5>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="uid" value="">
+                <table class="table table-striped nowrap" id="dt-table-detail">
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Kode</th>
+                            <th>Nama</th>
+                            <th>Qty</th>
+                            <th>Harga</th>
+                            <th>Subtotal</th>
+                            <th>Keterangan</th>
+                        </tr>
+                    </thead>
+
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-sm btn-theme-sml" class="close" data-bs-dismiss="modal" aria-label="Close">Close</button>
             </div>
         </div>
     </div>

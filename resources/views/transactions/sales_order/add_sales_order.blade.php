@@ -136,15 +136,15 @@
                                                     </div>
                                                 </div> -->
 
-                                                <div class="form-group">
+                                                <!-- <div class="form-group">
                                                     <label class="form-label">Proofing</label>
                                                     <div class="row">
-                                                        <div class="form-control-wrap col-md-12">
-                                                            <input type="text" class="form-control formated_number" id="proofing"
-                                                                name="proofing" value="0" required>
-                                                        </div>
+                                                        <div class="form-control-wrap col-md-12"> -->
+                                                            <input type="hidden" class="form-control formated_number" id="proofing"
+                                                                name="proofing" value="0" >
+                                                        <!-- </div>
                                                     </div>
-                                                </div>
+                                                </div> -->
 
                                                 <div class="form-group">
                                                     <label class="form-label">Keterangan</label>

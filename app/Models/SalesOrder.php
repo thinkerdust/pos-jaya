@@ -16,7 +16,7 @@ class SalesOrder extends Model
     public function dataTableSalesOrders($min, $max, $status, $role)
     {
         $user = Auth::user();
-        $query = DB::table('sales_orders as so')->join('customer as cus', 'so.uid_customer', '=', 'cus.uid')->select('so.uid', 'so.invoice_number', 'cus.name', DB::raw('DATE_FORMAT(so.transaction_date, "%d/%m/%Y") as transaction_date'), 'so.note', 'so.grand_total', 'so.paid_off')->where('so.status', 1)->where('so.pending', 0);
+        $query = DB::table('sales_orders as so')->join('customer as cus', 'so.uid_customer', '=', 'cus.uid')->select('so.uid', 'so.invoice_number', 'cus.name', DB::raw('DATE_FORMAT(so.transaction_date, "%d/%m/%Y") as transaction_date'), DB::raw('(SELECT GROUP_CONCAT( sod.note) from sales_order_details sod where sod.invoice_number=so.invoice_number and sod.status=1) as note'), 'so.grand_total', 'so.paid_off')->where('so.status', 1)->where('so.pending', 0);
 
         if (!empty($min) && !empty($max)) {
             $query->whereBetween('so.transaction_date', [$min, $max]);

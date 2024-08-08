@@ -80,8 +80,8 @@ class SalesController extends BaseController
 
     public function datatable_pending(Request $request)
     {
-        $min = !empty($request->min) ? date('Y-m-d', strtotime($request->min)) : '';
-        $max = !empty($request->max) ? date('Y-m-d', strtotime($request->max)) : '';
+        $min = !empty($request->min) ? date('Y-m-d', strtotime($request->min)) . ' 00:00:00' : '';
+        $max = !empty($request->max) ? date('Y-m-d', strtotime($request->max)) . ' 23:59:00' : '';
         $role = Auth::user()->id_role;
 
         $data = $this->sales_order->dataTablePending($min, $max, $role);
@@ -142,6 +142,22 @@ class SalesController extends BaseController
                         }
                     }
                 }
+            } else {
+                //create new invoice number
+                $no_inv = "INV" . date('mdY');
+                $get_last_number = DB::table("sales_orders")->where("invoice_number", "like", "$no_inv%")->where('uid_company', $uid_company)->orderBy('invoice_number', 'desc')->count();
+                $no_inv .= '-' . ++$get_last_number;
+
+                $loop = true;
+                while ($loop) {
+                    $validate_inv_number = DB::table('sales_orders')->where("invoice_number", $no_inv)->where('uid_company', $uid_company)->count();
+                    if ($validate_inv_number == 0) {
+                        $loop = false;
+                    } else {
+                        $no_inv = "INV" . date('mdY') . '-' . ++$get_last_number;
+                    }
+                }
+
             }
             try {
                 //delete detail
@@ -152,20 +168,37 @@ class SalesController extends BaseController
             }
 
         } else {
-            $no_inv = "INV" . date('mdY');
-            $get_last_number = DB::table("sales_orders")->where("invoice_number", "like", "$no_inv%")->where('uid_company', $uid_company)->orderBy('invoice_number', 'desc')->count();
-            $no_inv .= '-' . ++$get_last_number;
 
-            $loop = true;
-            while ($loop) {
-                $validate_inv_number = DB::table('sales_orders')->where("invoice_number", $no_inv)->where('uid_company', $uid_company)->count();
-                if ($validate_inv_number == 0) {
-                    $loop = false;
-                } else {
-                    $no_inv = "INV" . date('mdY') . '-' . ++$get_last_number;
+            if ($request->pending == 0) {
+                $no_inv = "INV" . date('mdY');
+                $get_last_number = DB::table("sales_orders")->where("invoice_number", "like", "$no_inv%")->where('uid_company', $uid_company)->orderBy('invoice_number', 'desc')->count();
+                $no_inv .= '-' . ++$get_last_number;
+
+                $loop = true;
+                while ($loop) {
+                    $validate_inv_number = DB::table('sales_orders')->where("invoice_number", $no_inv)->where('uid_company', $uid_company)->count();
+                    if ($validate_inv_number == 0) {
+                        $loop = false;
+                    } else {
+                        $no_inv = "INV" . date('mdY') . '-' . ++$get_last_number;
+                    }
                 }
-            }
+            } else {
+                $no_inv = "TMP" . date('mdY');
+                $get_last_number = DB::table("sales_orders")->where("invoice_number", "like", "$no_inv%")->where('uid_company', $uid_company)->orderBy('invoice_number', 'desc')->count();
+                $no_inv .= '-' . ++$get_last_number;
 
+                $loop = true;
+                while ($loop) {
+                    $validate_inv_number = DB::table('sales_orders')->where("invoice_number", $no_inv)->where('uid_company', $uid_company)->count();
+                    if ($validate_inv_number == 0) {
+                        $loop = false;
+                    } else {
+                        $no_inv = "TMP" . date('mdY') . '-' . ++$get_last_number;
+                    }
+                }
+
+            }
 
         }
 
@@ -246,8 +279,8 @@ class SalesController extends BaseController
             } else {
                 $data['insert_at'] = Carbon::now();
                 $data['insert_by'] = $user->id;
-                $uid_purchase_order = 'SO' . Carbon::now()->format('YmdHisu');
-                $data['uid'] = $uid_purchase_order;
+                $uid_sales_order = 'SO' . Carbon::now()->format('YmdHisu');
+                $data['uid'] = $uid_sales_order;
                 $data['uid_company'] = $user->uid_company;
             }
 
@@ -269,7 +302,7 @@ class SalesController extends BaseController
     {
         $uid = $request->uid;
         $data['header'] = db::table('sales_orders as so')->join('customer as cus', 'cus.uid', 'so.uid_customer')->select('so.uid', 'so.invoice_number', 'so.uid_customer', 'so.transaction_date', 'cus.name', 'so.discount', 'so.disc_rate', 'so.tax_rate', 'so.tax_value', 'so.grand_total', 'so.collection_date', 'so.priority', 'so.proofing', 'so.note', 'so.uid_company')->where('so.uid', $uid)->where('so.status', 1)->first();
-        $data['detail'] = db::table('sales_order_details as pd')->join('product as p', 'p.uid', 'pd.uid_product')->join('unit as u', 'u.uid', 'pd.uid_unit')->select('pd.invoice_number', 'pd.uid_product', 'p.name as product_name', 'pd.uid_unit', 'u.name as unit_name', 'pd.qty', 'pd.price', 'p.stock', 'pd.note', 'pd.packing', 'pd.cutting', 'pd.length', 'pd.width')->where('pd.invoice_number', $data['header']->invoice_number)->where('pd.status', 1)->where('pd.uid_company', $data['header']->uid_company)->get()->toArray();
+        $data['detail'] = db::table('sales_order_details as pd')->join('product as p', 'p.uid', 'pd.uid_product')->join('unit as u', 'u.uid', 'pd.uid_unit')->select('pd.invoice_number', 'pd.uid_product', 'p.name as product_name', 'pd.uid_unit', 'u.name as unit_name', 'pd.qty', 'pd.price', 'p.stock', 'pd.note', 'pd.length', 'pd.width')->where('pd.invoice_number', $data['header']->invoice_number)->where('pd.status', 1)->where('pd.uid_company', $data['header']->uid_company)->get()->toArray();
         return $this->ajaxResponse(true, 'Success!', $data);
     }
 

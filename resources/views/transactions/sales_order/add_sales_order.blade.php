@@ -146,15 +146,15 @@
                                                     </div>
                                                 </div> -->
 
-                                                <div class="form-group">
+                                                <!-- <div class="form-group">
                                                     <label class="form-label">Keterangan</label>
                                                     <div class="row">
-                                                        <div class="form-control-wrap col-md-12">
-                                                            <input type="text" class="form-control" id="keterangan"
+                                                        <div class="form-control-wrap col-md-12"> -->
+                                                            <input type="hidden" class="form-control" id="keterangan"
                                                                 name="keterangan" >
-                                                        </div>
+                                                        <!-- </div>
                                                     </div>
-                                                </div>
+                                                </div> -->
 
                                                 <!-- <div class="form-group">
                                                     <label class="form-label">Cutting</label>

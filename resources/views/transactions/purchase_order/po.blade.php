@@ -40,12 +40,13 @@ function integers($angka)
         }
 
         table {
-            font-size: x-small;
+            font-size: small;
+            font-weight: bold;
         }
 
         tfoot tr td {
             font-weight: bold;
-            font-size: x-small;
+            font-size: small;
         }
 
         .gray {
@@ -162,7 +163,7 @@ function integers($angka)
             @foreach ($data['detail'] as $d)
                         <?php    $subtotal = $d->qty * $d->price;
                 $grand_total += $subtotal;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                ?>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    ?>
 
                         <tr>
                             <td scope="row">{{ $no++ }}</td>

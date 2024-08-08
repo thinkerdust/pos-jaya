@@ -28,8 +28,15 @@ function integers($angka)
     <title>INVOICE {{ $data['header']->invoice_number }}</title>
 
     <style type="text/css">
+        @font-face {
+            font-family: 'Courier';
+            font-style: normal;
+            font-weight: normal;
+            src: url(https://fonts.google.com/share?selection.family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700|Quicksand:wght@300..700) format('truetype');
+        }
+
         * {
-            font-family: Verdana, Arial, sans-serif;
+            font-family: Courier, Geneva, Tahoma, sans-serif;
         }
 
         table {
@@ -156,7 +163,7 @@ function integers($angka)
             @endphp
             @foreach ($data['detail'] as $d)
                         <?php 
-                                              if ($d->length != 0 || $d->width != 0) {
+                                                          if ($d->length != 0 || $d->width != 0) {
                     $size = $d->length . 'x' . $d->width;
 
                     $subtotal = ($d->length * $d->width * $d->qty * $d->price / 10000);
@@ -168,7 +175,7 @@ function integers($angka)
 
                 }
                 $grand_total += $subtotal;
-                                                                                                                                                            ?>
+                                                                                                                                                                        ?>
 
                         <tr>
                             <td scope="row">{{ $no++ }}</td>

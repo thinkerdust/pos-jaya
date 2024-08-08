@@ -340,8 +340,15 @@
                                             </table>
                                         </div>
                                         <hr class="preview-hr">
-                                        <button type="submit" class="btn btn-theme-sml submit"
-                                            id="btn-submit">Simpan</button>
+                                        @if (Auth::user()->id_role==2)
+                                            @if (isset($uid))
+                                            <button type="submit" class="btn btn-theme-sml submit"
+                                                id="btn-submit">Simpan</button>
+                                            @endif
+                                        @else
+                                            <button type="submit" class="btn btn-theme-sml submit"
+                                                    id="btn-submit">Simpan</button>
+                                        @endif
                                         <button type="submit"
                                             class="btn btn-outline-secondary btn-dim submit" id="btn-pending">Pending</button>
                                     </form>

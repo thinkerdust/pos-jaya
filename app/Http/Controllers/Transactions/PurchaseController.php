@@ -52,7 +52,7 @@ class PurchaseController extends BaseController
                         $btn = '<a href="/transaction/purchase/add?uid=' . $row->uid . '" class="btn btn-dim btn-outline-secondary btn-sm"><em class="icon ni ni-edit"></em><span>Edit</span></a>&nbsp;
                                 <a class="btn btn-dim btn-outline-secondary btn-sm" onclick="hapus(\'' . $row->uid . '\')"><em class="icon ni ni-trash"></em><span>Delete</span></a>&nbsp';
                     }
-                    $btn .= '<a class="btn btn-dim btn-outline-secondary btn-sm" href="/transaction/purchase/add?uid=' . $row->uid . '"><em class="icon ni ni-eye"></em><span>View</span></a>&nbsp';
+                    // $btn .= '<a class="btn btn-dim btn-outline-secondary btn-sm" href="/transaction/purchase/add?uid=' . $row->uid . '"><em class="icon ni ni-eye"></em><span>View</span></a>&nbsp';
                     $btn .= '<a class="btn btn-dim btn-outline-secondary btn-sm" target="_blank" href="/transaction/purchase/po/' . $row->uid . '"><em class="icon ni ni-send"></em><span>Purchase Order</span></a>';
                 }
 
@@ -327,7 +327,7 @@ class PurchaseController extends BaseController
         return $number;
     }
 
-    public function datatable_detail_purchase_order(Request $request) 
+    public function datatable_detail_purchase_order(Request $request)
     {
         $uid = $request->uid;
         $data = $this->purchase_order->dataTableDetailPurchaseOrder($uid);

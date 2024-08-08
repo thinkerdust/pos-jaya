@@ -46,3 +46,34 @@ function clearFilter(){
     $("#dt-table").DataTable().ajax.reload();
     $("#modal_filter").modal('hide');
 }
+
+function hapus(uid) {
+    Swal.fire({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, delete it!'
+    }).then((result) => {
+        if (result.value) {
+            $.ajax({
+                url: '/transaction/sales/delete/'+uid,
+                dataType: 'JSON',
+                success: function(response) {
+                    if(response.status){
+                        $("#dt-table").DataTable().ajax.reload(null, false);
+                        NioApp.Toast(response.message, 'success', {position: 'top-right'});
+                    }else{
+                        NioApp.Toast(response.message, 'warning', {position: 'top-right'});
+                    }
+                },
+                error: function(error) {
+                    console.log(error)
+                    NioApp.Toast('Error while fetching data', 'error', {position: 'top-right'});
+                }
+            })
+        }
+    });
+}
+
+

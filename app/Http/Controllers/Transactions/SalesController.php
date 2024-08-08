@@ -130,6 +130,15 @@ class SalesController extends BaseController
             $get_existing_header = DB::table('sales_orders')->where('uid', $uid)->first();
             $uid_company = $get_existing_header->uid_company;
             $get_existing_detail = DB::table('sales_order_details')->where('invoice_number', $no_inv)->where('uid_company', $uid_company)->get();
+
+            try {
+                //delete detail
+                $del_detail = DB::table('sales_order_details')->where('invoice_number', $no_inv)->where('uid_company', $uid_company)->delete();
+            } catch (\Throwable $e) {
+                DB::rollBack();
+                return $this->ajaxResponse(false, 'Failed to save data', $e);
+            }
+
             if ($get_existing_header->pending == 0) {
                 foreach ($get_existing_detail as $old) {
                     if ($request->pending == 0) {
@@ -159,13 +168,7 @@ class SalesController extends BaseController
                 }
 
             }
-            try {
-                //delete detail
-                $del_detail = DB::table('sales_order_details')->where('invoice_number', $no_inv)->where('uid_company', $uid_company)->delete();
-            } catch (\Throwable $e) {
-                DB::rollBack();
-                return $this->ajaxResponse(false, 'Failed to save data', $e);
-            }
+
 
         } else {
 

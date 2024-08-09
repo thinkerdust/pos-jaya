@@ -164,7 +164,7 @@ function integers($angka)
             @endphp
             @foreach ($data['detail'] as $d)
                         <?php 
-                                                                      if ($d->length != 0 || $d->width != 0) {
+                                                                                                                                                                                                                                              if ($d->length != 0 || $d->width != 0) {
                     $size = $d->length . 'x' . $d->width;
 
                     $subtotal = ($d->length * $d->width * $d->qty * $d->price / 10000);
@@ -176,7 +176,7 @@ function integers($angka)
 
                 }
                 $grand_total += $subtotal;
-                                                                                                                                                                                    ?>
+                                                                                                                                                                                                                                                                                                                                                            ?>
 
                         <tr>
                             <td scope="row">{{ $no++ }}</td>
@@ -258,12 +258,13 @@ function integers($angka)
                         {{$data['company']->account_number}} <br>{{'a/n ' . $data['company']->account_name}}
                     </p>
                 </td>
-                <td style="width:60%"></td>
+                <td style="width:60%;border:1px solid #555;text-align:center" rowspan="2">
+                    <p>{{($data['header']->paid_off == 1) ? 'LUNAS' : 'BELUM LUNAS'}}</p>
+                </td>
                 <td style="text-align:center">Petugas</td>
             </tr>
             <tr>
                 <td></td>
-                <td style="width:60%"></td>
                 <td style="text-align:center">{{Auth::user()->username}}</td>
             </tr>
         </table>

@@ -163,10 +163,10 @@ function integers($angka)
             $grand_total = 0; @endphp
             @foreach ($data['detail'] as $d)
                         <?php 
-                                                                                                                                    if ($d->length != 0 || $d->width != 0) {
+                                if ($d->length != 0 || $d->width != 0) {
                     $size = $d->length . 'x' . $d->width;
 
-                    $subtotal = ($d->length * $d->width * $d->qty * $d->price / 10000) + $d->packing + $d->cutting;
+                    $subtotal = ($d->length * $d->width * $d->qty * $d->price / 10000);
 
                 } else {
                     $size = "";
@@ -175,7 +175,7 @@ function integers($angka)
 
                 }
                 $grand_total += $subtotal;
-                                                                                                                                                                        ?>
+                                                                                                                                                                                                ?>
 
                         <tr>
                             <td scope="row">{{ $no++ }}</td>

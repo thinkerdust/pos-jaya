@@ -183,7 +183,7 @@ function integers($angka)
                             <td align="right">{{integers($d->price)}}</td>
                             <td align="center">{{$size}}</td>
                             <td align="right">{{integers($d->qty)}}</td>
-                            <td align="right">{{integers($d->packing + $d->cutting)}}</td>
+                            <td align="right">{{}}</td>
                             <td align="right">{{integers($subtotal)}}</td>
                         </tr>
                         @if ($d->note != "")

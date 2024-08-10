@@ -25,20 +25,28 @@ function integers($angka)
 
 <head>
     <meta charset="UTF-8">
-    <title>INVOICE {{ $data['header']->invoice_number }}</title>
+    <title>NOTA {{ $data['header']->invoice_number }}</title>
 
     <style type="text/css">
+        @font-face {
+            font-family: 'Courier';
+            font-style: normal;
+            font-weight: normal;
+            src: url(https://fonts.google.com/share?selection.family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700|Quicksand:wght@300..700) format('truetype');
+        }
+
         * {
-            font-family: Verdana, Arial, sans-serif;
+            font-family: Courier, Geneva, Tahoma, sans-serif;
         }
 
         table {
-            font-size: x-small;
+            font-size: small;
+            font-weight: bold;
         }
 
         tfoot tr td {
             font-weight: bold;
-            font-size: x-small;
+            font-size: small;
         }
 
         .gray {
@@ -61,7 +69,7 @@ function integers($angka)
         #table td,
         #table th {
             border: 1px solid #333;
-            padding: 8px;
+            padding: 3px;
         }
 
         /* #table tr:nth-child(even) {
@@ -69,20 +77,20 @@ function integers($angka)
         } */
 
         #table th {
-            padding-top: 12px;
-            padding-bottom: 12px;
+            padding-top: 3px;
+            padding-bottom: 3px;
             text-align: left;
         }
 
         #tfoot {
-            padding-top: 5px;
-            padding-bottom: 10px;
+            padding-top: 3px;
+            padding-bottom: 3px;
 
         }
 
         #tfoot td,
         #tfoot th {
-            padding: 3px;
+            padding: 2px;
         }
 
         @page {
@@ -123,14 +131,14 @@ function integers($angka)
             <td>:</td>
             <td>{{ \Carbon\Carbon::parse(now())->format('H.i')}}</td>
         </tr>
-        <tr>
+        <!-- <tr>
             <td><strong>Telp</strong></td>
             <td>:</td>
             <td>{{ $data['header']->phone}}</td>
             <td><strong></strong></td>
             <td></td>
             <td></td>
-        </tr>
+        </tr> -->
 
 
 
@@ -155,19 +163,19 @@ function integers($angka)
             $grand_total = 0; @endphp
             @foreach ($data['detail'] as $d)
                         <?php 
-                                                                                                            if ($d->length != 0 || $d->width != 0) {
+                                                                                                                                                                                                        if ($d->length != 0 || $d->width != 0) {
                     $size = $d->length . 'x' . $d->width;
 
-                    $subtotal = ($d->length * $d->width * $d->qty * $d->price / 10000) + $d->packing + $d->cutting;
+                    $subtotal = ($d->length * $d->width * $d->qty * $d->price / 10000);
 
                 } else {
                     $size = "";
 
-                    $subtotal = ($d->qty * $d->price) + $d->packing + $d->cutting;
+                    $subtotal = ($d->qty * $d->price);
 
                 }
                 $grand_total += $subtotal;
-                                                                                                                                                ?>
+                                                                                                                                                                                                                                                                                                                                                                        ?>
 
                         <tr>
                             <td scope="row">{{ $no++ }}</td>
@@ -175,7 +183,7 @@ function integers($angka)
                             <td align="right">{{integers($d->price)}}</td>
                             <td align="center">{{$size}}</td>
                             <td align="right">{{integers($d->qty)}}</td>
-                            <td align="right">{{integers($d->packing + $d->cutting)}}</td>
+                            <td align="right"></td>
                             <td align="right">{{integers($subtotal)}}</td>
                         </tr>
                         @if ($d->note != "")
@@ -187,11 +195,11 @@ function integers($angka)
         </tbody>
     </table>
     <table style="width:100%" id="tfoot">
-        <tr>
+        <!-- <tr>
             <td style="width:60%"></td>
             <td align="right">Subtotal</td>
             <td align="right">{{ integers($grand_total)}}</td>
-        </tr>
+        </tr> -->
         @if ($data['header']->discount != 0)
             <tr>
                 <td style="width:60%"></td>
@@ -223,8 +231,17 @@ function integers($angka)
         <tr>
             <td style="width:60%;"></td>
             <td align="right" style="font-weight:bold">Bayar</td>
-            <td align="right" style="font-weight:bold">{{"Rp. " . integers($data['receipt']->amount)}}</td>
+            <td align="right" style="font-weight:bold">
+                {{"Rp. " . integers(($data['receipt']->pay == 0) ? $data['receipt']->amount : $data['receipt']->pay)}}
+            </td>
         </tr>
+        @if ($data['receipt']->changes != 0)
+            <tr>
+                <td style="width:60%"></td>
+                <td align="right">Kembali</td>
+                <td align="right">{{"Rp. " . integers($data['receipt']->changes)}}</td>
+            </tr>
+        @endif
 
     </table>
     <div id="footer">

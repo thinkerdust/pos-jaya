@@ -80,8 +80,8 @@ class SalesController extends BaseController
 
     public function datatable_pending(Request $request)
     {
-        $min = !empty($request->min) ? date('Y-m-d', strtotime($request->min)) : '';
-        $max = !empty($request->max) ? date('Y-m-d', strtotime($request->max)) : '';
+        $min = !empty($request->min) ? date('Y-m-d', strtotime($request->min)) . ' 00:00:00' : '';
+        $max = !empty($request->max) ? date('Y-m-d', strtotime($request->max)) . ' 23:59:00' : '';
         $role = Auth::user()->id_role;
 
         $data = $this->sales_order->dataTablePending($min, $max, $role);
@@ -124,47 +124,84 @@ class SalesController extends BaseController
 
 
         $user = Auth::user();
-
+        $uid_company = $user->uid_company;
         if (!empty($uid)) {
             $no_inv = $request->invoice_number;
             $get_existing_header = DB::table('sales_orders')->where('uid', $uid)->first();
-            $get_existing_detail = DB::table('sales_order_details')->where('invoice_number', $no_inv)->get();
+            $uid_company = $get_existing_header->uid_company;
+            $get_existing_detail = DB::table('sales_order_details')->where('invoice_number', $no_inv)->where('uid_company', $uid_company)->get();
+
+            try {
+                //delete detail
+                $del_detail = DB::table('sales_order_details')->where('invoice_number', $no_inv)->where('uid_company', $uid_company)->delete();
+            } catch (\Throwable $e) {
+                DB::rollBack();
+                return $this->ajaxResponse(false, 'Failed to save data', $e);
+            }
+
             if ($get_existing_header->pending == 0) {
                 foreach ($get_existing_detail as $old) {
                     if ($request->pending == 0) {
                         //update stock back
                         try {
-                            $update_stock = DB::table('product')->where('uid', $old->uid_product)->where('uid_company', $user->uid_company)->increment('stock', $old->qty);
+                            $update_stock = DB::table('product')->where('uid', $old->uid_product)->where('uid_company', $uid_company)->increment('stock', $old->qty);
                         } catch (\Throwable $e) {
                             DB::rollBack();
                             return $this->ajaxResponse(false, 'Failed to update stock', $e);
                         }
                     }
                 }
+            } else {
+                //create new invoice number
+                $no_inv = "INV" . date('mdY');
+                $get_last_number = DB::table("sales_orders")->where("invoice_number", "like", "$no_inv%")->where('uid_company', $uid_company)->orderBy('invoice_number', 'desc')->count();
+                $no_inv .= '-' . ++$get_last_number;
+
+                $loop = true;
+                while ($loop) {
+                    $validate_inv_number = DB::table('sales_orders')->where("invoice_number", $no_inv)->where('uid_company', $uid_company)->count();
+                    if ($validate_inv_number == 0) {
+                        $loop = false;
+                    } else {
+                        $no_inv = "INV" . date('mdY') . '-' . ++$get_last_number;
+                    }
+                }
+
             }
-            try {
-                //delete detail
-                $del_detail = DB::table('sales_order_details')->where('invoice_number', $no_inv)->delete();
-            } catch (\Throwable $e) {
-                DB::rollBack();
-                return $this->ajaxResponse(false, 'Failed to save data', $e);
-            }
+
 
         } else {
-            $no_inv = "INV" . date('mdY');
-            $get_last_number = DB::table("sales_orders")->where("invoice_number", "like", "$no_inv%")->orderBy('invoice_number', 'desc')->count();
-            $no_inv .= '-' . ++$get_last_number;
 
-            $loop = true;
-            while ($loop) {
-                $validate_inv_number = DB::table('sales_orders')->where("invoice_number", $no_inv)->count();
-                if ($validate_inv_number == 0) {
-                    $loop = false;
-                } else {
-                    $no_inv = "INV" . date('mdY') . '-' . ++$get_last_number;
+            if ($request->pending == 0) {
+                $no_inv = "INV" . date('mdY');
+                $get_last_number = DB::table("sales_orders")->where("invoice_number", "like", "$no_inv%")->where('uid_company', $uid_company)->orderBy('invoice_number', 'desc')->count();
+                $no_inv .= '-' . ++$get_last_number;
+
+                $loop = true;
+                while ($loop) {
+                    $validate_inv_number = DB::table('sales_orders')->where("invoice_number", $no_inv)->where('uid_company', $uid_company)->count();
+                    if ($validate_inv_number == 0) {
+                        $loop = false;
+                    } else {
+                        $no_inv = "INV" . date('mdY') . '-' . ++$get_last_number;
+                    }
                 }
-            }
+            } else {
+                $no_inv = "TMP" . date('mdY');
+                $get_last_number = DB::table("sales_orders")->where("invoice_number", "like", "$no_inv%")->where('uid_company', $uid_company)->orderBy('invoice_number', 'desc')->count();
+                $no_inv .= '-' . ++$get_last_number;
 
+                $loop = true;
+                while ($loop) {
+                    $validate_inv_number = DB::table('sales_orders')->where("invoice_number", $no_inv)->where('uid_company', $uid_company)->count();
+                    if ($validate_inv_number == 0) {
+                        $loop = false;
+                    } else {
+                        $no_inv = "TMP" . date('mdY') . '-' . ++$get_last_number;
+                    }
+                }
+
+            }
 
         }
 
@@ -183,16 +220,16 @@ class SalesController extends BaseController
                     'price' => $request->details['prices'][$i],
                     'length' => $request->details['length'][$i],
                     'width' => $request->details['width'][$i],
-                    'packing' => $request->details['packing'][$i],
-                    'cutting' => $request->details['cutting'][$i],
                     'discount' => 0,
                     'note' => $request->details['notes'][$i],
                     'insert_at' => Carbon::now(),
-                    'insert_by' => $user->id
+                    'insert_by' => $user->id,
+                    'uid_company' => $uid_company
+
                 ]);
             } catch (\Throwable $e) {
                 DB::rollBack();
-                return $this->ajaxResponse(false, 'Failed to save data', $e);
+                return $this->ajaxResponse(false, 'Failed to save data detail', $e);
             }
 
             $subtotal += ($request->details['subtotal'][$i]);
@@ -245,8 +282,8 @@ class SalesController extends BaseController
             } else {
                 $data['insert_at'] = Carbon::now();
                 $data['insert_by'] = $user->id;
-                $uid_purchase_order = 'SO' . Carbon::now()->format('YmdHisu');
-                $data['uid'] = $uid_purchase_order;
+                $uid_sales_order = 'SO' . Carbon::now()->format('YmdHisu');
+                $data['uid'] = $uid_sales_order;
                 $data['uid_company'] = $user->uid_company;
             }
 
@@ -267,8 +304,8 @@ class SalesController extends BaseController
     public function edit_sales_order(Request $request)
     {
         $uid = $request->uid;
-        $data['header'] = db::table('sales_orders as so')->join('customer as cus', 'cus.uid', 'so.uid_customer')->select('so.uid', 'so.invoice_number', 'so.uid_customer', 'so.transaction_date', 'cus.name', 'so.discount', 'so.disc_rate', 'so.tax_rate', 'so.tax_value', 'so.grand_total', 'so.collection_date', 'so.priority', 'so.proofing', 'so.note')->where('so.uid', $uid)->where('so.status', 1)->first();
-        $data['detail'] = db::table('sales_order_details as pd')->join('product as p', 'p.uid', 'pd.uid_product')->join('unit as u', 'u.uid', 'pd.uid_unit')->select('pd.invoice_number', 'pd.uid_product', 'p.name as product_name', 'pd.uid_unit', 'u.name as unit_name', 'pd.qty', 'pd.price', 'p.stock', 'pd.note', 'pd.packing', 'pd.cutting', 'pd.length', 'pd.width')->where('pd.invoice_number', $data['header']->invoice_number)->where('pd.status', 1)->get()->toArray();
+        $data['header'] = db::table('sales_orders as so')->join('customer as cus', 'cus.uid', 'so.uid_customer')->select('so.uid', 'so.invoice_number', 'so.uid_customer', 'so.transaction_date', 'cus.name', 'so.discount', 'so.disc_rate', 'so.tax_rate', 'so.tax_value', 'so.grand_total', 'so.collection_date', 'so.priority', 'so.proofing', 'so.note', 'so.uid_company')->where('so.uid', $uid)->where('so.status', 1)->first();
+        $data['detail'] = db::table('sales_order_details as pd')->join('product as p', 'p.uid', 'pd.uid_product')->join('unit as u', 'u.uid', 'pd.uid_unit')->select('pd.invoice_number', 'pd.uid_product', 'p.name as product_name', 'pd.uid_unit', 'u.name as unit_name', 'pd.qty', 'pd.price', 'p.stock', 'pd.note', 'pd.length', 'pd.width')->where('pd.invoice_number', $data['header']->invoice_number)->where('pd.status', 1)->where('pd.uid_company', $data['header']->uid_company)->get()->toArray();
         return $this->ajaxResponse(true, 'Success!', $data);
     }
 
@@ -279,19 +316,20 @@ class SalesController extends BaseController
         $process = DB::table('sales_orders')->where('uid', $uid)
             ->update(['status' => 0, 'update_at' => Carbon::now(), 'update_by' => $user->id]);
 
-        $get_invoice_number = DB::table('sales_orders')->select('invoice_number', 'pending')->where('uid', $uid)->first();
+        $get_invoice_number = DB::table('sales_orders')->select('invoice_number', 'pending', 'uid_company')->where('uid', $uid)->first();
         $invoice_number = $get_invoice_number->invoice_number;
         $pending = $get_invoice_number->pending;
-        $del_detail = DB::table('sales_order_details')->where('invoice_number', $invoice_number)
+        $uid_company = $get_invoice_number->uid_company;
+        $del_detail = DB::table('sales_order_details')->where('invoice_number', $invoice_number)->where('uid_company', $uid_company)
             ->update(['status' => 0, 'update_at' => Carbon::now(), 'update_by' => $user->id]);
 
         //update stock
-        $get_existing_detail = DB::table('sales_order_details')->where('invoice_number', $invoice_number)->get();
+        $get_existing_detail = DB::table('sales_order_details')->where('invoice_number', $invoice_number)->where('uid_company', $uid_company)->get();
         foreach ($get_existing_detail as $old) {
             if ($pending == 0) {
                 //update stock back
                 try {
-                    $update_stock = DB::table('product')->where('uid', $old->uid_product)->where('uid_company', $user->uid_company)->increment('stock', $old->qty);
+                    $update_stock = DB::table('product')->where('uid', $old->uid_product)->where('uid_company', $uid_company)->increment('stock', $old->qty);
                 } catch (\Throwable $e) {
                     DB::rollBack();
                     return $this->ajaxResponse(false, 'Failed to update stock', $e);
@@ -311,9 +349,9 @@ class SalesController extends BaseController
     public function print_pdf(Request $request)
     {
         $uid = $request->uid;
-        $data['header'] = db::table('sales_orders as so')->join('customer as cus', 'cus.uid', 'so.uid_customer')->select('so.uid', 'so.invoice_number', 'so.uid_customer', 'so.transaction_date', 'cus.name', 'cus.phone', 'so.discount', 'so.disc_rate', 'so.tax_rate', 'so.tax_value', 'so.grand_total', 'so.collection_date', 'so.priority', 'so.uid_company', 'so.proofing')->where('so.uid', $uid)->where('so.status', 1)->first();
-        $data['detail'] = db::table('sales_order_details as pd')->join('product as p', 'p.uid', 'pd.uid_product')->join('unit as u', 'u.uid', 'pd.uid_unit')->select('pd.invoice_number', 'pd.uid_product', 'p.name as product_name', 'pd.uid_unit', 'u.name as unit_name', 'pd.qty', 'pd.price', 'pd.note', 'pd.length', 'pd.width', 'pd.packing', 'pd.cutting')->where('pd.invoice_number', $data['header']->invoice_number)->where('pd.status', 1)->get()->toArray();
-        $data['receipt'] = DB::table('receivable_payments as rp')->where('rp.invoice_number', $data['header']->invoice_number)->where('status', 1)->sum('amount');
+        $data['header'] = db::table('sales_orders as so')->join('customer as cus', 'cus.uid', 'so.uid_customer')->select('so.uid', 'so.invoice_number', 'so.uid_customer', 'so.transaction_date', 'cus.name', 'cus.phone', 'so.discount', 'so.disc_rate', 'so.tax_rate', 'so.tax_value', 'so.grand_total', 'so.collection_date', 'so.priority', 'so.uid_company', 'so.proofing', 'so.paid_off')->where('so.uid', $uid)->where('so.status', 1)->first();
+        $data['detail'] = db::table('sales_order_details as pd')->join('product as p', 'p.uid', 'pd.uid_product')->join('unit as u', 'u.uid', 'pd.uid_unit')->select('pd.invoice_number', 'pd.uid_product', 'p.name as product_name', 'pd.uid_unit', 'u.name as unit_name', 'pd.qty', 'pd.price', 'pd.note', 'pd.length', 'pd.width')->where('pd.invoice_number', $data['header']->invoice_number)->where('pd.status', 1)->where('pd.uid_company', $data['header']->uid_company)->get()->toArray();
+        $data['receipt'] = DB::table('receivable_payments as rp')->where('rp.invoice_number', $data['header']->invoice_number)->where('status', 1)->where('uid_company', $data['header']->uid_company)->sum('amount');
         $data['company'] = DB::table('company')->where('uid', $data['header']->uid_company)->first();
 
 
@@ -338,12 +376,13 @@ class SalesController extends BaseController
         $response_status = true;
         $response_message = "Ready Stock";
         $user = Auth::user();
+        $uid_company = $request->uid_company;
         $data = array();
         for ($i = 0; $i < sizeof($request->details['products']); $i++) {
 
             $uid_product = $request->details['products'][$i];
             $qty = $request->details['qty'][$i];
-            $get_stock = DB::table('product')->where('uid', $uid_product)->where('uid_company', $user->uid_company)->first();
+            $get_stock = DB::table('product')->where('uid', $uid_product)->where('uid_company', $uid_company)->first();
             if (!empty($get_stock)) {
                 if ($get_stock->stock < $qty) {
                     $low_stock = array();

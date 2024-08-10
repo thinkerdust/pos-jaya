@@ -38,9 +38,10 @@ class ReceivablePaymentController extends BaseController
     {
         $min = !empty($request->min) ? date('Y-m-d', strtotime($request->min)) . ' 00:00:00' : '';
         $max = !empty($request->max) ? date('Y-m-d', strtotime($request->max)) . ' 23:59:00' : '';
+        $payment_method = !empty($request->payment) ? $request->payment : '';
         $role = Auth::user()->id_role;
 
-        $data = $this->receivable_payment->dataTableReceivablePayments($min, $max, $role);
+        $data = $this->receivable_payment->dataTableReceivablePayments($min, $max, $role, $payment_method);
         return Datatables::of($data)->addIndexColumn()
             ->addColumn('action', function ($row) {
                 $btn = '';
@@ -161,14 +162,15 @@ class ReceivablePaymentController extends BaseController
 
         $get_noinv = DB::table('receivable_payments')->where('uid', $uid)->first();
         $noinv = $get_noinv->invoice_number;
+        $uid_company = $get_noinv->uid_company;
 
         $process = DB::table('receivable_payments')->where('uid', $uid)
             ->update(['status' => 0, 'update_at' => Carbon::now(), 'update_by' => $user->id]);
 
         $get_total_bayar = DB::table('receivable_payments')->where('invoice_number', $noinv)->where('status', 1)->sum('amount');
-        $get_total_inv = DB::table('sales_orders')->where('invoice_number', $noinv)->where('status', 1)->first();
+        $get_total_inv = DB::table('sales_orders')->where('invoice_number', $noinv)->where('status', 1)->where('uid_company', $uid_company)->first();
         $paid_off = ($get_total_bayar == $get_total_inv->grand_total) ? 1 : 0;
-        $update_paid_off = DB::table('sales_orders')->where('invoice_number', $noinv)->where('status', 1)->update(['paid_off' => $paid_off]);
+        $update_paid_off = DB::table('sales_orders')->where('invoice_number', $noinv)->where('status', 1)->where('uid_company', $uid_company)->update(['paid_off' => $paid_off]);
 
         if ($process) {
             return $this->ajaxResponse(true, 'Data save successfully');
@@ -184,8 +186,8 @@ class ReceivablePaymentController extends BaseController
         $data['receipt'] = DB::table('receivable_payments as rp')->join('users as u', 'rp.insert_by', 'u.id')->where('rp.uid', $uid)->where('rp.status', 1)->select('rp.uid', 'rp.term', 'rp.amount', 'u.username', 'rp.invoice_number', 'rp.uid_company')->first();
         $data['company'] = DB::table('company')->where('uid', $data['receipt']->uid_company)->first();
 
-        $data['header'] = DB::table('sales_orders as so')->join('customer as cus', 'cus.uid', 'so.uid_customer')->select('so.uid', 'so.invoice_number', 'so.uid_customer', 'so.transaction_date', 'cus.name', 'cus.phone', 'so.discount', 'so.disc_rate', 'so.tax_rate', 'so.tax_value', 'so.grand_total', 'so.collection_date', 'so.priority', 'so.paid_off', 'so.proofing')->where('so.invoice_number', $data['receipt']->invoice_number)->where('so.status', 1)->first();
-        $data['detail'] = DB::table('sales_order_details as pd')->join('product as p', 'p.uid', 'pd.uid_product')->join('unit as u', 'u.uid', 'pd.uid_unit')->select('pd.invoice_number', 'pd.uid_product', 'p.name as product_name', 'pd.uid_unit', 'u.name as unit_name', 'pd.qty', 'pd.price', 'pd.note', 'pd.length', 'pd.width', 'pd.packing', 'pd.cutting')->where('pd.invoice_number', $data['receipt']->invoice_number)->where('pd.status', 1)->get()->toArray();
+        $data['header'] = DB::table('sales_orders as so')->join('customer as cus', 'cus.uid', 'so.uid_customer')->select('so.uid', 'so.invoice_number', 'so.uid_customer', 'so.transaction_date', 'cus.name', 'cus.phone', 'so.discount', 'so.disc_rate', 'so.tax_rate', 'so.tax_value', 'so.grand_total', 'so.collection_date', 'so.priority', 'so.paid_off', 'so.proofing')->where('so.invoice_number', $data['receipt']->invoice_number)->where('so.uid_company', $data['receipt']->uid_company)->where('so.status', 1)->first();
+        $data['detail'] = DB::table('sales_order_details as pd')->join('product as p', 'p.uid', 'pd.uid_product')->join('unit as u', 'u.uid', 'pd.uid_unit')->select('pd.invoice_number', 'pd.uid_product', 'p.name as product_name', 'pd.uid_unit', 'u.name as unit_name', 'pd.qty', 'pd.price', 'pd.note', 'pd.length', 'pd.width')->where('pd.invoice_number', $data['receipt']->invoice_number)->where('pd.status', 1)->where('pd.uid_company', $data['receipt']->uid_company)->get()->toArray();
 
         $pdf = PDF::loadview('transactions.receivable_payment.receipt', ['data' => $data])->setPaper('A5', 'landscape');
         return $pdf->stream('Nota-' . $data['header']->invoice_number);
@@ -207,9 +209,10 @@ class ReceivablePaymentController extends BaseController
     public function get_receivable_payment(Request $request)
     {
         $uid = $request->uid;
-        $data['header'] = DB::table('sales_orders as so')->join('customer as cus', 'cus.uid', 'so.uid_customer')->select('so.uid', 'so.invoice_number', 'so.uid_customer', 'so.transaction_date', 'cus.name', 'cus.phone', 'so.discount', 'so.disc_rate', 'so.tax_rate', 'so.tax_value', 'so.grand_total', 'so.collection_date', 'so.priority', DB::raw('so.grand_total - (SELECT ifnull(sum(rp.amount), 0) FROM receivable_payments as rp WHERE rp.status = 1 AND rp.invoice_number = so.invoice_number) as selisih'))->where('so.uid', $uid)->first();
+        $data['header'] = DB::table('sales_orders as so')->join('customer as cus', 'cus.uid', 'so.uid_customer')->select('so.uid', 'so.invoice_number', 'so.uid_customer', 'so.transaction_date', 'cus.name', 'cus.phone', 'so.discount', 'so.disc_rate', 'so.tax_rate', 'so.tax_value', 'so.grand_total', 'so.collection_date', 'so.priority', 'so.uid_company', DB::raw('so.grand_total - (SELECT ifnull(sum(rp.amount), 0) FROM receivable_payments as rp WHERE rp.status = 1 AND rp.invoice_number = so.invoice_number) as selisih'))->where('so.uid', $uid)->where('so.status', 1)->first();
         $invoice_number = $data['header']->invoice_number;
-        $data['receipt'] = DB::table('receivable_payments as rp')->join('payment_method as pm', 'pm.uid', '=', 'rp.uid_payment_method')->select('rp.uid', 'rp.invoice_number', 'rp.amount', 'rp.transaction_date', 'pm.name as payment_method')->where('rp.invoice_number', $invoice_number)->where('rp.status', 1)->get();
+        $uid_company = $data['header']->uid_company;
+        $data['receipt'] = DB::table('receivable_payments as rp')->join('payment_method as pm', 'pm.uid', '=', 'rp.uid_payment_method')->select('rp.uid', 'rp.invoice_number', 'rp.amount', 'rp.transaction_date', 'pm.name as payment_method')->where('rp.invoice_number', $invoice_number)->where('rp.status', 1)->where('rp.uid_company', $uid_company)->get();
 
         return $this->ajaxResponse(true, 'Success!', $data);
     }

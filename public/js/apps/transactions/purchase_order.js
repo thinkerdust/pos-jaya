@@ -1,5 +1,6 @@
 var grand_total = 0;
 var disc = 0;
+var level = "{{Auth::user()->id_role}}";
 
 $('.formated_number').on('keyup', (evt) => {
     keyUpThousandView(evt)
@@ -46,6 +47,7 @@ $(document).ready(function() {
                         let header = response.data.header;
                         let detail = response.data.detail;
                         $('#uid_purchase_order').val(header.uid);
+                        $('#uid_company').val(header.uid_company);
                         $('#po_number').val(header.po_number);
                         if (header.discount != 0) {
                             $('#en_disc').attr('checked',true);

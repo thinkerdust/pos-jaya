@@ -21,6 +21,7 @@
                                         <input type="hidden" name="uid_sales_order" id="uid_sales_order"
                                             value="{{ isset($uid) ? $uid : null }}">
                                             <input type="hidden" name="invoice_number" id="invoice_number">
+                                            <input type="hidden" name="uid_company" id="uid_company" value="{{Auth::user()->uid_company}}">
 
                                         <div class="row gy-4">
                                             <div class="col-sm-6">
@@ -135,25 +136,25 @@
                                                     </div>
                                                 </div> -->
 
-                                                <div class="form-group">
+                                                <!-- <div class="form-group">
                                                     <label class="form-label">Proofing</label>
                                                     <div class="row">
-                                                        <div class="form-control-wrap col-md-12">
-                                                            <input type="text" class="form-control formated_number" id="proofing"
-                                                                name="proofing" value="0" required>
-                                                        </div>
+                                                        <div class="form-control-wrap col-md-12"> -->
+                                                            <input type="hidden" class="form-control formated_number" id="proofing"
+                                                                name="proofing" value="0" >
+                                                        <!-- </div>
                                                     </div>
-                                                </div>
+                                                </div> -->
 
-                                                <div class="form-group">
+                                                <!-- <div class="form-group">
                                                     <label class="form-label">Keterangan</label>
                                                     <div class="row">
-                                                        <div class="form-control-wrap col-md-12">
-                                                            <input type="text" class="form-control" id="keterangan"
+                                                        <div class="form-control-wrap col-md-12"> -->
+                                                            <input type="hidden" class="form-control" id="keterangan"
                                                                 name="keterangan" >
-                                                        </div>
+                                                        <!-- </div>
                                                     </div>
-                                                </div>
+                                                </div> -->
 
                                                 <!-- <div class="form-group">
                                                     <label class="form-label">Cutting</label>
@@ -323,8 +324,6 @@
                                                         <th class="text-center">Qty</th>
                                                         <th class="text-center">Ukuran</th>
                                                         <th class="text-center">Harga</th>
-                                                        <th class="text-center">Cutting Price</th>
-                                                        <th class="text-center">Packing Price</th>
                                                         <th class="text-center">Subtotal</th>
                                                         <th class="text-center">Notes</th>
                                                         <th class="text-center">Action</th>
@@ -341,8 +340,15 @@
                                             </table>
                                         </div>
                                         <hr class="preview-hr">
-                                        <button type="submit" class="btn btn-theme-sml submit"
-                                            id="btn-submit">Simpan</button>
+                                        @if (Auth::user()->id_role==2)
+                                            @if (isset($uid))
+                                            <button type="submit" class="btn btn-theme-sml submit"
+                                                id="btn-submit">Simpan</button>
+                                            @endif
+                                        @else
+                                            <button type="submit" class="btn btn-theme-sml submit"
+                                                    id="btn-submit">Simpan</button>
+                                        @endif
                                         <button type="submit"
                                             class="btn btn-outline-secondary btn-dim submit" id="btn-pending">Pending</button>
                                     </form>

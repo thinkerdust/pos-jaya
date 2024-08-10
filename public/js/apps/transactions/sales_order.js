@@ -4,6 +4,7 @@ var ppn = 0;
 var laminating = 0;
 var proofing = 0;
 var which;
+var level = "{{Auth::user()->id_role}}";
 
 $(".submit").click(function () {
     which = $(this).attr("id");
@@ -35,7 +36,7 @@ const thousandView = (number = 0) => {
 }
 
 const originView = (number = 0) => {
-    return number.replace('.','');
+    return number.replaceAll('.','').replaceAll(',','.');
 }
 
 $(document).ready(function() {    
@@ -50,6 +51,7 @@ $(document).ready(function() {
                         let detail = response.data.detail;
                         $('#uid_sales_order').val(header.uid);
                         $('#invoice_number').val(header.invoice_number);
+                        $('#uid_company').val(header.uid_company);
                         $('#collection_date').val(header.collection_date);
                         $('#priority').val(header.priority);
                         $('#disc').val(thousandView(header.discount));
@@ -95,8 +97,6 @@ $(document).ready(function() {
                             html += '<td class="text-center"><input type="hidden" name="details[stock][]" value="'+detail[i].qty+'"/>'+detail[i].qty+'</td>';
                             html += '<td class="text-center"><input type="hidden" name="details[length][]" value="'+length+'"/><input type="hidden" name="details[width][]" value="'+width+'"/>'+length+'x'+width+'</td>';
                             html += '<td class="text-center"><input type="hidden" name="details[prices][]" value="'+price+'"/>'+price_formated+'</td>';
-                            html += '<td class="text-center"><input type="hidden" name="details[cutting][]" value="'+cutting+'"/>'+cutting_formated+'</td>';
-                            html += '<td class="text-center"><input type="hidden" name="details[packing][]" value="'+packing+'"/>'+packing_formated+'</td>';            
                             html += '<td class="text-center"><input class="subtotal" type="hidden" name="details[subtotal][]" value="'+subtotal+'"/>'+subtotal_formated+'</td>';
                             html += '<td class="text-center"><input class="notes" type="hidden" name="details[notes][]" value="'+notes+'"/>'+notes+'</td>';
                             html += '<td class="text-center">';
@@ -572,8 +572,6 @@ $("#add_product").click(function(){
                 html += '<td class="text-center"><input type="hidden" name="details[qty][]" value="'+qty+'"/>'+qty+'</td>';
                 html += '<td class="text-center"><input type="hidden" name="details[length][]" value="'+length+'"/><input type="hidden" name="details[width][]" value="'+width+'"/>'+length+'x'+width+'</td>';
                 html += '<td class="text-center"><input type="hidden" name="details[prices][]" value="'+price+'"/>'+price_formated+'</td>';
-                html += '<td class="text-center"><input type="hidden" name="details[cutting][]" value="'+cutting+'"/>'+cutting_formated+'</td>';
-                html += '<td class="text-center"><input type="hidden" name="details[packing][]" value="'+packing+'"/>'+packing_formated+'</td>';
                 html += '<td class="text-center"><input class="subtotal" type="hidden" name="details[subtotal][]" value="'+subtotal+'"/>'+subtotal_formated+'</td>';
                 html += '<td class="text-center"><input class="notes" type="hidden" name="details[notes][]" value="'+notes+'"/>'+notes+'</td>';
                 html += '<td class="text-center">';
@@ -890,7 +888,10 @@ function edit_receipt(uid){
             if(response.status){
                 $("#modal_uid").val(uid);
                 $("#modal_payment_method").empty().append(`<option value="${response.data[0].uid_payment_method}">${response.data[0].payment_method}</option>`).val(response.data[0].uid_payment_method).trigger('change');
-                $("#modal_amount").val(thousandView(response.data[0].amount));
+                $("#modal_amount").val(thousandView(response.data[0].pay));
+                var selisih = parseFloat(originView($("#modal_selisih").val())) + parseFloat(response.data[0].amount);
+                $("#modal_selisih").val(thousandView(selisih));
+                $("#modal_changes").val(thousandView(response.data[0].changes));
             }else{
                 NioApp.Toast(response.message, 'warning', {position: 'top-right'});
             }
@@ -919,3 +920,14 @@ function clearFilter(){
     $("#dt-table").DataTable().ajax.reload();
     $("#modal_filter").modal('hide');
 }
+
+
+$("#modal_amount").keyup(function(){
+    var bayar = $(this).val() ? originView($(this).val()) : 0;
+    var tagihan = $("#modal_selisih").val() ? originView($("#modal_selisih").val()) : 0;
+    console.log(bayar)
+    console.log(tagihan)
+    var kembalian = bayar - tagihan;
+    kembalian = (kembalian < 0) ? 0 : kembalian;
+    $("#modal_changes").val(thousandView(kembalian));
+})

@@ -28,17 +28,25 @@ function integers($angka)
     <title>Purchase Order {{ $data['header']->po_number }}</title>
 
     <style type="text/css">
+        @font-face {
+            font-family: 'Courier';
+            font-style: normal;
+            font-weight: normal;
+            src: url(https://fonts.google.com/share?selection.family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700|Quicksand:wght@300..700) format('truetype');
+        }
+
         * {
-            font-family: Verdana, Arial, sans-serif;
+            font-family: Courier, Geneva, Tahoma, sans-serif;
         }
 
         table {
-            font-size: x-small;
+            font-size: small;
+            font-weight: bold;
         }
 
         tfoot tr td {
             font-weight: bold;
-            font-size: x-small;
+            font-size: small;
         }
 
         .gray {
@@ -155,7 +163,7 @@ function integers($angka)
             @foreach ($data['detail'] as $d)
                         <?php    $subtotal = $d->qty * $d->price;
                 $grand_total += $subtotal;
-                                                                                                                                                                                                                                                                                                                        ?>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    ?>
 
                         <tr>
                             <td scope="row">{{ $no++ }}</td>

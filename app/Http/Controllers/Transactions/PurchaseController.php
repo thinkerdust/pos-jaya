@@ -52,7 +52,7 @@ class PurchaseController extends BaseController
                         $btn = '<a href="/transaction/purchase/add?uid=' . $row->uid . '" class="btn btn-dim btn-outline-secondary btn-sm"><em class="icon ni ni-edit"></em><span>Edit</span></a>&nbsp;
                                 <a class="btn btn-dim btn-outline-secondary btn-sm" onclick="hapus(\'' . $row->uid . '\')"><em class="icon ni ni-trash"></em><span>Delete</span></a>&nbsp';
                     }
-                    $btn .= '<a class="btn btn-dim btn-outline-secondary btn-sm" href="/transaction/purchase/add?uid=' . $row->uid . '"><em class="icon ni ni-eye"></em><span>View</span></a>&nbsp';
+                    // $btn .= '<a class="btn btn-dim btn-outline-secondary btn-sm" href="/transaction/purchase/add?uid=' . $row->uid . '"><em class="icon ni ni-eye"></em><span>View</span></a>&nbsp';
                     $btn .= '<a class="btn btn-dim btn-outline-secondary btn-sm" target="_blank" href="/transaction/purchase/po/' . $row->uid . '"><em class="icon ni ni-send"></em><span>Purchase Order</span></a>';
                 }
 
@@ -83,14 +83,16 @@ class PurchaseController extends BaseController
 
 
         $user = Auth::user();
-
+        $uid_company = $user->uid_company;
         if (!empty($uid)) {
             $no_po = $request->po_number;
-            $get_existing_detail = DB::table('purchase_order_details')->where('po_number', $no_po)->get();
+            $get_existing_header = DB::table('purchase_orders')->where('uid', $uid)->first();
+            $uid_company = $get_existing_header->uid_company;
+            $get_existing_detail = DB::table('purchase_order_details')->where('po_number', $no_po)->where('uid_company', $uid_company)->get();
             foreach ($get_existing_detail as $old) {
                 //update stock back
                 try {
-                    $update_stock = DB::table('product')->where('uid', $old->uid_product)->where('uid_company', $user->uid_company)->decrement('stock', $old->qty);
+                    $update_stock = DB::table('product')->where('uid', $old->uid_product)->where('uid_company', $uid_company)->decrement('stock', $old->qty);
                 } catch (\Throwable $e) {
                     DB::rollBack();
                     return $this->ajaxResponse(false, 'Failed to update stock', $e);
@@ -99,7 +101,7 @@ class PurchaseController extends BaseController
 
             try {
                 //delete detail
-                $del_detail = DB::table('purchase_order_details')->where('po_number', $no_po)->delete();
+                $del_detail = DB::table('purchase_order_details')->where('po_number', $no_po)->where('uid_company', $uid_company)->delete();
             } catch (\Throwable $e) {
                 DB::rollBack();
                 return $this->ajaxResponse(false, 'Failed to save data', $e);
@@ -107,12 +109,12 @@ class PurchaseController extends BaseController
 
         } else {
             $no_po = "PO" . date('mdY');
-            $get_last_number = DB::table("purchase_orders")->where("po_number", "like", "$no_po%")->orderBy('po_number', 'desc')->count();
+            $get_last_number = DB::table("purchase_orders")->where("po_number", "like", "$no_po%")->where("uid_company", $uid_company)->orderBy('po_number', 'desc')->count();
             $no_po .= '-' . ++$get_last_number;
 
             $loop = true;
             while ($loop) {
-                $validate_po_number = DB::table('purchase_orders')->where("po_number", $no_po)->count();
+                $validate_po_number = DB::table('purchase_orders')->where("po_number", $no_po)->where('uid_company', $uid_company)->count();
                 if ($validate_po_number == 0) {
                     $loop = false;
                 } else {
@@ -139,7 +141,8 @@ class PurchaseController extends BaseController
                     'note' => '',
                     'insert_at' => Carbon::now(),
                     'insert_by' => $user->id,
-                    'status' => 1
+                    'status' => 1,
+                    'uid_company' => $uid_company
                 ]);
             } catch (\Throwable $e) {
                 DB::rollBack();
@@ -148,7 +151,7 @@ class PurchaseController extends BaseController
 
             try {
                 //update stock
-                $update_stock = DB::table('product')->where('uid', $request->details['products'][$i])->where('uid_company', $user->uid_company)->increment('stock', $request->details['qty'][$i]);
+                $update_stock = DB::table('product')->where('uid', $request->details['products'][$i])->where('uid_company', $uid_company)->increment('stock', $request->details['qty'][$i]);
             } catch (\Throwable $e) {
                 DB::rollBack();
                 return $this->ajaxResponse(false, 'Failed to update stock', $e);
@@ -206,8 +209,8 @@ class PurchaseController extends BaseController
     public function edit_purchase_order(Request $request)
     {
         $uid = $request->uid;
-        $data['header'] = db::table('purchase_orders as po')->join('supplier as sup', 'sup.uid', 'po.uid_supplier')->select('po.uid', 'po.po_number', 'po.uid_supplier', 'po.transaction_date', 'sup.name', 'po.discount')->where('po.uid', $uid)->where('po.status', 1)->first();
-        $data['detail'] = db::table('purchase_order_details as pd')->join('product as p', 'p.uid', 'pd.uid_product')->join('unit as u', 'u.uid', 'pd.uid_unit')->select('pd.po_number', 'pd.uid_product', 'p.name as product_name', 'pd.uid_unit', 'u.name as unit_name', 'pd.qty', 'pd.price')->where('pd.po_number', $data['header']->po_number)->where('pd.status', 1)->get()->toArray();
+        $data['header'] = db::table('purchase_orders as po')->join('supplier as sup', 'sup.uid', 'po.uid_supplier')->select('po.uid', 'po.po_number', 'po.uid_supplier', 'po.transaction_date', 'sup.name', 'po.discount', 'po.uid_company')->where('po.uid', $uid)->where('po.status', 1)->first();
+        $data['detail'] = db::table('purchase_order_details as pd')->join('product as p', 'p.uid', 'pd.uid_product')->join('unit as u', 'u.uid', 'pd.uid_unit')->select('pd.po_number', 'pd.uid_product', 'p.name as product_name', 'pd.uid_unit', 'u.name as unit_name', 'pd.qty', 'pd.price')->where('pd.po_number', $data['header']->po_number)->where('pd.uid_company', $data['header']->uid_company)->where('pd.status', 1)->get()->toArray();
         return $this->ajaxResponse(true, 'Success!', $data);
     }
 
@@ -215,13 +218,13 @@ class PurchaseController extends BaseController
     {
         $uid = $request->uid;
         $user = Auth::user();
-        $get_po_number = DB::table('purchase_orders')->select('po_number')->where('uid', $uid)->first();
+        $get_po_number = DB::table('purchase_orders')->select('po_number', 'uid_company')->where('uid', $uid)->first();
         $po_number = $get_po_number->po_number;
-
+        $uid_company = $get_po_number->uid_company;
         //check future stock
-        $detail_po = DB::table('purchase_order_details')->where('po_number', $po_number)->get();
+        $detail_po = DB::table('purchase_order_details')->where('po_number', $po_number)->where('uid_company', $uid_company)->get();
         foreach ($detail_po as $po) {
-            $get_existing_stock = DB::table('product')->where('uid', $po->uid_product)->first();
+            $get_existing_stock = DB::table('product')->where('uid', $po->uid_product)->where('uid_company', $uid_company)->first();
             $existing_stock = $get_existing_stock->stock;
             $qty = $po->qty;
             $future_stock = $existing_stock - $qty;
@@ -235,14 +238,14 @@ class PurchaseController extends BaseController
         $process = DB::table('purchase_orders')->where('uid', $uid)
             ->update(['status' => 0, 'update_at' => Carbon::now(), 'update_by' => $user->id]);
 
-        $del_detail = DB::table('purchase_order_details')->where('po_number', $po_number)
+        $del_detail = DB::table('purchase_order_details')->where('po_number', $po_number)->where('uid_company', $uid_company)
             ->update(['status' => 0, 'update_at' => Carbon::now(), 'update_by' => $user->id]);
 
-        $get_existing_detail = DB::table('purchase_order_details')->where('po_number', $po_number)->get();
+        $get_existing_detail = DB::table('purchase_order_details')->where('po_number', $po_number)->where('uid_company', $uid_company)->get();
         foreach ($get_existing_detail as $old) {
             //update stock back
             try {
-                $update_stock = DB::table('product')->where('uid', $old->uid_product)->where('uid_company', $user->uid_company)->decrement('stock', $old->qty);
+                $update_stock = DB::table('product')->where('uid', $old->uid_product)->where('uid_company', $uid_company)->decrement('stock', $old->qty);
             } catch (\Throwable $e) {
                 DB::rollBack();
                 return $this->ajaxResponse(false, 'Failed to update stock', $e);
@@ -266,7 +269,7 @@ class PurchaseController extends BaseController
     {
         $uid = $request->uid;
         $data['header'] = db::table('purchase_orders as po')->join('supplier as sup', 'sup.uid', 'po.uid_supplier')->select('po.uid', 'po.po_number', 'po.uid_supplier', 'po.transaction_date', 'sup.name', 'sup.phone', 'po.discount', 'po.tax_rate', 'po.tax_value', 'po.grand_total', 'po.uid_company')->where('po.uid', $uid)->where('po.status', 1)->first();
-        $data['detail'] = db::table('purchase_order_details as pd')->join('product as p', 'p.uid', 'pd.uid_product')->join('unit as u', 'u.uid', 'pd.uid_unit')->select('pd.po_number', 'pd.uid_product', 'p.name as product_name', 'pd.uid_unit', 'u.name as unit_name', 'pd.qty', 'pd.price', 'pd.note')->where('pd.po_number', $data['header']->po_number)->where('pd.status', 1)->get()->toArray();
+        $data['detail'] = db::table('purchase_order_details as pd')->join('product as p', 'p.uid', 'pd.uid_product')->join('unit as u', 'u.uid', 'pd.uid_unit')->select('pd.po_number', 'pd.uid_product', 'p.name as product_name', 'pd.uid_unit', 'u.name as unit_name', 'pd.qty', 'pd.price', 'pd.note')->where('pd.po_number', $data['header']->po_number)->where('pd.status', 1)->where('pd.uid_company', $data['header']->uid_company)->get()->toArray();
         $data['company'] = DB::table('company')->where('uid', $data['header']->uid_company)->first();
 
 
@@ -283,6 +286,7 @@ class PurchaseController extends BaseController
         $response_status = true;
         $response_message = "Ready Stock";
         $user = Auth::user();
+        $uid_company = $request->uid_company;
         $data = array();
         if (!empty($uid)) {
 
@@ -290,8 +294,8 @@ class PurchaseController extends BaseController
             for ($i = 0; $i < sizeof($request->details['products']); $i++) {
 
                 $uid_product = $request->details['products'][$i];
-                $get_stock = DB::table('product')->where('uid', $uid_product)->where('uid_company', $user->uid_company)->first();
-                $get_existing = DB::table('purchase_order_details')->where('uid_product', $uid_product)->where('po_number', $no_po)->first();
+                $get_stock = DB::table('product')->where('uid', $uid_product)->where('uid_company', $uid_company)->first();
+                $get_existing = DB::table('purchase_order_details')->where('uid_product', $uid_product)->where('po_number', $no_po)->where('uid_company', $uid_company)->first();
 
                 $qty = $request->details['qty'][$i];
                 $stock = $get_stock->stock;
@@ -323,7 +327,7 @@ class PurchaseController extends BaseController
         return $number;
     }
 
-    public function datatable_detail_purchase_order(Request $request) 
+    public function datatable_detail_purchase_order(Request $request)
     {
         $uid = $request->uid;
         $data = $this->purchase_order->dataTableDetailPurchaseOrder($uid);

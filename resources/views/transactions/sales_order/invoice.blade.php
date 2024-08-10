@@ -69,7 +69,7 @@ function integers($angka)
         #table td,
         #table th {
             border: 1px solid #333;
-            padding: 5px;
+            padding: 3px;
         }
 
         /* #table tr:nth-child(even) {
@@ -77,20 +77,20 @@ function integers($angka)
         } */
 
         #table th {
-            padding-top: 5px;
-            padding-bottom: 5px;
+            padding-top: 3px;
+            padding-bottom: 3px;
             text-align: left;
         }
 
         #tfoot {
-            padding-top: 5px;
-            padding-bottom: 10px;
+            padding-top: 3px;
+            padding-bottom: 3px;
 
         }
 
         #tfoot td,
         #tfoot th {
-            padding: 3px;
+            padding: 2px;
         }
 
         @page {
@@ -131,14 +131,14 @@ function integers($angka)
             <td>:</td>
             <td>{{ \Carbon\Carbon::parse(now())->format('H.i')}}</td>
         </tr>
-        <tr>
+        <!-- <tr>
             <td><strong>Telp</strong></td>
             <td>:</td>
             <td>{{ $data['header']->phone}}</td>
             <td><strong></strong></td>
             <td></td>
             <td></td>
-        </tr>
+        </tr> -->
 
 
 
@@ -164,7 +164,7 @@ function integers($angka)
             @endphp
             @foreach ($data['detail'] as $d)
                         <?php 
-                                                                                                                                                                                                                                              if ($d->length != 0 || $d->width != 0) {
+                                                                                                                                                                                                                                                                                                          if ($d->length != 0 || $d->width != 0) {
                     $size = $d->length . 'x' . $d->width;
 
                     $subtotal = ($d->length * $d->width * $d->qty * $d->price / 10000);
@@ -176,7 +176,7 @@ function integers($angka)
 
                 }
                 $grand_total += $subtotal;
-                                                                                                                                                                                                                                                                                                                                                            ?>
+                                                                                                                                                                                                                                                                                                                                                                                                                        ?>
 
                         <tr>
                             <td scope="row">{{ $no++ }}</td>
@@ -196,11 +196,11 @@ function integers($angka)
         </tbody>
     </table>
     <table style="width:100%" id="tfoot">
-        <tr>
+        <!-- <tr>
             <td style="width:60%"></td>
             <td align="right">Subtotal</td>
             <td align="right">{{ integers($grand_total)}}</td>
-        </tr>
+        </tr> -->
         @if ($data['header']->discount != 0)
             <tr>
                 <td style="width:60%"></td>

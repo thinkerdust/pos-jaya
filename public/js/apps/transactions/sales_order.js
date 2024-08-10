@@ -36,7 +36,7 @@ const thousandView = (number = 0) => {
 }
 
 const originView = (number = 0) => {
-    return number.replace('.','');
+    return number.replaceAll('.','').replaceAll(',','.');
 }
 
 $(document).ready(function() {    
@@ -888,7 +888,10 @@ function edit_receipt(uid){
             if(response.status){
                 $("#modal_uid").val(uid);
                 $("#modal_payment_method").empty().append(`<option value="${response.data[0].uid_payment_method}">${response.data[0].payment_method}</option>`).val(response.data[0].uid_payment_method).trigger('change');
-                $("#modal_amount").val(thousandView(response.data[0].amount));
+                $("#modal_amount").val(thousandView(response.data[0].pay));
+                var selisih = parseFloat(originView($("#modal_selisih").val())) + parseFloat(response.data[0].amount);
+                $("#modal_selisih").val(thousandView(selisih));
+                $("#modal_changes").val(thousandView(response.data[0].changes));
             }else{
                 NioApp.Toast(response.message, 'warning', {position: 'top-right'});
             }
@@ -917,3 +920,14 @@ function clearFilter(){
     $("#dt-table").DataTable().ajax.reload();
     $("#modal_filter").modal('hide');
 }
+
+
+$("#modal_amount").keyup(function(){
+    var bayar = $(this).val() ? originView($(this).val()) : 0;
+    var tagihan = $("#modal_selisih").val() ? originView($("#modal_selisih").val()) : 0;
+    console.log(bayar)
+    console.log(tagihan)
+    var kembalian = bayar - tagihan;
+    kembalian = (kembalian < 0) ? 0 : kembalian;
+    $("#modal_changes").val(thousandView(kembalian));
+})

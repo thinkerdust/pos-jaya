@@ -116,12 +116,21 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <div class="form-group">
                                 <label class="form-label">Nominal Pembayaran</label>
                                 <div class="form-control-wrap">
                                     <input type="text" class="form-control formated_number" name="modal_amount"
                                         placeholder="0" id="modal_amount" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label class="form-label">Kembalian</label>
+                                <div class="form-control-wrap">
+                                    <input type="text" class="form-control formated_number" name="modal_changes"
+                                        value="0" id="modal_changes" readonly>
                                 </div>
                             </div>
                         </div>

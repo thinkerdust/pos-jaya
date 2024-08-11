@@ -82,9 +82,14 @@ class ReceivablePaymentController extends BaseController
 
         $no_inv = $request->modal_noinv;
 
-        $amount = $this->origin_number($request->modal_amount);
+        $bayar = $this->origin_number($request->modal_amount);
         $selisih = $this->origin_number($request->modal_selisih);
+        $kembali = $this->origin_number($request->modal_changes);
 
+        // echo $bayar . "<br>";
+        // echo $selisih . "<br>";
+        // echo $kembali . "<br>";
+        $amount = $bayar - $kembali;
         if (empty($uid)) {
             $paid_off = ($amount == $selisih) ? 1 : 0;
 
@@ -94,7 +99,7 @@ class ReceivablePaymentController extends BaseController
         } else {
             $get_old_amount = DB::table('receivable_payments')->where('uid', $uid)->where('status', 1)->first();
             $old_amount = $get_old_amount->amount;
-            $selisih += $old_amount;
+            // $selisih += $old_amount;
 
             $paid_off = ($amount == $selisih) ? 1 : 0;
 
@@ -119,6 +124,8 @@ class ReceivablePaymentController extends BaseController
                 'uid_payment_method' => $request->modal_payment_method,
                 'transaction_date' => Carbon::now(),
                 'amount' => $amount,
+                'pay' => $bayar,
+                'changes' => $kembali,
                 'term' => ++$count_term,
                 'status' => 1
             ];
@@ -151,7 +158,10 @@ class ReceivablePaymentController extends BaseController
     public function edit_receivable_payment(Request $request)
     {
         $uid = $request->uid;
-        $data = DB::table('receivable_payments as rp')->join('sales_orders as so', 'so.invoice_number', '=', 'rp.invoice_number')->join('customer as c', 'c.uid', '=', 'so.uid_customer')->join('payment_method as pm', 'pm.uid', 'rp.uid_payment_method')->select('rp.uid', 'rp.invoice_number', 'c.name', 'rp.transaction_date', 'rp.term', 'rp.amount', 'rp.uid_payment_method', 'pm.name as payment_method')->where('rp.uid', $uid)->where('rp.status', 1)->get();
+        $data = DB::table('receivable_payments as rp')->leftJoin('sales_orders as so', function ($join) {
+            $join->on('rp.invoice_number', '=', 'so.invoice_number');
+            $join->on('rp.uid_company', '=', 'so.uid_company');
+        })->join('customer as c', 'c.uid', '=', 'so.uid_customer')->join('payment_method as pm', 'pm.uid', 'rp.uid_payment_method')->select('rp.uid', 'rp.invoice_number', 'c.name', 'rp.transaction_date', 'rp.term', 'rp.amount', 'rp.uid_payment_method', 'pm.name as payment_method', 'rp.pay', 'rp.changes')->where('rp.uid', $uid)->where('rp.status', 1)->get();
         return $this->ajaxResponse(true, 'Success!', $data);
     }
 
@@ -183,7 +193,7 @@ class ReceivablePaymentController extends BaseController
     public function print_pdf(Request $request)
     {
         $uid = $request->uid;
-        $data['receipt'] = DB::table('receivable_payments as rp')->join('users as u', 'rp.insert_by', 'u.id')->where('rp.uid', $uid)->where('rp.status', 1)->select('rp.uid', 'rp.term', 'rp.amount', 'u.username', 'rp.invoice_number', 'rp.uid_company')->first();
+        $data['receipt'] = DB::table('receivable_payments as rp')->join('users as u', 'rp.insert_by', 'u.id')->where('rp.uid', $uid)->where('rp.status', 1)->select('rp.uid', 'rp.term', 'rp.amount', 'u.username', 'rp.invoice_number', 'rp.uid_company', 'rp.pay', 'rp.changes')->first();
         $data['company'] = DB::table('company')->where('uid', $data['receipt']->uid_company)->first();
 
         $data['header'] = DB::table('sales_orders as so')->join('customer as cus', 'cus.uid', 'so.uid_customer')->select('so.uid', 'so.invoice_number', 'so.uid_customer', 'so.transaction_date', 'cus.name', 'cus.phone', 'so.discount', 'so.disc_rate', 'so.tax_rate', 'so.tax_value', 'so.grand_total', 'so.collection_date', 'so.priority', 'so.paid_off', 'so.proofing')->where('so.invoice_number', $data['receipt']->invoice_number)->where('so.uid_company', $data['receipt']->uid_company)->where('so.status', 1)->first();

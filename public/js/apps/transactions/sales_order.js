@@ -742,6 +742,7 @@ function bayar(uid){
                 $("#modal_selisih").val(thousandView(data.selisih));
                 $("#modal_payment_method").val('').trigger('change');
                 $("#modal_amount").val('');
+                $("#modal_changes").val(0);
                 $("#title_modal_pembayaran").html('Form Pembayaran '+data.invoice_number);
                 $("#modal_pembayaran").modal('show')
 
@@ -888,7 +889,9 @@ function edit_receipt(uid){
             if(response.status){
                 $("#modal_uid").val(uid);
                 $("#modal_payment_method").empty().append(`<option value="${response.data[0].uid_payment_method}">${response.data[0].payment_method}</option>`).val(response.data[0].uid_payment_method).trigger('change');
-                $("#modal_amount").val(thousandView(response.data[0].pay));
+                var amount = (response.data[0].pay!=0) ? thousandView(response.data[0].pay) :  thousandView(response.data[0].amount);
+                console.log(amount);
+                $("#modal_amount").val(amount);
                 var selisih = parseFloat(originView($("#modal_selisih").val())) + parseFloat(response.data[0].amount);
                 $("#modal_selisih").val(thousandView(selisih));
                 $("#modal_changes").val(thousandView(response.data[0].changes));
@@ -929,5 +932,8 @@ $("#modal_amount").keyup(function(){
     console.log(tagihan)
     var kembalian = bayar - tagihan;
     kembalian = (kembalian < 0) ? 0 : kembalian;
+    console.log(bayar);
+    console.log(tagihan);
+    console.log(kembalian);
     $("#modal_changes").val(thousandView(kembalian));
 })

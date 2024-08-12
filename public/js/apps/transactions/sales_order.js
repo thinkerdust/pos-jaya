@@ -468,7 +468,7 @@ $("#qty").change(function(){
             success: function(response) {
                 if(response.status) {
                     let data = response.data;
-                    $('#price').val(thousandView(data.price));
+                    $('#price').val(thousandView(data.price)).trigger('keyup');
                     NioApp.Toast('Harga grosir diterapkan', 'success', {position: 'top-right'});
                 }
             },

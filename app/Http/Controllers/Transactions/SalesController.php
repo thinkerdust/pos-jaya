@@ -57,7 +57,7 @@ class SalesController extends BaseController
             ->addColumn('action', function ($row) {
                 $btn = '';
                 $role = Auth::user()->id_role;
-                $cek_pembayaran = DB::table('receivable_payments')->where('invoice_number', $row->invoice_number)->where('status', 1)->count();
+                $cek_pembayaran = DB::table('receivable_payments')->where('invoice_number', $row->invoice_number)->where('uid_company', $row->uid_company, )->where('status', 1)->count();
                 if (Gate::allows('crudAccess', 'TX2', $row)) {
                     if ($cek_pembayaran == 0) {
                         if ($role == 1) {

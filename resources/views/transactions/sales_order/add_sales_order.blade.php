@@ -216,7 +216,7 @@
                                                 <div class="form-group">
                                                     <label class="form-label">Panjang (cm)</label>
                                                     <div class="form-control-wrap">
-                                                        <input type="number" class="form-control" id="panjang" name="panjang"
+                                                        <input type="text" class="form-control formated_number" id="panjang" name="panjang"
                                                             value="0">
                                                     </div>
                                                 </div>
@@ -225,7 +225,7 @@
                                                 <div class="form-group">
                                                     <label class="form-label">Lebar (cm)</label>
                                                     <div class="form-control-wrap">
-                                                        <input type="number" class="form-control" id="lebar" name="lebar"
+                                                        <input type="text" class="form-control formated_number" id="lebar" name="lebar"
                                                             value="0">
                                                     </div>
                                                 </div>

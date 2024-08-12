@@ -177,7 +177,7 @@ class ReceivablePaymentController extends BaseController
         $process = DB::table('receivable_payments')->where('uid', $uid)
             ->update(['status' => 0, 'update_at' => Carbon::now(), 'update_by' => $user->id]);
 
-        $get_total_bayar = DB::table('receivable_payments')->where('invoice_number', $noinv)->where('status', 1)->sum('amount');
+        $get_total_bayar = DB::table('receivable_payments')->where('invoice_number', $noinv)->where('status', 1)->where('uid_company', $uid_company)->sum('amount');
         $get_total_inv = DB::table('sales_orders')->where('invoice_number', $noinv)->where('status', 1)->where('uid_company', $uid_company)->first();
         $paid_off = ($get_total_bayar == $get_total_inv->grand_total) ? 1 : 0;
         $update_paid_off = DB::table('sales_orders')->where('invoice_number', $noinv)->where('status', 1)->where('uid_company', $uid_company)->update(['paid_off' => $paid_off]);

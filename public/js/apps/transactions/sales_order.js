@@ -21,10 +21,20 @@ $('#price').change(function(){
 
 
 const keyUpThousandView = (evt) => {
-    let currentValue = (evt.currentTarget.value != '') ? evt.currentTarget.value.replaceAll('.','') : '0';
+    let parts = evt.currentTarget.value.split(",");
+
+    let integerPart = parts[0];
+    let decimalPart = parts[1] || "";
+
+    let currentValue = (integerPart != '') ? integerPart.replaceAll('.','') : '0';
     let iNumber = parseInt(currentValue);
-    let result = isNaN(iNumber) == false ? thousandView(iNumber) : '0';
-    evt.currentTarget.value = result;
+    let result = isNaN(iNumber) == false ? typeThousandView(iNumber) : '0';
+    if (parts.length == 1) {
+        evt.currentTarget.value = result;
+    }else{
+        evt.currentTarget.value = result+","+decimalPart;
+    }
+
 }
 
 const typeThousandView = (number = 0) => {

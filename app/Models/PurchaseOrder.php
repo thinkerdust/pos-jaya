@@ -22,10 +22,10 @@ class PurchaseOrder extends Model
             $query->whereBetween('po.transaction_date', [$min, $max]);
         }
 
-        if ($role == 2) {
-            $query->where('po.uid_company', $user->uid_company);
-        } elseif ($role == 3) {
+        if ($role == 3) {
             $query->where('po.insert_by', $user->id);
+        } else {
+            $query->where('po.uid_company', $user->uid_company);
         }
 
 
@@ -49,13 +49,13 @@ class PurchaseOrder extends Model
     public function dataTableDetailPurchaseOrder($uid)
     {
         $query = DB::table('purchase_orders as po')
-                    ->join('purchase_order_details as pod', function ($join) {
-                        $join->on('po.po_number', '=', 'pod.po_number')
-                             ->on('po.uid_company', '=', 'pod.uid_company');
-                    })
-                    ->join('product as p', 'pod.uid_product', '=', 'p.uid')
-                    ->where([['po.status', 1], ['pod.status', 1], ['po.uid', $uid]])
-                    ->select('p.kode as kode_product', 'p.name as name_product', 'pod.qty', 'pod.price', 'pod.note', DB::raw('(pod.qty * pod.price) as subtotal'));
+            ->join('purchase_order_details as pod', function ($join) {
+                $join->on('po.po_number', '=', 'pod.po_number')
+                    ->on('po.uid_company', '=', 'pod.uid_company');
+            })
+            ->join('product as p', 'pod.uid_product', '=', 'p.uid')
+            ->where([['po.status', 1], ['pod.status', 1], ['po.uid', $uid]])
+            ->select('p.kode as kode_product', 'p.name as name_product', 'pod.qty', 'pod.price', 'pod.note', DB::raw('(pod.qty * pod.price) as subtotal'));
 
         return $query;
     }

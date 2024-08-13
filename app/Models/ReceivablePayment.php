@@ -26,10 +26,10 @@ class ReceivablePayment extends Model
             $query->where('rp.uid_payment_method', $payment_method);
         }
 
-        if ($role == 2) {
-            $query->where('rp.uid_company', $user->uid_company);
-        } elseif ($role == 3) {
+        if ($role == 3) {
             $query->where('rp.insert_by', $user->id);
+        } else {
+            $query->where('rp.uid_company', $user->uid_company);
         }
 
 

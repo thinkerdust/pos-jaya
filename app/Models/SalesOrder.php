@@ -26,10 +26,10 @@ class SalesOrder extends Model
             $query->where('so.paid_off', $status);
         }
 
-        if ($role == 2) {
-            $query->where('so.uid_company', $user->uid_company);
-        } elseif ($role == 3) {
+        if ($role == 3) {
             $query->where('so.insert_by', $user->id);
+        } else {
+            $query->where('so.uid_company', $user->uid_company);
         }
 
         $order = request('order')[0];

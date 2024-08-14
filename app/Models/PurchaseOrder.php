@@ -31,7 +31,8 @@ class PurchaseOrder extends Model
 
         $order = request('order')[0];
         if ($order['column'] == '0') {
-            $query->orderBy('po.po_number', 'DESC');
+            $query->orderBy(DB::raw("SUBSTRING(po.po_number, 3, 8)"), 'asc')
+            ->orderBy(DB::raw("CAST(SUBSTRING_INDEX(po.po_number, '-', -1) AS UNSIGNED)"), 'asc');
         }
 
         return $query;

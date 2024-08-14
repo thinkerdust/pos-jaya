@@ -60,12 +60,19 @@ class ProductDamageController extends BaseController
             return $this->ajaxResponse(false, $validator->errors()->first());
         }
 
-        $user = Auth::user();
-
+        $uid_product = $request->product;
         $qty = Str::replace('.', '', $request->qty);
 
+        // cek stock produk
+        $check_stock = DB::table('product')->where('uid', $uid_product)->first();
+        if($check_stock->stock < $qty) {
+            return $this->ajaxResponse(false, 'Out of stock!');
+        }
+
+        $user = Auth::user();
+
         $data = [
-            'uid_product' => $request->product,
+            'uid_product' => $uid_product,
             'stock' => $qty,
             'note' => $request->note
         ];

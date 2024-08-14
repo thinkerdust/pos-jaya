@@ -16,13 +16,12 @@ var table = NioApp.DataTable('#dt-table', {
         {data: 'name', name:'cus.name' },
         {data: 'transaction_date', name:'so.transaction_date'},
         {data: 'grand_total', name:'so.grand_total', className:'text-end'},
-        {data: 'note', name:'so.note'},
+        {data: 'note', name:'so.note', orderable: false},
         {data: 'action', orderable: false, searchable: false},
     ],
     columnDefs: [
         {
             targets: 4,
-            orderable: false,
             render: function(data, type, full, meta) {
                 return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(full['grand_total']);
             }

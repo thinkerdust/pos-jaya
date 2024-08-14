@@ -34,7 +34,7 @@ class SalesOrder extends Model
 
         $order = request('order')[0];
         if ($order['column'] == '0') {
-            $query->orderBy('so.uid', 'DESC');
+            $query->orderBy('so.invoice_number', 'DESC');
         }
 
         return $query;

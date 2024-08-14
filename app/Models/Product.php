@@ -23,10 +23,10 @@ class Product extends Model
                     ->select('p.uid', 'p.kode', 'p.name', 'p.cost_price', 'p.sell_price', 'p.retail_member_price', 'p.stock', 'p.status', 'pc.name as name_categories', 'u.name as name_unit');
 
         $user = Auth::user();
-        if($user->id_role == 2) {
-            $query->where('p.uid_company', $user->uid_company);
-        }elseif($user->id_role == 3) {
+        if($user->id_role == 3) {
             $query->where('p.insert_by', $user->id);
+        }else {
+            $query->where('p.uid_company', $user->uid_company);
         }
 
         $order = request('order')[0];
@@ -95,10 +95,10 @@ class Product extends Model
                     ->select('p.uid', 'p.kode', 'p.name', 'p.cost_price', 'p.sell_price', 'p.retail_member_price', 'p.stock', 'p.status', 'pc.name as name_categories', 'u.name as name_unit');
 
         $user = Auth::user();
-        if($user->id_role == 2) {
-            $query->where('p.uid_company', $user->uid_company);
-        }elseif($user->id_role == 3) {
+        if($user->id_role == 3) {
             $query->where('p.insert_by', $user->id);
+        }else {
+            $query->where('p.uid_company', $user->uid_company);
         }
 
         $order = request('order')[0];

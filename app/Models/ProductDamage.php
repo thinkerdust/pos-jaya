@@ -16,10 +16,18 @@ class ProductDamage extends Model
 
     public function dataTableProductDamage()
     {
+        $user = Auth::user();
+
         $query = DB::table('product_damage as pd')
                     ->join('product as p', 'pd.uid_product', '=', 'p.uid')
                     ->where([['pd.status', 1], ['p.status', 1]])
                     ->select('pd.uid', 'pd.uid_product', 'p.name as name_product', 'pd.stock', 'pd.note', 'pd.status');
+
+        if ($user->id_role == 3) {
+            $query->where('pd.insert_by', $user->id);
+        } else {
+            $query->where('p.uid_company', $user->uid_company);
+        }
 
         return $query;
     }

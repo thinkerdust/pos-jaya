@@ -349,7 +349,7 @@
                                             <button type="submit" class="btn btn-theme-sml submit"
                                                     id="btn-submit">Simpan</button>
                                         @endif
-                                        @if (empty($uid))
+                                        @if (empty($uid) || $pending->pending==1)
                                         <button type="submit"
                                             class="btn btn-outline-secondary btn-dim submit" id="btn-pending">Pending</button>
                                         @endif

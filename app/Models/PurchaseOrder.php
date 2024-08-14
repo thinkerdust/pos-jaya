@@ -31,7 +31,7 @@ class PurchaseOrder extends Model
 
         $order = request('order')[0];
         if ($order['column'] == '0') {
-            $query->orderBy('po.uid', 'DESC');
+            $query->orderBy('po.po_number', 'DESC');
         }
 
         return $query;

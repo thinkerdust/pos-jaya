@@ -26,7 +26,7 @@ class ReceivablePaymentController extends BaseController
 
     public function index()
     {
-        $title = 'Penerimaan';
+        $title = 'Pembayaran';
         $js = 'js/apps/transactions/receivable_payment.js?_=' . rand();
         return view('transactions.receivable_payment.index', compact('title', 'js'));
     }

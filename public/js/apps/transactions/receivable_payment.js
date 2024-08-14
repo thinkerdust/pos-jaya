@@ -125,7 +125,6 @@ var table = NioApp.DataTable('#dt-table', {
     columnDefs: [
         {
             targets: 4,
-            orderable: false,
             render: function(data, type, full, meta) {
                 return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(full['amount']);
             }

@@ -35,7 +35,7 @@ class ReceivablePayment extends Model
 
         $order = request('order')[0];
         if ($order['column'] == '0') {
-            $query->orderBy('rp.uid', 'DESC');
+            $query->orderBy('rp.insert_at', 'DESC');
         }
 
         return $query;

@@ -10,7 +10,7 @@ var table = NioApp.DataTable('#dt-table', {
         {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false},
         {data: 'name_product', name: 'p.name'},
         {data: 'stock', name: 'pd.stock', render: $.fn.dataTable.render.number( ',', '.', 0)},
-        {data: 'note', name: 'pd.note'},
+        {data: 'note', name: 'pd.note', orderable: false},
         {data: 'action', orderable: false, searchable: false},
     ],
     columnDefs: [] 

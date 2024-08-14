@@ -34,8 +34,8 @@ class SalesOrder extends Model
 
         $order = request('order')[0];
         if ($order['column'] == '0') {
-            $query->orderBy(DB::raw("SUBSTRING(so.invoice_number, 3, 8)"), 'asc')
-            ->orderBy(DB::raw("CAST(SUBSTRING_INDEX(so.invoice_number, '-', -1) AS UNSIGNED)"), 'asc');
+            $query->orderBy(DB::raw("SUBSTRING(so.invoice_number, 3, 8)"), 'DESC')
+            ->orderBy(DB::raw("CAST(SUBSTRING_INDEX(so.invoice_number, '-', -1) AS UNSIGNED)"), 'DESC');
         }
 
         return $query;
@@ -59,8 +59,8 @@ class SalesOrder extends Model
 
         $order = request('order')[0];
         if ($order['column'] == '0') {
-            $query->orderBy(DB::raw("SUBSTRING(so.invoice_number, 3, 8)"), 'asc')
-            ->orderBy(DB::raw("CAST(SUBSTRING_INDEX(so.invoice_number, '-', -1) AS UNSIGNED)"), 'asc');
+            $query->orderBy(DB::raw("SUBSTRING(so.invoice_number, 3, 8)"), 'DESC')
+            ->orderBy(DB::raw("CAST(SUBSTRING_INDEX(so.invoice_number, '-', -1) AS UNSIGNED)"), 'DESC');
         }
 
         return $query;

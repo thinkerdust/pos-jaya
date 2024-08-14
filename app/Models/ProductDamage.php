@@ -29,6 +29,11 @@ class ProductDamage extends Model
             $query->where('p.uid_company', $user->uid_company);
         }
 
+        $order = request('order')[0];
+        if ($order['column'] == '0') {
+            $query->orderBy('pd.insert_at', 'DESC');
+        }
+
         return $query;
     }
 

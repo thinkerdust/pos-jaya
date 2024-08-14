@@ -105,8 +105,9 @@ class SalesController extends BaseController
     public function add_sales_order(Request $request)
     {
         $uid = $request->uid;
+        $pending = DB::table('sales_orders as so')->where('uid',$uid)->select('pending')->first();
         $js = 'js/apps/transactions/sales_order.js?_=' . rand();
-        return view('transactions.sales_order.add_sales_order', compact('js', 'uid'));
+        return view('transactions.sales_order.add_sales_order', compact('js', 'uid','pending'));
     }
 
     public function store_sales_order(Request $request)
@@ -153,17 +154,19 @@ class SalesController extends BaseController
                 }
             } else {
                 //create new invoice number
-                $no_inv = "INV" . date('mdY');
-                $get_last_number = DB::table("sales_orders")->where("invoice_number", "like", "$no_inv%")->where('uid_company', $uid_company)->orderBy('invoice_number', 'desc')->count();
-                $no_inv .= '-' . ++$get_last_number;
+                if ($request->pending == 0) {
+                    $no_inv = "INV" . date('mdY');
+                    $get_last_number = DB::table("sales_orders")->where("invoice_number", "like", "$no_inv%")->where('uid_company', $uid_company)->orderBy('invoice_number', 'desc')->count();
+                    $no_inv .= '-' . ++$get_last_number;
 
-                $loop = true;
-                while ($loop) {
-                    $validate_inv_number = DB::table('sales_orders')->where("invoice_number", $no_inv)->where('uid_company', $uid_company)->count();
-                    if ($validate_inv_number == 0) {
-                        $loop = false;
-                    } else {
-                        $no_inv = "INV" . date('mdY') . '-' . ++$get_last_number;
+                    $loop = true;
+                    while ($loop) {
+                        $validate_inv_number = DB::table('sales_orders')->where("invoice_number", $no_inv)->where('uid_company', $uid_company)->count();
+                        if ($validate_inv_number == 0) {
+                            $loop = false;
+                        } else {
+                            $no_inv = "INV" . date('mdY') . '-' . ++$get_last_number;
+                        }
                     }
                 }
 

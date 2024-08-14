@@ -68,7 +68,8 @@ class ReceivablePaymentController extends BaseController
     public function store_receivable_payment(Request $request)
     {
         $uid = $request->input('modal_uid');
-
+        $user = Auth::user();
+        $uid_company = $user->uid_company;
         $validator = Validator::make($request->all(), [
             'modal_noinv' => 'required',
             'modal_amount' => 'required',
@@ -109,13 +110,12 @@ class ReceivablePaymentController extends BaseController
         }
 
         try {
-            DB::table('sales_orders')->where('invoice_number', $no_inv)->update(['paid_off' => $paid_off]);
+            DB::table('sales_orders')->where('invoice_number', $no_inv)->where('uid_company',$uid_company)->update(['paid_off' => $paid_off]);
         } catch (\Throwable $th) {
             return $this->ajaxResponse(false, 'Failed to save data', $th);
         }
 
-        $count_term = DB::table('receivable_payments')->where('invoice_number', $no_inv)->where('status', 1)->count();
-        $user = Auth::user();
+        $count_term = DB::table('receivable_payments')->where('invoice_number', $no_inv)->where('uid_company',$uid_company)->where('status', 1)->count();
         DB::beginTransaction();
         try {
 

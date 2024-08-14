@@ -13,13 +13,13 @@ class PendingTransactionExport implements FromCollection, WithHeadings
      */
     public function collection()
     {
-        return SalesOrder::join('customer as cus', 'sales_orders.uid_customer', '=', 'cus.uid')->select('sales_orders.invoice_number', 'cus.name', 'sales_orders.transaction_date', 'sales_orders.grand_total')->where('sales_orders.status', 1)->where('sales_orders.pending', 1)->orderBy('sales_orders.uid', 'desc')->get();
+        return SalesOrder::join('customer as cus', 'sales_orders.uid_customer', '=', 'cus.uid')->join('company as c','sales_orders.uid_company','=','c.uid')->select('sales_orders.invoice_number', 'cus.name', 'sales_orders.transaction_date', 'sales_orders.grand_total','c.name as company')->where('sales_orders.status', 1)->where('sales_orders.pending', 1)->orderBy('sales_orders.uid', 'desc')->get();
 
     }
 
     public function headings(): array
     {
-        return ["NO INVOICE", "CUSTOMER", "TANGGAL", "GRAND TOTAL"];
+        return ["NO INVOICE", "CUSTOMER", "TANGGAL", "GRAND TOTAL","COMPANY"];
     }
 
 }

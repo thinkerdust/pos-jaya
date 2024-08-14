@@ -349,8 +349,10 @@
                                             <button type="submit" class="btn btn-theme-sml submit"
                                                     id="btn-submit">Simpan</button>
                                         @endif
+                                        @if (empty($uid))
                                         <button type="submit"
                                             class="btn btn-outline-secondary btn-dim submit" id="btn-pending">Pending</button>
+                                        @endif
                                     </form>
                                 </div>
                             </div>

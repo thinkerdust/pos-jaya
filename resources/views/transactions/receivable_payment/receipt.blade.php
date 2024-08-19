@@ -202,14 +202,18 @@ function integers($angka)
         </tr> -->
         @if ($data['header']->discount != 0)
             <tr>
-                <td style="width:60%"></td>
+                <td style="width:40%"></td>
+                <td></td>
+                <td></td>
                 <td align="right">Discount</td>
                 <td align="right">{{ integers($data['header']->discount)}}</td>
             </tr>
         @endif
         @if ($data['header']->tax_rate != 0)
             <tr>
-                <td style="width:60%"></td>
+                <td style="width:40%"></td>
+                <td></td>
+                <td></td>
                 <td align="right">Ppn {{$data['header']->tax_rate != 0 ? "(" . $data['header']->tax_rate . "%)" : ""}}
                 </td>
                 <td align="right">{{integers($data['header']->tax_value)}}</td>
@@ -217,19 +221,25 @@ function integers($angka)
         @endif
         @if ($data['header']->proofing != 0)
             <tr>
-                <td style="width:60%"></td>
+                <td style="width:40%"></td>
+                <td></td>
+                <td></td>
                 <td align="right">Proofing</td>
                 <td align="right">{{ integers($data['header']->proofing)}}</td>
             </tr>
         @endif
         <tr>
-            <td style="width:60%;"></td>
+            <td style="width:40%;"></td>
+            <td></td>
+            <td></td>
             <td align="right" style="font-weight:bold">Total</td>
             <td align="right" style="font-weight:bold">{{"Rp. " . integers($data['header']->grand_total)}}</td>
         </tr>
 
         <tr>
-            <td style="width:60%;"></td>
+            <td style="width:40%;"></td>
+            <td align="right" style="font-weight:bold">Pembayaran</td>
+            <td align="right" style="font-weight:bold">{{integers($data['receipt']->amount)}}</td>
             <td align="right" style="font-weight:bold">Bayar</td>
             <td align="right" style="font-weight:bold">
                 {{"Rp. " . integers(($data['receipt']->pay == 0) ? $data['receipt']->amount : $data['receipt']->pay)}}
@@ -237,7 +247,9 @@ function integers($angka)
         </tr>
         @if ($data['receipt']->changes != 0)
             <tr>
-                <td style="width:60%"></td>
+                <td style="width:40%"></td>
+                <td></td>
+                <td></td>
                 <td align="right">Kembali</td>
                 <td align="right">{{"Rp. " . integers($data['receipt']->changes)}}</td>
             </tr>

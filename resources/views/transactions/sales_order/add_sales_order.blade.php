@@ -190,12 +190,21 @@
                                         <hr class="preview-hr">
                                         <h5 class="mb-2">Produk</h5>
                                         <div class="row gy-4">
-                                            <div class="col-md-8">
+                                            <div class="col-md-3">
                                                 <div class="form-group">
                                                     <label class="form-label">Produk</label>
                                                     <div class="form-control-wrap">
                                                         <select class="form-control" name="product" id="product">
                                                         </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <div class="form-group">
+                                                    <label class="form-label">Harga</label>
+                                                    <div class="form-control-wrap">
+                                                        <input type="text" class="form-control formated_number" id="price"
+                                                            placeholder="0" min="0" name="price">
                                                     </div>
                                                 </div>
                                             </div>
@@ -208,28 +217,37 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <hr class="preview-hr">
-                                        <h5 class="mb-2">Laminasi</h5>
-                                        <div class="row mt-2">
                                             <div class="col-md-2">
                                                 <div class="form-group">
-                                                    <label class="form-label">Panjang (cm)</label>
+                                                    <label class="form-label">Qty</label>
+                                                    <div class="form-control-wrap">
+                                                        <input type="number" class="form-control" id="qty" name="qty"
+                                                            placeholder="0" min="0">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-1">
+                                                <div class="form-group">
+                                                    <label class="form-label">P (cm)</label>
                                                     <div class="form-control-wrap">
                                                         <input type="text" class="form-control formated_number" id="panjang" name="panjang"
                                                             value="0">
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="col-md-2">
+                                            <div class="col-md-1">
                                                 <div class="form-group">
-                                                    <label class="form-label">Lebar (cm)</label>
+                                                    <label class="form-label">L (cm)</label>
                                                     <div class="form-control-wrap">
                                                         <input type="text" class="form-control formated_number" id="lebar" name="lebar"
                                                             value="0">
                                                     </div>
                                                 </div>
                                             </div>
+                                        </div>
+                                        <hr class="preview-hr">
+                                        <!-- <h5 class="mb-2">Laminasi</h5> -->
+                                        <div class="row mt-2">
                                             <div class="col-md-6">
                                                 <div class="form-group">
                                                     <label class="form-label">Keterangan</label>
@@ -239,8 +257,21 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                                                                                    
-
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <label class="form-label">Subtotal</label>
+                                                    <div class="form-control-wrap">
+                                                        <input type="text" class="form-control formated_number" id="subtotal" name="subtotal"
+                                                            placeholder="0" readonly>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-1 d-flex align-items-end">
+                                                <div class="form-group">
+                                                    <button class="btn btn-dim btn-outline-secondary" id="add_product"
+                                                        type="button"><i class="icon ni ni-plus"></i></button>
+                                                </div>
+                                            </div>                                                 
                                         </div>
                                         <hr class="preview-hr">
                                         <!-- <h5 class="mb-2">Cutting & Packing</h5>
@@ -275,42 +306,9 @@
                                             </div> -->
                                         <!-- </div> -->
                                         <hr class="preview-hr">
-                                        <h5 class="mb-2">Subtotal</h5>
+                                        <!-- <h5 class="mb-2">Subtotal</h5> -->
                                         <div class="row mt-2">
-                                            <div class="col-md-4">
-                                                <div class="form-group">
-                                                    <label class="form-label">Harga</label>
-                                                    <div class="form-control-wrap">
-                                                        <input type="text" class="form-control formated_number" id="price"
-                                                            placeholder="0" min="0" name="price">
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-2">
-                                                <div class="form-group">
-                                                    <label class="form-label">Qty</label>
-                                                    <div class="form-control-wrap">
-                                                        <input type="number" class="form-control" id="qty" name="qty"
-                                                            placeholder="0" min="0">
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <div class="form-group">
-                                                    <label class="form-label">Subtotal</label>
-                                                    <div class="form-control-wrap">
-                                                        <input type="text" class="form-control formated_number" id="subtotal" name="subtotal"
-                                                            placeholder="0" readonly>
-                                                    </div>
-                                                </div>
-                                            </div>
 
-                                            <div class="col-md-1 d-flex align-items-end">
-                                                <div class="form-group">
-                                                    <button class="btn btn-dim btn-outline-secondary" id="add_product"
-                                                        type="button"><i class="icon ni ni-plus"></i></button>
-                                                </div>
-                                            </div>
                                         </div>
 
                                         <hr class="preview-hr">

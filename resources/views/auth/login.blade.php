@@ -9,7 +9,7 @@
     <meta name="description" content="ForYou by Sinarmas land">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <!-- Fav Icon  -->
-    <link rel="shortcut icon" href="{{ asset('images/icon-bag-small.png') }}">
+    <link rel="shortcut icon" href="{{ asset('images/icon-pos-jaya.png') }}">
     <!-- Page Title  -->
     <title>Login | {{ config('app.name', 'Laravel') }}</title>
     <!-- StyleSheets  -->
@@ -27,10 +27,10 @@
                 <div class="nk-content ">
                     <div class="nk-block nk-block-middle nk-auth-body  wide-xs">
                         <div class="brand-logo pb-4 text-center">
-                            <!-- <a href="/" class="logo-link">
-                                <img class="logo-light logo-img logo-img-lg" src="{{ asset('images/icon-bag-small-2.png') }}" srcset="{{ asset('images/icon-bag-small-2.png 2x') }}" alt="logo">
-                                <img class="logo-dark logo-img logo-img-lg" src="{{ asset('images/icon-bag-small-2.png') }}" srcset="{{ asset('images/icon-bag-small-2.png 2x') }}" alt="logo-dark">
-                            </a> -->
+                            <a href="/" class="logo-link">
+                                <img class="logo-light logo-img logo-img-lg" src="{{ asset('images/icon-pos-jaya.png') }}" srcset="{{ asset('images/icon-pos-jaya.png') }}" alt="logo">
+                                <img class="logo-dark logo-img logo-img-lg" src="{{ asset('images/icon-pos-jaya.png') }}" srcset="{{ asset('images/icon-pos-jaya.png') }}" alt="logo-dark">
+                            </a>
                         </div>
                         <div class="card">
                             <div class="card-inner card-inner-lg">

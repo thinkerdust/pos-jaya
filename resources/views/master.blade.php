@@ -9,7 +9,7 @@
     <meta name="description" content="POS JAYA">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <!-- Fav Icon  -->
-    <link rel="shortcut icon" href="{{ asset('images/icon-bag-small.png') }}">
+    <link rel="shortcut icon" href="{{ asset('images/icon-pos-jaya.png') }}">
     <!-- Page Title  -->
     <title>Panel | {{ config('app.name', 'Laravel') }}</title>
     <!-- StyleSheets  -->

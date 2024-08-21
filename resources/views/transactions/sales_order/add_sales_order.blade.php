@@ -1,6 +1,11 @@
 @extends('master')
 
 @section('content')
+<style>
+  .custom-textarea {
+    height: 50px !important; /* Atur tinggi sesuai kebutuhan */
+  }
+</style>
 
 <div class="nk-content ">
     <div class="container-fluid">
@@ -46,16 +51,7 @@
                                                 <div class="form-group">
                                                     <label class="form-label">Alamat</label>
                                                     <div class="form-control-wrap">
-                                                        <textarea class="form-control" id="address" name="address"
-                                                            rows="5"></textarea>
-                                                    </div>
-                                                </div>
-
-                                                <div class="form-group">
-                                                    <label class="form-label">Tgl Pengambilan</label>
-                                                    <div class="form-control-wrap">
-                                                        <input type="date" class="form-control" id="collection_date" value="{{ date('Y-m-d') }}"
-                                                            name="collection_date" required>
+                                                        <input class="form-control" id="address" name="address"/>
                                                     </div>
                                                 </div>
 
@@ -71,8 +67,9 @@
                                                 </div>
 
 
+
                                             </div>
-                                            <div class="col-sm-6">
+                                            <div class="col-sm-6 pt-3">
                                                 <h2 class="text-end mt-3" id="grand_total">Rp. 0,-</h2>
                                                 <input type="hidden" name="grand_total" />
 
@@ -117,6 +114,14 @@
                                                         </div>
                                                     </div>
                                                 </div>
+                                                <div class="form-group">
+                                                    <label class="form-label">Tgl Pengambilan</label>
+                                                    <div class="form-control-wrap">
+                                                        <input type="date" class="form-control" id="collection_date" value="{{ date('Y-m-d') }}"
+                                                            name="collection_date" required>
+                                                    </div>
+                                                </div>
+
                                                 <!-- <div class="form-group">
                                                     <label class="form-label">Laminating</label>
                                                     <div class="row">
@@ -230,7 +235,7 @@
                                                 <div class="form-group">
                                                     <label class="form-label">P (cm)</label>
                                                     <div class="form-control-wrap">
-                                                        <input type="text" class="form-control formated_number" id="panjang" name="panjang"
+                                                        <input type="text" class="form-control formated_number" style="padding:5px" id="panjang" name="panjang"
                                                             value="0">
                                                     </div>
                                                 </div>
@@ -239,7 +244,7 @@
                                                 <div class="form-group">
                                                     <label class="form-label">L (cm)</label>
                                                     <div class="form-control-wrap">
-                                                        <input type="text" class="form-control formated_number" id="lebar" name="lebar"
+                                                        <input type="text" class="form-control formated_number" style="padding:5px" id="lebar" name="lebar"
                                                             value="0">
                                                     </div>
                                                 </div>
@@ -273,7 +278,7 @@
                                                 </div>
                                             </div>                                                 
                                         </div>
-                                        <hr class="preview-hr">
+                                        <!-- <hr class="preview-hr"> -->
                                         <!-- <h5 class="mb-2">Cutting & Packing</h5>
                                         <div class="row mt-2">
                                             <div class="col-md-2">
@@ -305,11 +310,11 @@
                                                 </div>
                                             </div> -->
                                         <!-- </div> -->
-                                        <hr class="preview-hr">
+                                        <!-- <hr class="preview-hr"> -->
                                         <!-- <h5 class="mb-2">Subtotal</h5> -->
-                                        <div class="row mt-2">
+                                        <!-- <div class="row mt-2">
 
-                                        </div>
+                                        </div> -->
 
                                         <hr class="preview-hr">
                                         <div class="table-responsive mt-4">

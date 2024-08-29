@@ -617,5 +617,13 @@ $('#modal_payment_method').select2({
     }
 })
 
+$("#export_excel").click(function(){
+    var min =  $('#filter_date_from').val()
+    var max =  $('#filter_date_to').val()
+    var payment_method =  $('#modal_payment_method').val()
+    window.open('/transaction/receivable_payment/export_excel?min='+min+'&max='+max+'&payment_method='+payment_method, '_blank')
+
+})
+
 
 

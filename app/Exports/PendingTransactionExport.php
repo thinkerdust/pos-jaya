@@ -5,21 +5,54 @@ namespace App\Exports;
 use App\Models\SalesOrder;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
-
+use DB;
+use Auth;
 class PendingTransactionExport implements FromCollection, WithHeadings
 {
     /**
      * @return \Illuminate\Support\Collection
      */
+    protected $min;
+    protected $max;
+
+    function __construct($min, $max)
+    {
+        $this->min = $min;
+        $this->max = $max;
+    }
+
     public function collection()
     {
-        return SalesOrder::join('customer as cus', 'sales_orders.uid_customer', '=', 'cus.uid')->join('company as c','sales_orders.uid_company','=','c.uid')->select('sales_orders.invoice_number', 'cus.name', 'sales_orders.transaction_date', 'sales_orders.grand_total','c.name as company')->where('sales_orders.status', 1)->where('sales_orders.pending', 1)->orderBy('sales_orders.uid', 'desc')->get();
+        $user = Auth::user();
+        $min = $this->min;
+        $max = $this->max;
+        $role = $user->id_role;
+
+        $query = DB::table('sales_orders as so')->join('customer as cus', 'so.uid_customer', '=', 'cus.uid')->leftJoin('sales_order_details as sod', function ($join) {
+            $join->on('sod.invoice_number', '=', 'so.invoice_number');
+            $join->on('sod.uid_company', '=', 'so.uid_company');
+        })->select('so.invoice_number', 'cus.name', DB::raw('DATE_FORMAT(so.transaction_date, "%d/%m/%Y") as transaction_date'), DB::raw('GROUP_CONCAT( sod.note) as note'), 'so.grand_total')->where('so.status', 1)->where('so.pending', 1)->groupBy('so.invoice_number', 'so.uid_company');
+
+        if (!empty($min) && !empty($max)) {
+            $query->whereBetween('so.transaction_date', [$min, $max]);
+        }
+
+        if ($role == 3) {
+            $query->where('so.insert_by', $user->id);
+        } else {
+            $query->where('so.uid_company', $user->uid_company);
+        }
+
+        $query->orderBy(DB::raw("SUBSTRING(so.invoice_number, 3, 8)"), 'DESC')
+            ->orderBy(DB::raw("CAST(SUBSTRING_INDEX(so.invoice_number, '-', -1) AS UNSIGNED)"), 'DESC');
+
+        return $query->get();
 
     }
 
     public function headings(): array
     {
-        return ["NO INVOICE", "CUSTOMER", "TANGGAL", "GRAND TOTAL","COMPANY"];
+        return ["NO INVOICE", "CUSTOMER", "TANGGAL", "NOTE", "GRAND TOTAL"];
     }
 
 }

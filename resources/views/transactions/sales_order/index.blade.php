@@ -18,7 +18,7 @@
                                 @can("crudAccess", "TX2")
                                     <a href="/transaction/sales/add" class="btn btn-theme-sml btn-sm"><em
                                             class="icon ni ni-plus"></em><span>Add Data</span></a>
-                                    <a href="/transaction/sales/export_excel" class="btn btn-success btn-sm"><em
+                                    <a id="export_excel" class="btn btn-success btn-sm"><em
                                             class="icon ni ni-download"></em><span>Export Excel</span></a>
                                     <button class="btn btn-primary btn-sm" onclick="filter()"><em
                                             class="icon ni ni-filter"></em><span>Filter</span></button>

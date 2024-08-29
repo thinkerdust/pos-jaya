@@ -37,7 +37,7 @@ class ReceivablePaymentController extends BaseController
     public function datatable_receivable_payment(Request $request)
     {
         $min = !empty($request->min) ? date('Y-m-d', strtotime($request->min)) . ' 00:00:00' : '';
-        $max = !empty($request->max) ? date('Y-m-d', strtotime($request->max)) . ' 23:59:00' : '';
+        $max = !empty($request->max) ? date('Y-m-d', strtotime($request->max)) . ' 23:59:59' : '';
         $payment_method = !empty($request->payment) ? $request->payment : '';
         $role = Auth::user()->id_role;
 
@@ -110,12 +110,12 @@ class ReceivablePaymentController extends BaseController
         }
 
         try {
-            DB::table('sales_orders')->where('invoice_number', $no_inv)->where('uid_company',$uid_company)->update(['paid_off' => $paid_off]);
+            DB::table('sales_orders')->where('invoice_number', $no_inv)->where('uid_company', $uid_company)->update(['paid_off' => $paid_off]);
         } catch (\Throwable $th) {
             return $this->ajaxResponse(false, 'Failed to save data', $th);
         }
 
-        $count_term = DB::table('receivable_payments')->where('invoice_number', $no_inv)->where('uid_company',$uid_company)->where('status', 1)->count();
+        $count_term = DB::table('receivable_payments')->where('invoice_number', $no_inv)->where('uid_company', $uid_company)->where('status', 1)->count();
         DB::beginTransaction();
         try {
 
@@ -204,9 +204,12 @@ class ReceivablePaymentController extends BaseController
         // return view('transactions.receivable_payment.receipt', ['data' => $data]);
     }
 
-    public function export_excel()
+    public function export_excel(Request $request)
     {
-        return Excel::download(new ReceivablePaymentExport, 'Pembayaran.xlsx');
+        $min = !empty($request->min) ? date('Y-m-d', strtotime($request->min)) . ' 00:00:00' : '';
+        $max = !empty($request->max) ? date('Y-m-d', strtotime($request->max)) . ' 23:59:59' : '';
+        $payment_method = !empty($request->payment_method) ? $request->payment_method : '';
+        return Excel::download(new ReceivablePaymentExport($min, $max, $payment_method), 'Pembayaran.xlsx');
     }
 
     public function origin_number($number = 0)

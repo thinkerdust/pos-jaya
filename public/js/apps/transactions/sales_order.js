@@ -944,3 +944,11 @@ $("#modal_amount").keyup(function(){
     console.log(kembalian);
     $("#modal_changes").val(thousandView(kembalian));
 })
+
+$("#export_excel").click(function(){
+    var min =  $('#filter_date_from').val()
+    var max =  $('#filter_date_to').val()
+    var status =  $('#filter_status').val()
+    window.open('/transaction/sales/export_excel?min='+min+'&max='+max+'&status='+status, '_blank')
+
+})

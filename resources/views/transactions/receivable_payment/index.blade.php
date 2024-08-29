@@ -17,9 +17,9 @@
                             <div class="card-inner">
                                 @can("crudAccess", "TX1")
                                     <!-- <a href="/transaction/receivable_payment/add" class="btn btn-theme-sml btn-sm"><em
-                                                                                    class="icon ni ni-plus"></em><span>Add Data</span></a> -->
-                                    <a href="/transaction/receivable_payment/export_excel"
-                                        class="btn btn-success btn-sm"><em class="icon ni ni-download"></em><span>Export
+                                                                                        class="icon ni ni-plus"></em><span>Add Data</span></a> -->
+                                    <a id="export_excel" class="btn btn-success btn-sm"><em
+                                            class="icon ni ni-download"></em><span>Export
                                             Excel</span></a>
                                     <button class="btn btn-primary btn-sm" onclick="filter()"><em
                                             class="icon ni ni-filter"></em><span>Filter</span></button>

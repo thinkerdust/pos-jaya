@@ -75,4 +75,11 @@ function hapus(uid) {
     });
 }
 
+$("#export_excel").click(function(){
+    var min =  $('#filter_date_from').val()
+    var max =  $('#filter_date_to').val()
+    window.open('/transaction/sales/export_excel_pending?min='+min+'&max='+max, '_blank')
+
+})
+
 

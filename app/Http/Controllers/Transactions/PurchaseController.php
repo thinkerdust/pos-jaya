@@ -39,7 +39,7 @@ class PurchaseController extends BaseController
     public function datatable_purchase_order(Request $request)
     {
         $min = !empty($request->min) ? date('Y-m-d', strtotime($request->min)) . ' 00:00:00' : '';
-        $max = !empty($request->max) ? date('Y-m-d', strtotime($request->max)) . ' 23:59:00' : '';
+        $max = !empty($request->max) ? date('Y-m-d', strtotime($request->max)) . ' 23:59:59' : '';
         $role = Auth::user()->id_role;
 
         $data = $this->purchase_order->dataTablePurchaseOrders($min, $max, $role);
@@ -260,9 +260,11 @@ class PurchaseController extends BaseController
         }
     }
 
-    public function export_excel()
+    public function export_excel(Request $request)
     {
-        return Excel::download(new PurchaseOrderExport, 'Pembelian.xlsx');
+        $min = !empty($request->min) ? date('Y-m-d', strtotime($request->min)) . ' 00:00:00' : '';
+        $max = !empty($request->max) ? date('Y-m-d', strtotime($request->max)) . ' 23:59:59' : '';
+        return Excel::download(new PurchaseOrderExport($min, $max), 'Pembelian.xlsx');
     }
 
     public function print_pdf(Request $request)

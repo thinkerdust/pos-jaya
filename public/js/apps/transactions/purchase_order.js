@@ -539,3 +539,24 @@ var tableDetail = NioApp.DataTable('#dt-table-detail', {
     ],
     columnDefs: [] 
 });
+
+$("#export_excel").click(function(){
+    var min =  $('#filter_date_from').val()
+        var max =  $('#filter_date_to').val()
+    window.open('/transaction/purchase/export_excel?min='+min+'&max='+max, '_blank')
+    // $.ajax({
+    //     url: '/transaction/purchase/export_excel',
+    //     type:"GET",
+    //     data:{
+    //         min : $('#filter_date_from').val(),
+    //         max : $('#filter_date_to').val(),
+    //     },
+    //     success: function(response) {
+    //     },
+    //     error: function(error) {
+    //         console.log(error)
+    //         NioApp.Toast('Error while fetching data', 'error', {position: 'top-right'});
+    //     }
+    // })
+
+})

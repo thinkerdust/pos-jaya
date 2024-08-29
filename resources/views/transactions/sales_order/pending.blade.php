@@ -16,7 +16,7 @@
                         <div class="card card-bordered card-preview">
                             <div class="card-inner">
                                 @can("crudAccess", "TX3")
-                                    <a href="/transaction/sales/export_excel_pending" class="btn btn-success btn-sm"><em
+                                    <a id="export_excel" class="btn btn-success btn-sm"><em
                                             class="icon ni ni-download"></em><span>Export Excel</span></a>
                                     <button class="btn btn-primary btn-sm" onclick="filter()"><em
                                             class="icon ni ni-filter"></em><span>Filter</span></button>

@@ -48,7 +48,7 @@ class SalesController extends BaseController
     public function datatable_sales_order(Request $request)
     {
         $min = !empty($request->min) ? date('Y-m-d', strtotime($request->min)) . ' 00:00:00' : '';
-        $max = !empty($request->max) ? date('Y-m-d', strtotime($request->max)) . ' 23:59:00' : '';
+        $max = !empty($request->max) ? date('Y-m-d', strtotime($request->max)) . ' 23:59:59' : '';
         $status = $request->status;
         $role = Auth::user()->id_role;
 
@@ -81,7 +81,7 @@ class SalesController extends BaseController
     public function datatable_pending(Request $request)
     {
         $min = !empty($request->min) ? date('Y-m-d', strtotime($request->min)) . ' 00:00:00' : '';
-        $max = !empty($request->max) ? date('Y-m-d', strtotime($request->max)) . ' 23:59:00' : '';
+        $max = !empty($request->max) ? date('Y-m-d', strtotime($request->max)) . ' 23:59:59' : '';
         $role = Auth::user()->id_role;
 
         $data = $this->sales_order->dataTablePending($min, $max, $role);
@@ -105,9 +105,9 @@ class SalesController extends BaseController
     public function add_sales_order(Request $request)
     {
         $uid = $request->uid;
-        $pending = DB::table('sales_orders as so')->where('uid',$uid)->select('pending')->first();
+        $pending = DB::table('sales_orders as so')->where('uid', $uid)->select('pending')->first();
         $js = 'js/apps/transactions/sales_order.js?_=' . rand();
-        return view('transactions.sales_order.add_sales_order', compact('js', 'uid','pending'));
+        return view('transactions.sales_order.add_sales_order', compact('js', 'uid', 'pending'));
     }
 
     public function store_sales_order(Request $request)
@@ -364,14 +364,19 @@ class SalesController extends BaseController
         // return view('transactions.sales_order.invoice', ['data' => $data]);
     }
 
-    public function export_excel()
+    public function export_excel(Request $request)
     {
-        return Excel::download(new SalesOrderExport, 'Penjualan.xlsx');
+        $min = !empty($request->min) ? date('Y-m-d', strtotime($request->min)) . ' 00:00:00' : '';
+        $max = !empty($request->max) ? date('Y-m-d', strtotime($request->max)) . ' 23:59:59' : '';
+        $status = $request->status;
+        return Excel::download(new SalesOrderExport($min, $max, $status), 'Penjualan.xlsx');
     }
 
-    public function export_excel_pending()
+    public function export_excel_pending(Request $request)
     {
-        return Excel::download(new PendingTransactionExport, 'Pending.xlsx');
+        $min = !empty($request->min) ? date('Y-m-d', strtotime($request->min)) . ' 00:00:00' : '';
+        $max = !empty($request->max) ? date('Y-m-d', strtotime($request->max)) . ' 23:59:59' : '';
+        return Excel::download(new PendingTransactionExport($min, $max), 'Pending.xlsx');
     }
 
     public function check_stock(Request $request)

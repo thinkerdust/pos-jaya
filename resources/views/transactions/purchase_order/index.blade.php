@@ -18,8 +18,9 @@
                                 @can("crudAccess", "TX1")
                                     <a href="/transaction/purchase/add" class="btn btn-theme-sml btn-sm"><em
                                             class="icon ni ni-plus"></em><span>Add Data</span></a>
-                                    <a href="/transaction/purchase/export_excel" class="btn btn-success btn-sm"><em
-                                            class="icon ni ni-download"></em><span>Export Excel</span></a>
+                                    <a id="export_excel" class="btn btn-success btn-sm"><em
+                                            class="icon ni ni-download"></em><span>Export
+                                            Excel</span></a>
                                     <button class="btn btn-primary btn-sm" onclick="filter()"><em
                                             class="icon ni ni-filter"></em><span>Filter</span></button>
                                 @endcan
@@ -103,7 +104,8 @@
                 </table>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-sm btn-theme-sml" class="close" data-bs-dismiss="modal" aria-label="Close">Close</button>
+                <button type="button" class="btn btn-sm btn-theme-sml" class="close" data-bs-dismiss="modal"
+                    aria-label="Close">Close</button>
             </div>
         </div>
     </div>

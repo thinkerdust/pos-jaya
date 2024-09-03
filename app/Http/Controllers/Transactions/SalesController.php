@@ -47,8 +47,8 @@ class SalesController extends BaseController
      */
     public function datatable_sales_order(Request $request)
     {
-        $min = !empty($request->min) ? date('Y-m-d', strtotime($request->min)) . ' 00:00:00' : '';
-        $max = !empty($request->max) ? date('Y-m-d', strtotime($request->max)) . ' 23:59:59' : '';
+        $min = !empty($request->min) ? date('Y-m-d', strtotime($request->min)) . ' 00:00:00' : date('Y-m-01 00:00:00');
+        $max = !empty($request->max) ? date('Y-m-d', strtotime($request->max)) . ' 23:59:59' : date('Y-m-t 23:59:59');
         $status = $request->status;
         $role = Auth::user()->id_role;
 
@@ -80,8 +80,8 @@ class SalesController extends BaseController
 
     public function datatable_pending(Request $request)
     {
-        $min = !empty($request->min) ? date('Y-m-d', strtotime($request->min)) . ' 00:00:00' : '';
-        $max = !empty($request->max) ? date('Y-m-d', strtotime($request->max)) . ' 23:59:59' : '';
+        $min = !empty($request->min) ? date('Y-m-d', strtotime($request->min)) . ' 00:00:00' : date('Y-m-01 00:00:00');
+        $max = !empty($request->max) ? date('Y-m-d', strtotime($request->max)) . ' 23:59:59' : date('Y-m-t 23:59:59');
         $role = Auth::user()->id_role;
 
         $data = $this->sales_order->dataTablePending($min, $max, $role);
@@ -366,16 +366,16 @@ class SalesController extends BaseController
 
     public function export_excel(Request $request)
     {
-        $min = !empty($request->min) ? date('Y-m-d', strtotime($request->min)) . ' 00:00:00' : '';
-        $max = !empty($request->max) ? date('Y-m-d', strtotime($request->max)) . ' 23:59:59' : '';
+        $min = !empty($request->min) ? date('Y-m-d', strtotime($request->min)) . ' 00:00:00' : date('Y-m-01 00:00:00');
+        $max = !empty($request->max) ? date('Y-m-d', strtotime($request->max)) . ' 23:59:59' : date('Y-m-t 23:59:59');
         $status = $request->status;
         return Excel::download(new SalesOrderExport($min, $max, $status), 'Penjualan.xlsx');
     }
 
     public function export_excel_pending(Request $request)
     {
-        $min = !empty($request->min) ? date('Y-m-d', strtotime($request->min)) . ' 00:00:00' : '';
-        $max = !empty($request->max) ? date('Y-m-d', strtotime($request->max)) . ' 23:59:59' : '';
+        $min = !empty($request->min) ? date('Y-m-d', strtotime($request->min)) . ' 00:00:00' : date('Y-m-01 00:00:00');
+        $max = !empty($request->max) ? date('Y-m-d', strtotime($request->max)) . ' 23:59:59' : date('Y-m-t 23:59:59');
         return Excel::download(new PendingTransactionExport($min, $max), 'Pending.xlsx');
     }
 

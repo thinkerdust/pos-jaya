@@ -114,7 +114,7 @@ class SalesOrder extends Model
                         and so.uid_company = rp.uid_company
                     where so.transaction_date between '$min' and '$max'
                         and so.uid_company = '$user->uid_company'
-                        and so.status = 1 
+                        and so.status = 1 and so.pending = 0
                         and sod.status = 1
                     group by so.invoice_number
                     order by so.transaction_date");
@@ -145,7 +145,7 @@ class SalesOrder extends Model
                         and p.uid_company = sod.uid_company 
                     JOIN customer c on c.uid = so.uid_customer 
                     JOIN unit u on u.uid = p.uid_unit 
-                    where so.status = 1 and sod.status = 1 and p.status = 1 and c.status = 1 and u.status = 1
+                    where so.status = 1 and so.pending = 0 and sod.status = 1 and p.status = 1 and c.status = 1 and u.status = 1
                         and so.transaction_date between '$min' and '$max'
                         and so.uid_company = '$user->uid_company'
                     order by p.name, so.transaction_date");
@@ -176,7 +176,7 @@ class SalesOrder extends Model
                         and p.uid_company = sod.uid_company 
                     JOIN customer c on c.uid = so.uid_customer 
                     JOIN unit u on u.uid = p.uid_unit 
-                    WHERE so.status = 1 and sod.status = 1 and p.status = 1 and c.status = 1 and u.status = 1
+                    WHERE so.status = 1 and so.pending = 0 and sod.status = 1 and p.status = 1 and c.status = 1 and u.status = 1
                         and so.transaction_date between '$min' and '$max'
                         and so.uid_company = '$user->uid_company'
                     ORDER BY c.name, so.transaction_date");
@@ -231,7 +231,7 @@ class SalesOrder extends Model
                         group by rp.invoice_number, rp.uid_company
                     ) as rp on so.invoice_number = rp.invoice_number
                         and so.uid_company = rp.uid_company
-                    WHERE so.status = 1 and so.uid_company = '$user->uid_company'
+                    WHERE so.status = 1 and so.pending = 0 and so.uid_company = '$user->uid_company'
                         and so.transaction_date between '$min' and '$max' 
                     order by c.name, so.transaction_date");
 

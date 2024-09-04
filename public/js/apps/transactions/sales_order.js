@@ -458,7 +458,7 @@ function getMaterial(uid,customer_type) {
     })
 }
 
-$("#qty").change(function(){
+$("#qty").keyup(function(){
     let product = $("#product").val();
     let qty = $(this).val();
     if (product == '') {

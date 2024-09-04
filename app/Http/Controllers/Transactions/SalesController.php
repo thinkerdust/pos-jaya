@@ -396,7 +396,6 @@ class SalesController extends BaseController
 
         $pdf = PDF::loadview('transactions.sales_order.invoice', ['data' => $data])->setPaper('A5', 'landscape');
         return $pdf->stream('Invoice-' . $data['header']->invoice_number);
-        // return view('transactions.sales_order.invoice', ['data' => $data]);
     }
 
     public function export_excel(Request $request)

@@ -166,7 +166,7 @@ Route::group(['middleware' => ['web', 'auth']], function () {
             });
         });
 
-        // Unit
+        // material
         Route::group(['prefix' => 'material', 'middleware' => ["can:SubMenu, 'MD6'"]], function () {
             Route::controller(MasterMaterialController::class)->group(function () {
                 Route::get('/', 'index')->name('material');
@@ -242,6 +242,7 @@ Route::group(['middleware' => ['web', 'auth']], function () {
                 Route::get('/export_excel', 'export_excel');
                 Route::get('/export_excel_pending', 'export_excel_pending');
                 Route::post('/check_stock', 'check_stock');
+                Route::get('/export-report', 'export_report_transaction');
             });
         });
 

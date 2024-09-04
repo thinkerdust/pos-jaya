@@ -2,19 +2,19 @@
 
 namespace App\Http\Controllers\Transactions;
 
-use App\Exports\PendingTransactionExport;
-use Maatwebsite\Excel\Facades\Excel;
-use App\Exports\SalesOrderExport;
 use App\Http\Controllers\BaseController as BaseController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
+use App\Exports\PendingTransactionExport;
+use App\Exports\SalesOrderExport;
+use App\Exports\ReportTransactionExport;
 use App\Models\SalesOrder;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
 use Yajra\DataTables\DataTables;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Storage;
 use PDF;
 
 class SalesController extends BaseController
@@ -112,7 +112,6 @@ class SalesController extends BaseController
 
     public function store_sales_order(Request $request)
     {
-        // dd($request);
         $uid = $request->input('uid_sales_order');
 
         $validator = Validator::make($request->all(), [
@@ -258,7 +257,6 @@ class SalesController extends BaseController
             $tax_rate = isset($request->ppn) ? $request->ppn : 0;
             $tax_value = isset($request->ppn_value) ? $this->origin_number($request->ppn_value) : 0;
             $proofing = $this->origin_number($request->proofing);
-            // dd($tax_value);
             $grand_total = $subtotal - $disc + $tax_value + $proofing;
             $data = [
                 'invoice_number' => $no_inv,
@@ -348,37 +346,6 @@ class SalesController extends BaseController
         }
     }
 
-
-    public function print_pdf(Request $request)
-    {
-        $uid = $request->uid;
-        $data['header'] = db::table('sales_orders as so')->join('customer as cus', 'cus.uid', 'so.uid_customer')->select('so.uid', 'so.invoice_number', 'so.uid_customer', 'so.transaction_date', 'cus.name', 'cus.phone', 'so.discount', 'so.disc_rate', 'so.tax_rate', 'so.tax_value', 'so.grand_total', 'so.collection_date', 'so.priority', 'so.uid_company', 'so.proofing', 'so.paid_off')->where('so.uid', $uid)->where('so.status', 1)->first();
-        $data['detail'] = db::table('sales_order_details as pd')->join('product as p', 'p.uid', 'pd.uid_product')->join('unit as u', 'u.uid', 'pd.uid_unit')->select('pd.invoice_number', 'pd.uid_product', 'p.name as product_name', 'pd.uid_unit', 'u.name as unit_name', 'pd.qty', 'pd.price', 'pd.note', 'pd.length', 'pd.width')->where('pd.invoice_number', $data['header']->invoice_number)->where('pd.status', 1)->where('pd.uid_company', $data['header']->uid_company)->get()->toArray();
-        $data['receipt'] = DB::table('receivable_payments as rp')->where('rp.invoice_number', $data['header']->invoice_number)->where('status', 1)->where('uid_company', $data['header']->uid_company)->sum('amount');
-        $data['company'] = DB::table('company')->where('uid', $data['header']->uid_company)->first();
-
-
-        // dd($data);
-        $pdf = PDF::loadview('transactions.sales_order.invoice', ['data' => $data])->setPaper('A5', 'landscape');
-        return $pdf->stream('Invoice-' . $data['header']->invoice_number);
-        // return view('transactions.sales_order.invoice', ['data' => $data]);
-    }
-
-    public function export_excel(Request $request)
-    {
-        $min = !empty($request->min) ? date('Y-m-d', strtotime($request->min)) . ' 00:00:00' : '';
-        $max = !empty($request->max) ? date('Y-m-d', strtotime($request->max)) . ' 23:59:59' : '';
-        $status = $request->status;
-        return Excel::download(new SalesOrderExport($min, $max, $status), 'Penjualan.xlsx');
-    }
-
-    public function export_excel_pending(Request $request)
-    {
-        $min = !empty($request->min) ? date('Y-m-d', strtotime($request->min)) . ' 00:00:00' : '';
-        $max = !empty($request->max) ? date('Y-m-d', strtotime($request->max)) . ' 23:59:59' : '';
-        return Excel::download(new PendingTransactionExport($min, $max), 'Pending.xlsx');
-    }
-
     public function check_stock(Request $request)
     {
         $response_status = true;
@@ -412,12 +379,45 @@ class SalesController extends BaseController
 
     }
 
-
-
     public function origin_number($number = 0)
     {
         $number = str_replace('.', '', $number);
         $number = str_replace(',', '.', $number);
         return $number;
+    }
+
+    public function print_pdf(Request $request)
+    {
+        $uid = $request->uid;
+        $data['header'] = db::table('sales_orders as so')->join('customer as cus', 'cus.uid', 'so.uid_customer')->select('so.uid', 'so.invoice_number', 'so.uid_customer', 'so.transaction_date', 'cus.name', 'cus.phone', 'so.discount', 'so.disc_rate', 'so.tax_rate', 'so.tax_value', 'so.grand_total', 'so.collection_date', 'so.priority', 'so.uid_company', 'so.proofing', 'so.paid_off')->where('so.uid', $uid)->where('so.status', 1)->first();
+        $data['detail'] = db::table('sales_order_details as pd')->join('product as p', 'p.uid', 'pd.uid_product')->join('unit as u', 'u.uid', 'pd.uid_unit')->select('pd.invoice_number', 'pd.uid_product', 'p.name as product_name', 'pd.uid_unit', 'u.name as unit_name', 'pd.qty', 'pd.price', 'pd.note', 'pd.length', 'pd.width')->where('pd.invoice_number', $data['header']->invoice_number)->where('pd.status', 1)->where('pd.uid_company', $data['header']->uid_company)->get()->toArray();
+        $data['receipt'] = DB::table('receivable_payments as rp')->where('rp.invoice_number', $data['header']->invoice_number)->where('status', 1)->where('uid_company', $data['header']->uid_company)->sum('amount');
+        $data['company'] = DB::table('company')->where('uid', $data['header']->uid_company)->first();
+
+        $pdf = PDF::loadview('transactions.sales_order.invoice', ['data' => $data])->setPaper('A5', 'landscape');
+        return $pdf->stream('Invoice-' . $data['header']->invoice_number);
+        // return view('transactions.sales_order.invoice', ['data' => $data]);
+    }
+
+    public function export_excel(Request $request)
+    {
+        $min = !empty($request->min) ? date('Y-m-d', strtotime($request->min)) . ' 00:00:00' : '';
+        $max = !empty($request->max) ? date('Y-m-d', strtotime($request->max)) . ' 23:59:59' : '';
+        $status = $request->status;
+        return Excel::download(new SalesOrderExport($min, $max, $status), 'Penjualan.xlsx');
+    }
+
+    public function export_excel_pending(Request $request)
+    {
+        $min = !empty($request->min) ? date('Y-m-d', strtotime($request->min)) . ' 00:00:00' : '';
+        $max = !empty($request->max) ? date('Y-m-d', strtotime($request->max)) . ' 23:59:59' : '';
+        return Excel::download(new PendingTransactionExport($min, $max), 'Pending.xlsx');
+    }
+
+    public function export_report_transaction(Request $request)
+    {
+        $min = !empty($request->min) ? date('Y-m-d', strtotime($request->min)) . ' 00:00:00' : date('Y-m-01') . ' 00:00:00';
+        $max = !empty($request->max) ? date('Y-m-d', strtotime($request->max)) . ' 23:59:59' : date('Y-m-t') . ' 23:59:59';
+        return Excel::download(new ReportTransactionExport($min, $max), 'Reports_'.date('Ymd').'.xlsx');
     }
 }

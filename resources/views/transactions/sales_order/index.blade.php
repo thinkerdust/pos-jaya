@@ -16,12 +16,10 @@
                         <div class="card card-bordered card-preview">
                             <div class="card-inner">
                                 @can("crudAccess", "TX2")
-                                    <a href="/transaction/sales/add" class="btn btn-theme-sml btn-sm"><em
-                                            class="icon ni ni-plus"></em><span>Add Data</span></a>
-                                    <a id="export_excel" class="btn btn-success btn-sm"><em
-                                            class="icon ni ni-download"></em><span>Export Excel</span></a>
-                                    <button class="btn btn-primary btn-sm" onclick="filter()"><em
-                                            class="icon ni ni-filter"></em><span>Filter</span></button>
+                                    <a href="/transaction/sales/add" class="btn btn-theme-sml btn-sm"><em class="icon ni ni-plus"></em><span>Add Data</span></a>
+                                    <button class="btn btn-primary btn-sm" onclick="filter()"><em class="icon ni ni-filter"></em><span>Filter</span></button>
+                                    <a id="export_excel" class="btn btn-success btn-sm"><em class="icon ni ni-download"></em><span>Export Excel</span></a>
+                                    <button class="btn btn-info btn-sm" id="btn-download-report"><em class="icon ni ni-file-xls"></em><span>Download Report</span></button>
                                 @endcan
                                 <hr class="preview-hr">
                                 <table class="table table-striped nowrap" id="dt-table">
@@ -186,7 +184,7 @@
                         <div class="form-group">
                             <label class="form-label">Status</label>
                             <div class="form-control-wrap">
-                                <select class="form-control select2" name="filter_status" id="filter_status">
+                                <select class="form-control js-select2" name="filter_status" id="filter_status">
                                     <option value=""></option>
                                     <option value="1">Lunas</option>
                                     <option value="0">Belum Lunas</option>

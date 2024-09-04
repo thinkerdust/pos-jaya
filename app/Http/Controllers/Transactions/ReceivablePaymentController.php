@@ -36,8 +36,8 @@ class ReceivablePaymentController extends BaseController
      */
     public function datatable_receivable_payment(Request $request)
     {
-        $min = !empty($request->min) ? date('Y-m-d', strtotime($request->min)) . ' 00:00:00' : '';
-        $max = !empty($request->max) ? date('Y-m-d', strtotime($request->max)) . ' 23:59:59' : '';
+        $min = !empty($request->min) ? date('Y-m-d', strtotime($request->min)) . ' 00:00:00' : date('Y-m-01 00:00:00');
+        $max = !empty($request->max) ? date('Y-m-d', strtotime($request->max)) . ' 23:59:59' : date('Y-m-t 23:59:59');
         $payment_method = !empty($request->payment) ? $request->payment : '';
         $role = Auth::user()->id_role;
 
@@ -208,8 +208,8 @@ class ReceivablePaymentController extends BaseController
 
     public function export_excel(Request $request)
     {
-        $min = !empty($request->min) ? date('Y-m-d', strtotime($request->min)) . ' 00:00:00' : '';
-        $max = !empty($request->max) ? date('Y-m-d', strtotime($request->max)) . ' 23:59:59' : '';
+        $min = !empty($request->min) ? date('Y-m-d', strtotime($request->min)) . ' 00:00:00' : date('Y-m-01 00:00:00');
+        $max = !empty($request->max) ? date('Y-m-d', strtotime($request->max)) . ' 23:59:59' : date('Y-m-t 23:59:59');
         $payment_method = !empty($request->payment_method) ? $request->payment_method : '';
         return Excel::download(new ReceivablePaymentExport($min, $max, $payment_method), 'Pembayaran.xlsx');
     }

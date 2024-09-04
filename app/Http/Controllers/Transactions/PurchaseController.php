@@ -274,8 +274,6 @@ class PurchaseController extends BaseController
         $data['detail'] = db::table('purchase_order_details as pd')->join('product as p', 'p.uid', 'pd.uid_product')->join('unit as u', 'u.uid', 'pd.uid_unit')->select('pd.po_number', 'pd.uid_product', 'p.name as product_name', 'pd.uid_unit', 'u.name as unit_name', 'pd.qty', 'pd.price', 'pd.note')->where('pd.po_number', $data['header']->po_number)->where('pd.status', 1)->where('pd.uid_company', $data['header']->uid_company)->get()->toArray();
         $data['company'] = DB::table('company')->where('uid', $data['header']->uid_company)->first();
 
-
-        // dd($data);
         $pdf = PDF::loadview('transactions.purchase_order.po', ['data' => $data])->setPaper('A5', 'landscape');
         return $pdf->stream('PO-' . $data['header']->po_number);
         // return view('transactions.sales_order.invoice', ['data' => $data]);

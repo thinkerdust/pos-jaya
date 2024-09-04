@@ -159,7 +159,7 @@ class AuthController extends BaseController
 
         $time = Carbon::now();
         $id = $request->id;
-        $user = User::find($id)->first();
+        $user = User::find($id);
 
         if($user->status == 1) {
             $status = 0;

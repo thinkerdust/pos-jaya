@@ -52,87 +52,87 @@ const originView = (number = 0) => {
 $(document).ready(function() {    
     let uid = $('#uid_sales_order').val();
     if(uid) {
-            $.ajax({
-                url: '/transaction/sales/edit/'+uid,
-                dataType: 'json',
-                success: function(response) {
-                    if(response.status) {
-                        let header = response.data.header;
-                        let detail = response.data.detail;
-                        $('#uid_sales_order').val(header.uid);
-                        $('#invoice_number').val(header.invoice_number);
-                        $('#uid_company').val(header.uid_company);
-                        $('#collection_date').val(header.collection_date);
-                        $('#priority').val(header.priority);
-                        $('#disc').val(thousandView(header.discount));
-                        $('#ppn_value').val(thousandView(header.tax_value));
-                        $('#disc_global').val(header.disc_rate);
-                        $('#ppn').val(header.tax_rate);
-                        $('#proofing').val(thousandView(header.proofing));
-                        $('#keterangan').val(header.note);
+        $.ajax({
+            url: '/transaction/sales/edit/'+uid,
+            dataType: 'json',
+            success: function(response) {
+                if(response.status) {
+                    let header = response.data.header;
+                    let detail = response.data.detail;
+                    $('#uid_sales_order').val(header.uid);
+                    $('#invoice_number').val(header.invoice_number);
+                    $('#uid_company').val(header.uid_company);
+                    $('#collection_date').val(header.collection_date);
+                    $('#priority').val(header.priority);
+                    $('#disc').val(thousandView(header.discount));
+                    $('#ppn_value').val(thousandView(header.tax_value));
+                    $('#disc_global').val(header.disc_rate);
+                    $('#ppn').val(header.tax_rate);
+                    $('#proofing').val(thousandView(header.proofing));
+                    $('#keterangan').val(header.note);
 
-                        disc = header.discount;
-                        ppn = header.tax_value;
-                        laminating = header.laminating;
-                        proofing = header.proofing;
-                        
-                        $("#customer").empty().append(`<option value="${header.uid_customer}">${header.name}</option>`).val(header.uid_customer).trigger('change');
+                    disc = header.discount;
+                    ppn = header.tax_value;
+                    laminating = header.laminating;
+                    proofing = header.proofing;
+                    
+                    $("#customer").empty().append(`<option value="${header.uid_customer}">${header.name}</option>`).val(header.uid_customer).trigger('change');
 
-                        var html = '';
-                        for (let i = 0; i < detail.length; i++) {
-                            // let subtotal = detail[i].price * detail[i].qty;
-                            var price = detail[i].price ? detail[i].price : 0 ;
-                            var qty = detail[i].qty ? detail[i].qty : 0 ;
-                            var width = detail[i].width ? detail[i].width : 0 ;
-                            var length = detail[i].length ? detail[i].length : 0;
-                            var packing = detail[i].packing ? detail[i].packing :0;
-                            var cutting = detail[i].cutting ? detail[i].cutting :0;
-                            var packing_formated = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(packing);
-                            var cutting_formated = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(cutting);
-                            if (length != 0 || width !=0) {
-                               var subtotal = ((parseFloat(length) * parseFloat(width) * parseFloat(price) * parseFloat(qty))/10000) + parseFloat(cutting)+ parseFloat(packing);   
-                        
-                            }else{
-                                var subtotal = (parseFloat(price) * parseFloat(qty)) + parseFloat(cutting)+ parseFloat(packing);   
-                        
-                            }
-
-                            var subtotal_formated = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(subtotal)
-                            let price_formated =  new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(detail[i].price);
-                            let notes = detail[i].note ?? "";
-                            html += '<tr>';
-                            html += '<td class="text-center"><input type="hidden" name="details[products][]" value="'+detail[i].uid_product+'"/>'+detail[i].product_name+'</td>';
-                            html += '<td class="text-center"><input type="hidden" name="details[units][]" value="'+detail[i].uid_unit+'"/>'+detail[i].unit_name+'</td>';
-                            html += '<td class="text-center"><input type="hidden" name="details[qty][]" value="'+detail[i].qty+'"/>'+detail[i].stock+'</td>';
-                            html += '<td class="text-center"><input type="hidden" name="details[stock][]" value="'+detail[i].qty+'"/>'+detail[i].qty+'</td>';
-                            html += '<td class="text-center"><input type="hidden" name="details[length][]" value="'+length+'"/><input type="hidden" name="details[width][]" value="'+width+'"/>'+length+'x'+width+'</td>';
-                            html += '<td class="text-center"><input type="hidden" name="details[prices][]" value="'+price+'"/>'+price_formated+'</td>';
-                            html += '<td class="text-center"><input class="subtotal" type="hidden" name="details[subtotal][]" value="'+subtotal+'"/>'+subtotal_formated+'</td>';
-                            html += '<td class="text-center"><input class="notes" type="hidden" name="details[notes][]" value="'+notes+'"/>'+notes+'</td>';
-                            html += '<td class="text-center">';
-                            html += '<a class="btn btn-sm btn-dim btn-outline-secondary" type="button" onclick="delMaterial(this)"><em class="icon ni ni-trash"></em></a>';
-                            html += '</td></tr>';  
-                            grand_total += subtotal;
-
+                    var html = '';
+                    for (let i = 0; i < detail.length; i++) {
+                        // let subtotal = detail[i].price * detail[i].qty;
+                        var price = detail[i].price ? detail[i].price : 0 ;
+                        var qty = detail[i].qty ? detail[i].qty : 0 ;
+                        var width = detail[i].width ? detail[i].width : 0 ;
+                        var length = detail[i].length ? detail[i].length : 0;
+                        var packing = detail[i].packing ? detail[i].packing :0;
+                        var cutting = detail[i].cutting ? detail[i].cutting :0;
+                        var packing_formated = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(packing);
+                        var cutting_formated = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(cutting);
+                        if (length != 0 || width !=0) {
+                            var subtotal = ((parseFloat(length) * parseFloat(width) * parseFloat(price) * parseFloat(qty))/10000) + parseFloat(cutting)+ parseFloat(packing);   
+                    
+                        }else{
+                            var subtotal = (parseFloat(price) * parseFloat(qty)) + parseFloat(cutting)+ parseFloat(packing);   
+                    
                         }
-            
-                        $("#tbody_product").find("#nodata").closest("tr").remove();
-                        $("#tbody_product").append(html);
-                        NioApp.Toast("Produk berhasil ditambahkan", 'success', {position: 'top-right'});
-                        
-                        //set grand total
-                        console.log(grand_total);
-                        setGrandTotal();
-            
+
+                        var subtotal_formated = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(subtotal)
+                        let price_formated =  new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(detail[i].price);
+                        let notes = detail[i].note ?? "";
+                        html += '<tr>';
+                        html += '<td class="text-center"><input type="hidden" name="details[products][]" value="'+detail[i].uid_product+'"/>'+detail[i].product_name+'</td>';
+                        html += '<td class="text-center"><input type="hidden" name="details[units][]" value="'+detail[i].uid_unit+'"/>'+detail[i].unit_name+'</td>';
+                        html += '<td class="text-center"><input type="hidden" name="details[qty][]" value="'+detail[i].qty+'"/>'+detail[i].stock+'</td>';
+                        html += '<td class="text-center"><input type="hidden" name="details[stock][]" value="'+detail[i].qty+'"/>'+detail[i].qty+'</td>';
+                        html += '<td class="text-center"><input type="hidden" name="details[length][]" value="'+length+'"/><input type="hidden" name="details[width][]" value="'+width+'"/>'+length+'x'+width+'</td>';
+                        html += '<td class="text-center"><input type="hidden" name="details[prices][]" value="'+price+'"/>'+price_formated+'</td>';
+                        html += '<td class="text-center"><input class="subtotal" type="hidden" name="details[subtotal][]" value="'+subtotal+'"/>'+subtotal_formated+'</td>';
+                        html += '<td class="text-center"><input class="notes" type="hidden" name="details[notes][]" value="'+notes+'"/>'+notes+'</td>';
+                        html += '<td class="text-center">';
+                        html += '<a class="btn btn-sm btn-dim btn-outline-secondary" type="button" onclick="delMaterial(this)"><em class="icon ni ni-trash"></em></a>';
+                        html += '</td></tr>';  
+                        grand_total += subtotal;
+
                     }
-                },
-                error: function(error) {
-                    console.log(error)
-                    NioApp.Toast('Error while fetching data', 'error', {position: 'top-right'});
+        
+                    $("#tbody_product").find("#nodata").closest("tr").remove();
+                    $("#tbody_product").append(html);
+                    NioApp.Toast("Produk berhasil ditambahkan", 'success', {position: 'top-right'});
+                    
+                    //set grand total
+                    console.log(grand_total);
+                    setGrandTotal();
+        
                 }
-            })
-    
-        }
+            },
+            error: function(error) {
+                console.log(error)
+                NioApp.Toast('Error while fetching data', 'error', {position: 'top-right'});
+            }
+        })
+
+    }
     
 });
 
@@ -285,12 +285,6 @@ $("#price").keyup(function(){
     setSubTotal()
 })
 
-
-
-
-
-
-
 function setSubTotal(){
     let length = originView($("#panjang").val()) ? originView($("#panjang").val()): 0;
     let width = originView($("#lebar").val()) ? originView($("#lebar").val()) : 0;
@@ -298,29 +292,14 @@ function setSubTotal(){
     let qty = originView($("#qty").val()) ? originView($("#qty").val()) : 0;
     let cutting = originView($("#cutting_price").val()) ? originView($("#cutting_price").val()) : 0;
     let packing = originView($("#packing_price").val()) ? originView($("#packing_price").val()) : 0;
-subtotal = 0;
-    console.log(cutting);
+    subtotal = 0;
     
     if (length != 0 || width !=0) {
-        console.log(length);
-        console.log(width);
-        console.log(price);
-        console.log(qty);
          st = ((parseFloat(length) * parseFloat(width) * parseFloat(price) * parseFloat(qty))/10000) + parseFloat(cutting)+ parseFloat(packing);     
-         console.log(st);  
          subtotal_formated = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(st);
-
     }else{
-        console.log(length);
-        console.log(width);
-        console.log(price);
-        console.log(qty);
-
          st = (price * qty)+parseFloat(cutting)+parseFloat(packing); 
-         console.log(st);  
- 
          subtotal_formated = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(st);
-  
     }
 
     $("#subtotal").val(subtotal_formated);
@@ -329,7 +308,7 @@ subtotal = 0;
 function setGrandTotal(){
     let grand_total_min_disc = grand_total - disc + parseFloat(ppn)  + parseFloat(proofing) ;
     let total = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(grand_total_min_disc);
-    console.log(total);
+
     $("#grand_total").html(total);
 }
 
@@ -489,14 +468,9 @@ $("#qty").change(function(){
 
 })
 
-function getGrosirPrice(){
-    
-}
-
 $('#customer').change(function(){
     getCustomer($(this).val());
 });
-
 
 function getCustomer(uid) {
     $.ajax({
@@ -527,7 +501,6 @@ $("#add_product").click(function(){
     var packing = originView($("#packing_price").val()) ? originView($("#packing_price").val()) :0;
     var cutting = originView($("#cutting_price").val()) ? originView($("#cutting_price").val()) :0;
 
-    console.log(uid_material);
     //validate
     if (uid_material == null) {
         NioApp.Toast("Produk harus di isi", 'warning', {position: 'top-right'});
@@ -723,7 +696,6 @@ function checkStock(formData){
         error: function(error) {
             console.log(error)
             btn.attr('disabled', false);
-            // btn.html('Save');
             NioApp.Toast('Error while fetching data', 'error', {position: 'top-right'});
         }
     });
@@ -775,9 +747,6 @@ function bayar(uid){
                 }
 
                 $("#tbody_pembayaran").html(html);
-
-
-                console.log(data)
             }
         },
         error: function(error) {
@@ -897,7 +866,7 @@ function edit_receipt(uid){
                 $("#modal_uid").val(uid);
                 $("#modal_payment_method").empty().append(`<option value="${response.data[0].uid_payment_method}">${response.data[0].payment_method}</option>`).val(response.data[0].uid_payment_method).trigger('change');
                 var amount = (response.data[0].pay!=0) ? thousandView(response.data[0].pay) :  thousandView(response.data[0].amount);
-                console.log(amount);
+
                 $("#modal_amount").val(amount);
                 var selisih = parseFloat(originView($("#modal_selisih").val())) + parseFloat(response.data[0].amount);
                 $("#modal_selisih").val(thousandView(selisih));
@@ -935,20 +904,22 @@ function clearFilter(){
 $("#modal_amount").keyup(function(){
     var bayar = $(this).val() ? originView($(this).val()) : 0;
     var tagihan = $("#modal_selisih").val() ? originView($("#modal_selisih").val()) : 0;
-    console.log(bayar)
-    console.log(tagihan)
+
     var kembalian = bayar - tagihan;
     kembalian = (kembalian < 0) ? 0 : kembalian;
-    console.log(bayar);
-    console.log(tagihan);
-    console.log(kembalian);
+
     $("#modal_changes").val(thousandView(kembalian));
 })
 
 $("#export_excel").click(function(){
-    var min =  $('#filter_date_from').val()
-    var max =  $('#filter_date_to').val()
-    var status =  $('#filter_status').val()
-    window.open('/transaction/sales/export_excel?min='+min+'&max='+max+'&status='+status, '_blank')
+    var min =  $('#filter_date_from').val();
+    var max =  $('#filter_date_to').val();
+    var status =  $('#filter_status').val();
+    window.open('/transaction/sales/export_excel?min='+min+'&max='+max+'&status='+status, '_blank');
+})
 
+$('#btn-download-report').click(function() {
+    let min =  $('#filter_date_from').val();
+    let max =  $('#filter_date_to').val();
+    location.href = '/transaction/sales/export-report?min='+min+'&max='+max;
 })

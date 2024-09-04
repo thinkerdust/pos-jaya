@@ -231,10 +231,16 @@ class MasterProductController extends BaseController
         $product = $request->uid;
         $qty = $request->get('qty');
         $data = DB::table('product_price')->where('uid_product', $product)->where('first_quantity', '<=', $qty)->where('last_quantity', '>=', $qty)->where('status', 1)->first();
+
         if (!empty($data)) {
-            return $this->ajaxResponse(true, 'Success!', $data);
+            return $this->ajaxResponse(true, 'Harga Grosir Diterapkan!', $data);
         } else {
-            return $this->ajaxResponse(false, 'No Wholesale Price');
+            $data = DB::table('product')->where('uid', $product)->where('status', 1)->select('sell_price as price')->first();
+            if (!empty($data)) {
+                return $this->ajaxResponse(true, 'Tidak menggunakan harga grosir', $data);
+            } else {
+                return $this->ajaxResponse(false, 'Produk tidak ada');
+            }
         }
     }
 

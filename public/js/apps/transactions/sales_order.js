@@ -466,25 +466,26 @@ $("#qty").keyup(function(){
         $("#product").focus();
         $(this).val(0);
     }else{
-        $.ajax({
-            url: '/product/get-price/'+product,
-            dataType: 'JSON',
-            data : {
-                qty : qty
-            },
-            success: function(response) {
-                if(response.status) {
-                    let data = response.data;
-                    $('#price').val(thousandView(data.price)).trigger('keyup');
-                    NioApp.Toast('Harga grosir diterapkan', 'success', {position: 'top-right'});
+        if (qty !== '') {
+            $.ajax({
+                url: '/product/get-price/'+product,
+                dataType: 'JSON',
+                data : {
+                    qty : qty
+                },
+                success: function(response) {
+                    if(response.status) {
+                        let data = response.data;
+                        $('#price').val(thousandView(data.price)).trigger('keyup');
+                        NioApp.Toast(response.message, 'success', {position: 'top-right'});
+                    }
+                },
+                error: function(error) {
+                    console.log(error)
+                    NioApp.Toast('Error while fetching data', 'error', {position: 'top-right'});
                 }
-            },
-            error: function(error) {
-                console.log(error)
-                NioApp.Toast('Error while fetching data', 'error', {position: 'top-right'});
-            }
-        })
-    
+            })
+        }
     }
 
 })

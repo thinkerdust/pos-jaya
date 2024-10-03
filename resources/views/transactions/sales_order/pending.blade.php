@@ -60,9 +60,9 @@
                         <label class="form-label">Datepicker Range</label>
                         <div class="form-control-wrap">
                             <div class="input-daterange date-picker-range input-group">
-                                <input type="text" class="form-control" id="filter_date_from" value="{{ date('m/01/Y') }}" readonly/>
+                                <input type="text" class="form-control" id="filter_date_from" value="" readonly/>
                                 <div class="input-group-addon">TO</div>
-                                <input type="text" class="form-control" id="filter_date_to" value="{{ date('m/t/Y') }}" readonly/>
+                                <input type="text" class="form-control" id="filter_date_to" value="" readonly/>
                             </div>
                         </div>
                     </div>

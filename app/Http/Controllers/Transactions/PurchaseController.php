@@ -13,7 +13,6 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Storage;
 use PDF;
 
 class PurchaseController extends BaseController
@@ -38,7 +37,9 @@ class PurchaseController extends BaseController
      */
     public function datatable_purchase_order(Request $request)
     {
-        $min = !empty($request->min) ? date('Y-m-d', strtotime($request->min)) . ' 00:00:00' : date('Y-m-01 00:00:00');
+        $last_month = Carbon::now()->subMonths(3);
+        $last_month = $last_month->format('Y-m-d');
+        $min = !empty($request->min) ? date('Y-m-d', strtotime($request->min)) . ' 00:00:00' : date('Y-m-01', strtotime($last_month)) . ' 00:00:00';
         $max = !empty($request->max) ? date('Y-m-d', strtotime($request->max)) . ' 23:59:59' : date('Y-m-t 23:59:59');
         $role = Auth::user()->id_role;
 
@@ -262,7 +263,9 @@ class PurchaseController extends BaseController
 
     public function export_excel(Request $request)
     {
-        $min = !empty($request->min) ? date('Y-m-d', strtotime($request->min)) . ' 00:00:00' : date('Y-m-01 00:00:00');
+        $last_month = Carbon::now()->subMonths(3);
+        $last_month = $last_month->format('Y-m-d');
+        $min = !empty($request->min) ? date('Y-m-d', strtotime($request->min)) . ' 00:00:00' : date('Y-m-01', strtotime($last_month)) . ' 00:00:00';
         $max = !empty($request->max) ? date('Y-m-d', strtotime($request->max)) . ' 23:59:59' : date('Y-m-t 23:59:59');
         return Excel::download(new PurchaseOrderExport($min, $max), 'Pembelian.xlsx');
     }
@@ -276,10 +279,7 @@ class PurchaseController extends BaseController
 
         $pdf = PDF::loadview('transactions.purchase_order.po', ['data' => $data])->setPaper('A5', 'landscape');
         return $pdf->stream('PO-' . $data['header']->po_number);
-        // return view('transactions.sales_order.invoice', ['data' => $data]);
     }
-
-
 
     public function check_stock(Request $request)
     {
@@ -316,7 +316,6 @@ class PurchaseController extends BaseController
 
         }
         return $this->ajaxResponse($response_status, $response_message, $data);
-
     }
 
 

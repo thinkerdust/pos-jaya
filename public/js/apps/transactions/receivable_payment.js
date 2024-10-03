@@ -587,6 +587,7 @@ function applyFilter(){
 function clearFilter(){
     $("#filter_date_from").val('');
     $("#filter_date_to").val('');
+    $("#modal_payment_method").val('').change();
     $("#dt-table").DataTable().ajax.reload();
     $("#modal_filter").modal('hide');
 }

@@ -31,15 +31,22 @@ class ReceivablePaymentExport implements FromCollection, WithHeadings
         $max = $this->max;
         $payment_method = $this->payment_method;
         $role = $user->id_role;
-        $query = DB::table('receivable_payments as rp')->leftJoin('sales_orders as so', function ($join) {
-            $join->on('rp.invoice_number', '=', 'so.invoice_number');
-            $join->on('rp.uid_company', '=', 'so.uid_company');
-        })->join('customer as c', 'c.uid', '=', 'so.uid_customer')->join('payment_method as pm', 'pm.uid', '=', 'rp.uid_payment_method')->select('rp.uid', 'rp.invoice_number', 'c.name as customer_name', DB::raw('DATE_FORMAT(rp.transaction_date, "%d/%m/%Y") as transaction_date'), 'rp.amount', 'rp.term', 'pm.name as payment_method')->where('rp.status', 1);
+        
+        $query = DB::table('receivable_payments as rp')
+                    ->leftJoin('sales_orders as so', function ($join) {
+                        $join->on('rp.invoice_number', '=', 'so.invoice_number');
+                        $join->on('rp.uid_company', '=', 'so.uid_company');
+                    })
+                    ->join('customer as c', 'c.uid', '=', 'so.uid_customer')
+                    ->join('payment_method as pm', 'pm.uid', '=', 'rp.uid_payment_method')
+                    ->select('rp.uid', 'rp.invoice_number', 'c.name as customer_name', DB::raw('DATE_FORMAT(rp.transaction_date, "%d/%m/%Y") as transaction_date'), 'rp.amount', 'rp.term', 'pm.name as payment_method')
+                    ->where('rp.status', 1);
+
         if (!empty($min) && !empty($max)) {
             $query->whereBetween('rp.transaction_date', [$min, $max]);
         }
 
-        if (!empty($payment_method)) {
+        if (!empty($payment_method) && $payment_method != 'null') {
             $query->where('rp.uid_payment_method', $payment_method);
         }
 
@@ -48,7 +55,6 @@ class ReceivablePaymentExport implements FromCollection, WithHeadings
         } else {
             $query->where('rp.uid_company', $user->uid_company);
         }
-
 
         $query->orderBy('rp.insert_at', 'DESC');
         return $query->get();

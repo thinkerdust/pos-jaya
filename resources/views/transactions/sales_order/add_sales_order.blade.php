@@ -66,8 +66,6 @@
                                                     </div>
                                                 </div>
 
-
-
                                             </div>
                                             <div class="col-sm-6 pt-3">
                                                 <h2 class="text-end mt-3" id="grand_total">Rp. 0,-</h2>
@@ -123,25 +121,6 @@
                                                 </div>
 
                                                 <!-- <div class="form-group">
-                                                    <label class="form-label">Laminating</label>
-                                                    <div class="row">
-                                                        <div class="form-control-wrap col-md-12">
-                                                            <input type="text" class="form-control formated_number" id="laminating"
-                                                                name="laminating" value="0" required>
-                                                        </div>
-                                                    </div>
-                                                </div> -->
-                                                <!-- <div class="form-group">
-                                                    <label class="form-label">Packing</label>
-                                                    <div class="row">
-                                                        <div class="form-control-wrap col-md-12">
-                                                            <input type="text" class="form-control formated_number" id="packing"
-                                                                name="packing" value="0" required>
-                                                        </div>
-                                                    </div>
-                                                </div> -->
-
-                                                <!-- <div class="form-group">
                                                     <label class="form-label">Proofing</label>
                                                     <div class="row">
                                                         <div class="form-control-wrap col-md-12"> -->
@@ -158,35 +137,6 @@
                                                             <input type="hidden" class="form-control" id="keterangan"
                                                                 name="keterangan" >
                                                         <!-- </div>
-                                                    </div>
-                                                </div> -->
-
-                                                <!-- <div class="form-group">
-                                                    <label class="form-label">Cutting</label>
-                                                    <div class="row">
-                                                        <div class="form-control-wrap col-md-12">
-                                                            <input type="text" class="form-control formated_number" id="cutting"
-                                                                name="cutting" value="0" required>
-                                                        </div>
-                                                    </div>
-                                                </div> -->
-
-
-
-                                                <!-- <div class="form-group">
-                                                    <label class="form-label">
-                                                        <input class="form-check-input" type="checkbox" id="en_disc">
-                                                        Diskon</label>
-                                                    <div class="form-control-wrap">
-                                                        <input type="number" class="form-control" id="disc" name="disc"
-                                                            min="0" value="0" required disbaled>
-                                                    </div>
-                                                </div> -->
-                                                <!-- <div class="form-group">
-                                                    <label class="form-label">Subtotal</label>
-                                                    <div class="form-control-wrap">
-                                                        <input type="number" class="form-control" id="subtotal"
-                                                            name="subtotal" min="0" value="0" required disabled>
                                                     </div>
                                                 </div> -->
 
@@ -309,12 +259,6 @@
                                                     <!-- </div>
                                                 </div>
                                             </div> -->
-                                        <!-- </div> -->
-                                        <!-- <hr class="preview-hr"> -->
-                                        <!-- <h5 class="mb-2">Subtotal</h5> -->
-                                        <!-- <div class="row mt-2">
-
-                                        </div> -->
 
                                         <hr class="preview-hr">
                                         <div class="table-responsive mt-4">

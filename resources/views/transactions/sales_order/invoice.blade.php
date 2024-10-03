@@ -72,10 +72,6 @@ function integers($angka)
             padding: 3px;
         }
 
-        /* #table tr:nth-child(even) {
-            background-color: #f2f2f2;
-        } */
-
         #table th {
             padding-top: 3px;
             padding-bottom: 3px;
@@ -131,16 +127,6 @@ function integers($angka)
             <td>:</td>
             <td>{{ \Carbon\Carbon::parse(now())->format('H.i')}}</td>
         </tr>
-        <!-- <tr>
-            <td><strong>Telp</strong></td>
-            <td>:</td>
-            <td>{{ $data['header']->phone}}</td>
-            <td><strong></strong></td>
-            <td></td>
-            <td></td>
-        </tr> -->
-
-
 
     </table>
 
@@ -196,11 +182,6 @@ function integers($angka)
         </tbody>
     </table>
     <table style="width:100%" id="tfoot">
-        <!-- <tr>
-            <td style="width:60%"></td>
-            <td align="right">Subtotal</td>
-            <td align="right">{{ integers($grand_total)}}</td>
-        </tr> -->
         @if ($data['header']->discount != 0)
             <tr>
                 <td style="width:60%"></td>

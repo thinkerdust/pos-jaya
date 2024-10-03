@@ -36,12 +36,13 @@ class ReceivablePaymentController extends BaseController
      */
     public function datatable_receivable_payment(Request $request)
     {
-        $min = !empty($request->min) ? date('Y-m-d', strtotime($request->min)) . ' 00:00:00' : date('Y-m-01 00:00:00');
+        $last_month = Carbon::now()->subMonths(3);
+        $last_month = $last_month->format('Y-m-d');
+        $min = !empty($request->min) ? date('Y-m-d', strtotime($request->min)) . ' 00:00:00' : date('Y-m-01', strtotime($last_month)) . ' 00:00:00';
         $max = !empty($request->max) ? date('Y-m-d', strtotime($request->max)) . ' 23:59:59' : date('Y-m-t 23:59:59');
         $payment_method = !empty($request->payment) ? $request->payment : '';
-        $role = Auth::user()->id_role;
 
-        $data = $this->receivable_payment->dataTableReceivablePayments($min, $max, $role, $payment_method);
+        $data = $this->receivable_payment->dataTableReceivablePayments($min, $max, $payment_method);
         return Datatables::of($data)->addIndexColumn()
             ->addColumn('action', function ($row) {
                 $btn = '';
@@ -55,8 +56,6 @@ class ReceivablePaymentController extends BaseController
             ->rawColumns(['action'])
             ->make(true);
     }
-
-
 
     public function add_receivable_payment(Request $request)
     {
@@ -87,9 +86,6 @@ class ReceivablePaymentController extends BaseController
         $selisih = $this->origin_number($request->modal_selisih);
         $kembali = $this->origin_number($request->modal_changes);
 
-        // echo $bayar . "<br>";
-        // echo $selisih . "<br>";
-        // echo $kembali . "<br>";
         $amount = $bayar - $kembali;
         if (empty($uid)) {
             $paid_off = ($amount == $selisih) ? 1 : 0;
@@ -100,7 +96,6 @@ class ReceivablePaymentController extends BaseController
         } else {
             $get_old_amount = DB::table('receivable_payments')->where('uid', $uid)->where('status', 1)->first();
             $old_amount = $get_old_amount->amount;
-            // $selisih += $old_amount;
 
             $paid_off = ($amount == $selisih) ? 1 : 0;
 
@@ -203,12 +198,13 @@ class ReceivablePaymentController extends BaseController
 
         $pdf = PDF::loadview('transactions.receivable_payment.receipt', ['data' => $data])->setPaper('A5', 'landscape');
         return $pdf->stream('Nota-' . $data['header']->invoice_number);
-        // return view('transactions.receivable_payment.receipt', ['data' => $data]);
     }
 
     public function export_excel(Request $request)
     {
-        $min = !empty($request->min) ? date('Y-m-d', strtotime($request->min)) . ' 00:00:00' : date('Y-m-01 00:00:00');
+        $last_month = Carbon::now()->subMonths(3);
+        $last_month = $last_month->format('Y-m-d');
+        $min = !empty($request->min) ? date('Y-m-d', strtotime($request->min)) . ' 00:00:00' : date('Y-m-01', strtotime($last_month)) . ' 00:00:00';
         $max = !empty($request->max) ? date('Y-m-d', strtotime($request->max)) . ' 23:59:59' : date('Y-m-t 23:59:59');
         $payment_method = !empty($request->payment_method) ? $request->payment_method : '';
         return Excel::download(new ReceivablePaymentExport($min, $max, $payment_method), 'Pembayaran.xlsx');

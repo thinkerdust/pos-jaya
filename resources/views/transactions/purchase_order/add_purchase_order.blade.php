@@ -67,15 +67,6 @@
                                                             id="disc" name="disc" value="0" required disbaled>
                                                     </div>
                                                 </div>
-                                                <!-- <div class="form-group">
-                                                    <label class="form-label">Subtotal</label>
-                                                    <div class="form-control-wrap">
-                                                        <input type="number" class="form-control" id="subtotal"
-                                                            name="subtotal" min="0" value="0" required disabled>
-                                                    </div>
-                                                </div> -->
-
-
                                             </div>
                                         </div>
                                         <hr class="preview-hr">

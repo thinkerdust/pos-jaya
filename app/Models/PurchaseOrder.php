@@ -31,7 +31,7 @@ class PurchaseOrder extends Model
 
         $order = request('order')[0];
         if ($order['column'] == '0') {
-            $query->orderBy(DB::raw("STR_TO_DATE(SUBSTRING(po.po_number, 3, 8), '%d%m%Y')"), 'DESC')
+            $query->orderBy(DB::raw("STR_TO_DATE(SUBSTRING(po.po_number, 3, 8), '%m%d%Y')"), 'DESC')
             ->orderBy(DB::raw("CAST(SUBSTRING_INDEX(po.po_number, '-', -1) AS UNSIGNED)"), 'DESC');
         }
 

@@ -37,7 +37,7 @@ class SalesOrder extends Model
 
         $order = request('order')[0];
         if ($order['column'] == '0') {
-            $query->orderBy(DB::raw("STR_TO_DATE(SUBSTRING(so.invoice_number, 3, 8), '%d%m%Y')"), 'DESC')
+            $query->orderBy(DB::raw("STR_TO_DATE(SUBSTRING(so.invoice_number, 4, 8), '%m%d%Y')"), 'DESC')
             ->orderBy(DB::raw("CAST(SUBSTRING_INDEX(so.invoice_number, '-', -1) AS UNSIGNED)"), 'DESC');
         }
 

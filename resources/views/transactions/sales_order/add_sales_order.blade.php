@@ -1,11 +1,6 @@
 @extends('master')
 
 @section('content')
-<style>
-  .custom-textarea {
-    height: 50px !important; /* Atur tinggi sesuai kebutuhan */
-  }
-</style>
 
 <div class="nk-content ">
     <div class="container-fluid">
